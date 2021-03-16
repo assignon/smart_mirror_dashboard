@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import exc
 
-class Appointment(BaseMixin, db.Base):
+class Appointment(BaseMixin, db.Model):
     __tablename__ = 'Appointment'
 
     appointment_id = Column(Integer, primary_key=True)

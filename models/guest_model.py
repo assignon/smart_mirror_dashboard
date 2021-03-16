@@ -8,7 +8,7 @@ from .base_model import BaseMixin
 from .appointment_model import Appointment
 from .image_model import Image
 
-class Guest(BaseMixin, db.Base):
+class Guest(BaseMixin, db.Model):
     __tablename__ = 'Guest'
 
     guest_id = Column(Integer, primary_key=True)

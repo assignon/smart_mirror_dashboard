@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import desc
 from sqlalchemy import exc
 from .base_model import BaseMixin
 
-class Image(BaseMixin, db.Base):
+class Image(BaseMixin, db.Model):
     __tablename__ = 'Image'
     image_id = Column(Integer, primary_key=True)
     filepath = Column(String)

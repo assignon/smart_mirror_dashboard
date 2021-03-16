@@ -21,6 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_file
 app.config['JWT_SECRETE_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 # initialize db
 db = SQLAlchemy(app)
+db.create_all()
 migrate = Migrate(app, db)
 
 # mysql conf
