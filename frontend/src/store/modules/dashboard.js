@@ -1,22 +1,15 @@
 export default {
-    namespaced: true,
+  namespaced: true,
 
-    state: {
-        
-    },
+  state: {},
 
-    getters: {
-        // getUserData(state) {
-        //     return state.userDataArr
-        // },
-    },
+  getters: {
+    // getUserData(state) {
+    //     return state.userDataArr
+    // },
+  },
 
-    mutations: {
-    
-    },
+  mutations: {},
 
-    actions: {
-        
-    },
-  
-}
+  actions: {}
+};

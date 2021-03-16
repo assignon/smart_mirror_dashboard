@@ -1,4 +1,3 @@
-
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 // import "vue-material-design-icons/styles.css";
 import "@fortawesome/fontawesome-free/css/all.css";
@@ -14,10 +13,12 @@ import Axios from "axios";
 // vue session
 import VueSession from "vue-session";
 
+import vuetify from "./plugins/vuetify";
+
 Vue.config.productionTip = false;
 Vue.use(VAnimateCss);
 Vue.use(Vuex);
-Vue.use(VueSession, { persist: true    });
+Vue.use(VueSession, { persist: true });
 
 Axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 Axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
@@ -29,5 +30,6 @@ new Vue({
   created() {},
   router,
   store,
+  vuetify,
   render: h => h(App)
 }).$mount("#app");

@@ -4,26 +4,32 @@
       <Nav v-if="!$route.name.startsWith('Login')" class='hidden-md-and-up' />
       <router-view class="animated fadeIn"></router-view>
     </v-main>
-  </v-app>    
+  </v-app>
 </template>
 
 <script>
-import Nav from "./components/layouts/Nav"
-
+import Nav from "./components/layouts/Nav";
 export default {
   name: "App",
-
   components: {
-    Nav
+    Nav,
   },
-
   data: () => ({
     //
   }),
-
-  created(){},
-
-  methods: {}
+  created(){
+    
+  },
+  methods: {
+    // createSession() {
+    //   if (!this.$session.has("auth")) {
+    //     this.$session.start();
+    //     this.$session.set("auth", false);
+    //   }
+    //   this.$store.state.AUTHENTICATED = this.$session.get("auth");
+    //   // console.log(this.$store.state.AUTHENTICATED);
+    // },
+  }
 };
 </script>
 
@@ -37,11 +43,11 @@ body {
   padding: 0px;
 }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  /* color: #2c3e50; */
   margin: 0px;
   padding: 0px;
   width: 100%;

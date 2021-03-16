@@ -1,6 +1,6 @@
 <template>
   <div class="login-core">
-    <h1 class='display-3'>Login page</h1>
+    <h1 class="display-3">Login page</h1>
   </div>
 </template>
 
@@ -11,28 +11,25 @@
 export default {
   name: "Login",
 
-  components: {
+  components: {},
+
+  data() {
+    return {};
   },
 
-  data(){
-    return{
-
-    }
-  },
-
-  created(){},
+  created() {},
 
   methods: {
-    startSession(token, su, userId){
+    startSession(token, su, userId) {
       // start a session
-      this.$session.start()
+      this.$session.start();
       // store token en user id
-      this.$session.set('token', token)
-      this.$session.set('userId', userId)
-      this.$session.set('authenticated', true)
-      this.$session.set('su', su)
+      this.$session.set("token", token);
+      this.$session.set("userId", userId);
+      this.$session.set("authenticated", true);
+      this.$session.set("su", su);
     }
-  },
+  }
 
   // signin(){
   //   let self = this;
@@ -65,12 +62,12 @@ export default {
 </script>
 
 <style scoped>
-  .login-core{
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+.login-core {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>
