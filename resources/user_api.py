@@ -11,6 +11,6 @@ class CreateUser(Resource):
         pass
 
 class GetUser(Resource):
-    # @jwt_required
+    @jwt_required
     def get(self):
        return model.get_user()
