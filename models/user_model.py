@@ -1,27 +1,53 @@
 from datetime import datetime
 from settings import db, bcrypt
-# from flask_bcrypt import generate_password_hash, check_password_hash
-# from werkzeug.security import generate_password_hash, check_password_hash
+from flask_bcrypt import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
-from flask import jsonify, make_response
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import desc
+from sqlalchemy import exc
+from .base_model import BaseMixin
 
-# db = setting['db']
 
-class UserModel(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(length=50), nullable=False)
-    login = db.Column(db.String(length=30), unique=True, nullable=False)
-    password = db.Column(db.String(length=30), nullable=False)
-    is_admin = db.Column(db.Boolean, nullable=False)
-    
-    # def __init__(self, name, login, password, is_admin):
-    #     self.name = name
-    #     self.login = login
-    #     self.password = password
-    #     self.is_admin = is_admin
-    
+class User(BaseMixin, db.Model):
+    __tablename__ = 'User'
+
+    user_id = Column(Integer, primary_key=True)
+    name = Column(String(length=50), nullable=False)
+    login = Column(String(length=30), unique=True, nullable=False)
+    password = Column(String(length=30), nullable=False)
+    is_admin = Column(Boolean, nullable=False)
+
+
     def __repr__(self):
-        return str(self.name)
+        return self.name
+
+    
+    @staticmethod
+    def get_user(user_id):
+        user = db.session.query(User).filter_by(user_id=user_id).first()
+        return user
+    
+    @staticmethod
+    def update_user(user_id, **kwargs):
+        """
+        This function updates the user in the database and returns the updated user.
+        Input:
+            user_id: id of the user that needs to be updated
+            **kwargs: key value pairs, keys used should be the same as the columns specified in the model 
+        """
+        
+        user = User.get_user(user_id)
+
+        for column, value in kwargs.items():  
+            setattr(user, column, value) 
+
+        db.session.commit()
+        return user
+    
+
+    
     
     def hash_pass(self):
         self.password = bcrypt.generate_password_hash(self.password).decode('utf8')
@@ -29,10 +55,6 @@ class UserModel(db.Model):
     def check_pass(self, password):
         return bcrypt.check_password_hash(self.password, password)
     
-    def new_user(self):
-        # add new user to DB
-        pass
-
     def signin(self):
         # # login basis user sended data verification
         
@@ -44,5 +66,3 @@ class UserModel(db.Model):
         # return {'token': token, 'user_id': user.id, 'admin': user.is_admin}
         pass
     
-    def get_user(self):
-        return jsonify(dict({'id': 1, 'name': 'Yanick', 'admin': True, 'token': 'wsdhj98743puihsadnv36'}))
