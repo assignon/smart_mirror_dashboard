@@ -14,8 +14,6 @@ import Axios from "axios";
 // vue session
 import VueSession from "vue-session";
 
-import vuetify from "./plugins/vuetify";
-
 Vue.config.productionTip = false;
 Vue.use(VAnimateCss);
 Vue.use(Vuex);
@@ -31,6 +29,5 @@ new Vue({
   created() {},
   router,
   store,
-  vuetify,
   render: h => h(App)
 }).$mount("#app");
