@@ -1,26 +1,44 @@
 <template>
   <v-app id='app'>
     <v-main>
-      <Nav v-if="!$route.name.startsWith('Login')" class='hidden-md-and-up' />
-      <router-view class="animated fadeIn"></router-view>
+      <div id="nav">
+        <router-link v-if="authenticated" to="/login" v-on:click.native="logout()" replace>Logout</router-link>
+        <Nav v-if="!$route.name.startsWith('Login')" class='hidden-md-and-up'/>
+      </div>
+      <router-view class="animated fadeIn" @authenticated="setAuthenticated"/>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import Nav from "./components/layouts/Nav";
+
 export default {
   name: "App",
   components: {
     Nav,
   },
   data: () => ({
-    //
+    return: {
+      authenticated: false,
+      mockAccount: {
+        username: "test",
+        password: "test"
+      }
+    }
   }),
-  created(){
-    
+  created() {
+    if (!this.authenticated) {
+      // this.$router.replace({name: "Login"})
+    }
   },
   methods: {
+    setAuthenticated(status) {
+      this.authenticated = status;
+    },
+    logout() {
+      this.authenticated = false;
+    }
     // createSession() {
     //   if (!this.$session.has("auth")) {
     //     this.$session.start();
@@ -42,6 +60,7 @@ body {
   margin: 0px;
   padding: 0px;
 }
+
 #app {
   /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
