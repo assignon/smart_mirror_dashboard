@@ -46,11 +46,15 @@ class User(BaseMixin, db.Model):
         db.session.commit()
         return user
     
+    @staticmethod
+    def delete_user(user_id):
+        User.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
 
-    
-    
+
     def hash_pass(self):
         self.password = bcrypt.generate_password_hash(self.password).decode('utf8')
+        db.session.commit()
         
     def check_pass(self, password):
         return bcrypt.check_password_hash(self.password, password)
