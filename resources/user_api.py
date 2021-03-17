@@ -7,7 +7,9 @@ import sys
 # models imports
 
 from models.user_model import User
-
+from models.appointment_model import Appointment
+from models.guest_model import Guest
+from models.image_model import Image
 
 class CreateUser(Resource):
     def post(self):

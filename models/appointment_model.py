@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, 
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import exc
+from .base_model import BaseMixin
 
 class Appointment(BaseMixin, db.Model):
     __tablename__ = 'Appointment'
