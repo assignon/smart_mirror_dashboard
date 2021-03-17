@@ -7,6 +7,7 @@ from sqlalchemy import exc
 from .base_model import BaseMixin
 from .appointment_model import Appointment
 from .image_model import Image
+from datetime import datetime
 
 class Guest(BaseMixin, db.Model):
     __tablename__ = 'Guest'
@@ -39,7 +40,8 @@ class Guest(BaseMixin, db.Model):
         Hie komt functie om 1 of meedere afbeeldingen toe tevoegen aan guest
         """
 
-        new_images = [Image(filepath=filepath_image, guest_id=self.guest_id) for filepath_image in filepath_images]
+        current_date = datetime.today()
+        new_images = [Image(filepath=filepath_image, guest_id=self.guest_id, date=current_date) for filepath_image in filepath_images]
         db.session.add_all(new_images)
         db.session.commit()
     
@@ -50,9 +52,13 @@ class Guest(BaseMixin, db.Model):
         
         return images
     
+    def delete_images(self):
+        db.session.query(Image).filter_by(guest_id=self.guest_id).delete()
+        db.session.commit()
+    
 
     @staticmethod
-    def update_guest(guest_id, **kwargs):
+    def update_guest(guest_id, new_appointment=False,**kwargs):
         """
         This function updates the guest in the database and returns the updated guest.
         Input:
@@ -61,13 +67,13 @@ class Guest(BaseMixin, db.Model):
         """
         guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()
         # terugkerende klant heeft afspraak met dezelfde employee
-        if 'employee_name' not in kwargs.keys():
+        if 'employee_name' not in kwargs.keys() and new_appointment:
             most_recent_employee = guest.appointments[0].employee_name
             Appointment.create(employee_name=most_recent_employee, guest_id=guest_id)
 
         for column, value in kwargs.items():  
             # klant heeft afspraak met ander employee
-            if column == 'employee_name':
+            if column == 'employee_name' and new_appointment:
                 Appointment.create(employee_name=value, guest_id=guest_id)
             else:
                 setattr(guest, column, value) 
@@ -84,3 +90,8 @@ class Guest(BaseMixin, db.Model):
         guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()     
         
         return guest
+    
+    @staticmethod
+    def delete_guest(guest_id):
+        db.session.query(Guest).filter_by(guest_id=guest_id).delete()
+        db.session.commit()

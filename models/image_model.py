@@ -3,6 +3,7 @@ from settings import db
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import desc
+from sqlalchemy.sql import func
 from sqlalchemy import exc
 from .base_model import BaseMixin
 
@@ -11,7 +12,7 @@ class Image(BaseMixin, db.Model):
     image_id = Column(Integer, primary_key=True)
     filepath = Column(String)
     # nieuwe column
-    date = Column(Date)
+    date = Column(Date, default=func.current_date())
     guest_id = Column(Integer, ForeignKey(
         'Guest.guest_id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     guest = relationship("Guest", back_populates="images")

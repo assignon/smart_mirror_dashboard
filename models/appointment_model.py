@@ -25,12 +25,13 @@ class Appointment(BaseMixin, db.Model):
         appointment = db.session.query(Appointment).filter(appointment_id=appointment_id).first()
         return appointment
 
+
     @staticmethod
     def update_appointment(appointment_id, **kwargs):
         """
-        This function updates the user in the database and returns the updated user.
+        This function updates the appointment in the database and returns the updated appointment.
         Input:
-            user_id: id of the user that needs to be updated
+            appoinment_id: id of the appointment that needs to be updated
             **kwargs: key value pairs, keys used should be the same as the columns specified in the model 
         """
         
@@ -41,3 +42,9 @@ class Appointment(BaseMixin, db.Model):
 
         db.session.commit()
         return appointment
+
+
+    @staticmethod
+    def delete_appointment(appointment_id):
+        db.session.query(Appointment).filter_by(appointment_id=appointment_id).delete()
+        db.session.commit()
