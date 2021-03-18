@@ -1,22 +1,15 @@
 <template>
-  <v-app id='app'>
+  <v-app id="app">
     <v-main>
-      <div id="nav">
-        <router-link v-if="authenticated" to="/login" v-on:click.native="logout()" replace>Logout</router-link>
-        <Nav v-if="!$route.name.startsWith('Login')" class='hidden-md-and-up'/>
-      </div>
-      <router-view class="animated fadeIn" @authenticated="setAuthenticated"/>
+      <router-view class="animated fadeIn" @authenticated="setAuthenticated" />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Nav from "./components/layouts/Nav";
-
 export default {
   name: "App",
   components: {
-    Nav,
   },
   data: () => ({
     return: {

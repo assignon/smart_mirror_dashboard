@@ -13,9 +13,8 @@
 
 export default {
   name: "Login",
-
-  components: {},
-
+  components: {
+  },
   data() {
     return {
       input: {
@@ -24,9 +23,7 @@ export default {
       }
     };
   },
-
   created() {},
-
   methods: {
     startSession(token, su, userId) {
       // start a session

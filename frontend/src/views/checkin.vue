@@ -6,16 +6,19 @@
 </template>
 
 <script>
+import Navbar from "@/components/layouts/Navbar";
 export default {
-name: "dashboard",
+  name: "Checkin",
+  component: {
+    Navbar
+  },
   data() {
     return {};
   }
-}
+};
 </script>
 
 <style scoped>
-  #dashboard {
-
-  }
+#dashboard {
+}
 </style>
