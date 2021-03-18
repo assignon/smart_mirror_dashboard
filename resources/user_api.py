@@ -1,16 +1,21 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
-# models imports
-from models.user_model import *
+import os
+import sys
 
-model = UserModel()
+# models imports
+
+from models.user_model import User
+from models.appointment_model import Appointment
+from models.guest_model import Guest
+from models.image_model import Image
 
 class CreateUser(Resource):
     def post(self):
-        pass
+        User.create()
 
 class GetUser(Resource):
     # @jwt_required
     def get(self):
-       return model.get_user()
+       return jsonify(User.get_user())
