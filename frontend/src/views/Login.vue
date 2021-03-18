@@ -1,9 +1,21 @@
 <template>
   <div class="login-core">
-    <h1 class="display-3">Soggeti Mirror Login</h1>
-    <input type="text" name="username" v-model="input.username" placeholder="Username" />
-    <input type="password" name="password" v-model="input.password" placeholder="Password">
-    <button type="button" v-on:click="login()">Login</button>
+    <h1 class="display-3 mb-10 mt-16">Soggeti Mirror Login</h1>
+    <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
+    <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
+    <v-form class="login-form">
+      <v-text-field
+          label="Username"
+      ></v-text-field>
+      <v-text-field
+          label="Password"
+      ></v-text-field>
+      <v-btn
+          elevation="6"
+          v-on:click="login()"
+      >Login
+      </v-btn>
+    </v-form>
   </div>
 </template>
 
@@ -13,8 +25,7 @@
 
 export default {
   name: "Login",
-  components: {
-  },
+  components: {},
   data() {
     return {
       input: {
@@ -23,7 +34,8 @@ export default {
       }
     };
   },
-  created() {},
+  created() {
+  },
   methods: {
     startSession(token, su, userId) {
       // start a session
@@ -36,18 +48,14 @@ export default {
 
     },
     login() {
-        if(this.input.username != "" && this.input.password != "") {
-          if(this.input.username == this.$parent.mockAccount.username && this.input.password == this.$parent.mockAccount.password) {
-            this.$emit("authenticated", true);
-            this.$router.replace({name: "Dashboard"})
-          } else {
-            console.log('Gebruikersnaam en of wachtwoord is verkeerd');
-          }
-        } else {
-          console.log('Vul een gebruikersnaam en wachtwoord in');
-        }
+      if (this.input.username != "" && this.input.password != "") {
+        this.startSession("string", true, 1)
+        this.$router.push({name: "Checkin"})
+      } else {
+        console.log('Vul een gebruikersnaam en wachtwoord in');
       }
-  }
+    }
+  },
 
   // signin(){
   //   let self = this;
@@ -81,12 +89,20 @@ export default {
 
 <style scoped>
 .login-core {
-  height: 100vh;
+
+}
+
+.login-form {
+  height: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
+}
+
+.login-form .v-text-field {
+  width: 10%;
 }
 </style>

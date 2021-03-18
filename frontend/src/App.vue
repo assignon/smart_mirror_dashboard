@@ -1,37 +1,30 @@
 <template>
   <v-app id="app">
     <v-main>
+      <Navbar />
       <router-view class="animated fadeIn" @authenticated="setAuthenticated" />
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Navbar from "@/components/layouts/Navbar";
 export default {
   name: "App",
   components: {
+    Navbar
   },
   data: () => ({
     return: {
       authenticated: false,
-      mockAccount: {
-        username: "test",
-        password: "test"
-      }
     }
   }),
   created() {
-    if (!this.authenticated) {
-      // this.$router.replace({name: "Login"})
+    if (!this.$session.get("authenticated")) {
+      this.$router.push({name: "Login"})
     }
   },
   methods: {
-    setAuthenticated(status) {
-      this.authenticated = status;
-    },
-    logout() {
-      this.authenticated = false;
-    }
     // createSession() {
     //   if (!this.$session.has("auth")) {
     //     this.$session.start();

@@ -1,7 +1,7 @@
 <template>
-  <nav
+  <div
     v-if="!$route.name.startsWith('Login')"
-    class="hidden-md-and-up"
+    class="hidden-sm-and-down"
     role="navigation"
     aria-label="main navigation"
   >
@@ -32,20 +32,32 @@
         </div>
       </div>
     </div>
-  </nav>
+  </div>
 </template>
 <script>
 export default {
-  name: "Navbar"
+  name: "Navbar",
+  methods: {
+    setAuthenticated(status) {
+      this.authenticated = status;
+    },
+    logout() {
+      this.authenticated = false;
+    }
+  }
 };
 </script>
-<style lang="scss" scoped>
-nav {
-  margin-top: 25px;
-  margin-bottom: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-  }
+<style scoped>
+div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-content: center;
+  gap: 15px;
+}
+div a {
+  font-weight: bold;
+  color: #2c3e50;
+  width: 100%;
 }
 </style>
