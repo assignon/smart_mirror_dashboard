@@ -9,7 +9,10 @@ from resources.user_api import *
 def api_routes(rest_api):
     # routes map
     routes = [
-        {'name': GetUser, 'path': '/user/get_user'}
+        {'name': GetUser, 'path': '/user/get_user'},
+        {'name': InsertUser, 'path': '/user/insert_user'},
+        {'name': UpdateUser, 'path':},
+        {'name':, 'path':},
     ]
     # add api routes and make it accessible
     for route in routes:
