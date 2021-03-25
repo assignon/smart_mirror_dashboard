@@ -7,15 +7,14 @@ from marshmallow import ValidationError
 # models imports
 
 from models.user_model import User
-from models.appointment_model import Appointment
-from models.guest_model import Guest
-from models.image_model import Image
 
 # schema imports
-from schemas.user_schema import UserSchema
+from schemas.user_schema import UserSchema, EditUserSchema
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
+edit_user_schema = EditUserSchema()
+
 
 class UserCollection(Resource):
 
@@ -23,6 +22,7 @@ class UserCollection(Resource):
         """
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
+        
         users = User.get_all_users()
         return users_schema.dump(users)
 
@@ -34,7 +34,13 @@ class UserCollection(Resource):
         json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
+        
+        # remove whitespaces from input
+        
+        remove_whitespace(json_data)
+
         # Validate and deserialize input
+        
         try:
             data = user_schema.load(json_data)
         except ValidationError as err:
@@ -45,7 +51,12 @@ class UserCollection(Resource):
             return user_schema.dump(user), 201
         else:
             return 500
-        
+
+
+    def delete(self, user_id):
+        User.delete_user(user_id)
+        return 200
+
 
 class UserApi(Resource):
 
@@ -60,4 +71,28 @@ class UserApi(Resource):
         """
         Edit user
         """
-        pass
+
+        json_data = request.get_json()
+        if not json_data:
+            return {"message": "No input data provided"}, 400
+        
+        # remove whitespaces from input
+        
+        remove_whitespace(json_data)
+
+        # Validate and deserialize input
+        
+        try:
+            data = edit_user_schema.load(json_data)
+        except ValidationError as err:
+            return err.messages, 422
+        
+        edited_user = User.update_user(user_id, **data)
+        return user_schema.dump(edited_user), 200
+
+                
+
+def remove_whitespace(json_data):
+    for key, value in json_data.items():
+        if type(value) == str:
+            json_data[key] = value.strip()

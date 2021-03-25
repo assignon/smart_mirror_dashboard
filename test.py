@@ -2,7 +2,7 @@ import requests
 
 BASE = 'http://localhost:5000/'
 
-response = requests.post(BASE + 'users', json={'name':'test','login':'         ', 'password':'password123', 'is_admin':True})
+response = requests.put(BASE + 'user/1', json={'login':'SebasC96'})
 print(response.json())
 input()
 
