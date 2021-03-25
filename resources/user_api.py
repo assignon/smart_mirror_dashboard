@@ -2,6 +2,7 @@ from flask_restful import Resource, reqparse, abort
 from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 from settings import ma
+from marshmallow import ValidationError
 
 # models imports
 
@@ -13,12 +14,6 @@ from models.image_model import Image
 # schema imports
 from schemas.user_schema import UserSchema
 
-# class CreateUserSchema(ma.Schema):
-#     name = ma.fields.Str(required=True)
-#     login = ma.fields.Str(required=True)
-#     password = ma.fields.Str(required=True)
-#     is_admin = ma.fields.Bool(required=True)
-
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
@@ -26,13 +21,10 @@ class UserCollection(Resource):
 
     def get(self):
         """
-        Get all users from the database
+        Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
         users = User.get_all_users()
-        print(users)
-        users = users_schema.dump(users)
-        print(users)
-        return users
+        return users_schema.dump(users)
 
 
     def post(self):
@@ -44,12 +36,16 @@ class UserCollection(Resource):
             return {"message": "No input data provided"}, 400
         # Validate and deserialize input
         try:
-            data = create_user_schema.load(json_data)
-        except ma.ValidationError as err:
+            data = user_schema.load(json_data)
+        except ValidationError as err:
             return err.messages, 422
         
-        videos[video_id] = data
-        return videos[video_id], 201
+        succes, user = User.create(**data)
+        if succes:
+            return user_schema.dump(user), 201
+        else:
+            return 500
+        
 
 class UserApi(Resource):
 
