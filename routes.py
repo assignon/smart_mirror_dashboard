@@ -1,18 +1,13 @@
-# from flask_restful import Api
-# import app
-
+from settings import rest_api
 # models imports
 from resources.user_api import *
 
-# initialize restful api with flask app
-# rest_api = Api(app)
+
 def api_routes(rest_api):
     # routes map
     routes = [
-        {'name': GetUser, 'path': '/user/get_user'},
-        {'name': InsertUser, 'path': '/user/insert_user'},
-        {'name': UpdateUser, 'path':},
-        {'name':, 'path':},
+        {'name': UserCollection, 'path': '/users'},
+        {'name': UserApi, 'path': '/user/<int:user_id>'},
     ]
     # add api routes and make it accessible
     for route in routes:

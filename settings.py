@@ -1,9 +1,11 @@
 import os, sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Api
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from flask_marshmallow import Marshmallow
 
 # from flask_restful import Api
 # if 'app' not in sys.modules:
@@ -20,6 +22,7 @@ bcrypt = Bcrypt(app)
 db_file = "sqlite:///{}".format(os.path.join(PROJECT_DIR, 'smart_mirror.db'))
 app.config['SQLALCHEMY_DATABASE_URI'] = db_file
 app.config['JWT_SECRETE_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
+
 # initialize db
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -28,7 +31,12 @@ migrate = Migrate(app, db)
 
 
 ## api settings
-# rest_api = Api(app)
+rest_api = Api(app)
+
+
+# initialize marshmallow
+
+ma = Marshmallow(app)
 # custom error
 
 ## jwt authentication setup

@@ -1,12 +1,11 @@
 from datetime import datetime
-from settings import db, bcrypt
+from settings import db, bcrypt, ma
 from flask_bcrypt import generate_password_hash, check_password_hash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, exc
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import desc
-from sqlalchemy import exc
 from .base_model import BaseMixin
 
 
@@ -23,12 +22,17 @@ class User(BaseMixin, db.Model):
     def __repr__(self):
         return self.name
 
-    
+    @staticmethod
+    def get_all_users():
+        return db.session.query(User).all()
+
+
     @staticmethod
     def get_user(user_id):
         user = db.session.query(User).filter_by(user_id=user_id).first()
         return user
     
+
     @staticmethod
     def update_user(user_id, **kwargs):
         """
@@ -46,6 +50,7 @@ class User(BaseMixin, db.Model):
         db.session.commit()
         return user
     
+
     @staticmethod
     def delete_user(user_id):
         User.query.filter_by(user_id=user_id).delete()
@@ -56,9 +61,11 @@ class User(BaseMixin, db.Model):
         self.password = bcrypt.generate_password_hash(self.password).decode('utf8')
         db.session.commit()
         
+
     def check_pass(self, password):
         return bcrypt.check_password_hash(self.password, password)
     
+
     def signin(self):
         # # login basis user sended data verification
         
