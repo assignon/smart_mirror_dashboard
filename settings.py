@@ -21,7 +21,7 @@ bcrypt = Bcrypt(app)
 # sqlite conf
 db_file = "sqlite:///{}".format(os.path.join(PROJECT_DIR, 'smart_mirror.db'))
 app.config['SQLALCHEMY_DATABASE_URI'] = db_file
-app.config['JWT_SECRETE_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
+app.config['JWT_SECRET_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 
 # initialize db
 db = SQLAlchemy(app)

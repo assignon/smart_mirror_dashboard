@@ -3,7 +3,7 @@ from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 from settings import ma
 from marshmallow import ValidationError
-
+from .authentication_api import login_required
 # models imports
 
 from models.user_model import User
@@ -17,17 +17,20 @@ edit_user_schema = EditUserSchema()
 
 
 class UserCollection(Resource):
-
-    def get(self):
+    @staticmethod
+    @login_required
+    def get(current_user):
         """
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
-        
+        if not current_user.is_admin:
+            return jsonify({'message': 'Not authorized to perform this function'})
         users = User.get_all_users()
         return users_schema.dump(users)
 
-
-    def post(self):
+    @staticmethod
+    @login_required
+    def post(current_user):
         """
         Add a new user to the database
         """
@@ -59,15 +62,17 @@ class UserCollection(Resource):
 
 
 class UserApi(Resource):
-
-    def get(self, user_id): 
+    @staticmethod
+    @login_required
+    def get(current_user, user_id): 
         """
         get user based on userid
         """
         pass
 
-
-    def put(self, user_id):
+    @staticmethod
+    @login_required
+    def put(current_user, user_id):
         """
         Edit user
         """

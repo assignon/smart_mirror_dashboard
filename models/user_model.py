@@ -9,7 +9,7 @@ from sqlalchemy.sql.expression import desc
 from .base_model import BaseMixin
 
 
-class User(BaseMixin, db.Model):
+class User(db.Model):
     __tablename__ = 'User'
 
     user_id = Column(Integer, primary_key=True)
@@ -21,6 +21,28 @@ class User(BaseMixin, db.Model):
 
     def __repr__(self):
         return self.name
+
+    @staticmethod
+    def create(name, login, password, is_admin):
+        """
+        This function inserts a new row into the table and returns a tuple (boolean succes, obj)
+        obj contains instance of the class if succes = True, if False it contains the error message.
+        arguments should match the column names specified in the model
+        """
+        
+        succes = True
+        user = User(name=name, login=login, password=bcrypt.generate_password_hash(password).decode('utf8'), is_admin=is_admin)
+        db.session.add(user)
+        try:
+            db.session.commit()
+        except exc.IntegrityError as e:
+            db.session.rollback()
+            succes = False
+            user = e.orig.args 
+
+
+        return succes, user
+
 
     @staticmethod
     def get_all_users():
@@ -57,23 +79,7 @@ class User(BaseMixin, db.Model):
         db.session.commit()
 
 
-    def hash_pass(self):
-        self.password = bcrypt.generate_password_hash(self.password).decode('utf8')
-        db.session.commit()
-        
-
-    def check_pass(self, password):
+    def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
     
 
-    def signin(self):
-        # # login basis user sended data verification
-        
-        # # aad expiration time for the created user token 
-        # expires = datetime.timedelta(days=1)
-        # token = create_access_token(indentity=str(user.id), expires_delta=expires)
-        # refresh_token = create_refresh_token(identity = str(user.id))
-        
-        # return {'token': token, 'user_id': user.id, 'admin': user.is_admin}
-        pass
-    
