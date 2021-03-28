@@ -3,7 +3,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 
@@ -37,8 +36,3 @@ rest_api = Api(app)
 # initialize marshmallow
 
 ma = Marshmallow(app)
-# custom error
-
-## jwt authentication setup
-jwt = JWTManager(app)
-# jwt._set_error_handler_callbacks(rest_api)

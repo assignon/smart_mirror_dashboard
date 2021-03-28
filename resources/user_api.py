@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse, abort
 from flask import request, jsonify, make_response
-from flask_jwt_extended import jwt_required
 from settings import ma
 from marshmallow import ValidationError
 from .authentication_api import login_required
@@ -17,6 +16,8 @@ edit_user_schema = EditUserSchema()
 
 
 class UserCollection(Resource):
+
+    #getest
     @staticmethod
     @login_required
     def get(current_user):
@@ -28,6 +29,7 @@ class UserCollection(Resource):
         users = User.get_all_users()
         return users_schema.dump(users)
 
+    #getest
     @staticmethod
     @login_required
     def post(current_user):
@@ -56,26 +58,40 @@ class UserCollection(Resource):
             return 500
 
 
-    def delete(self, user_id):
+    #getest
+    @staticmethod
+    @login_required
+    def delete(current_user, user_id):
+        if not current_user.is_admin:
+            return jsonify({'message': 'Not authorized to perform this function'})
         User.delete_user(user_id)
         return 200
 
 
 class UserApi(Resource):
+
     @staticmethod
     @login_required
     def get(current_user, user_id): 
         """
         get user based on userid
         """
-        pass
+        if not current_user.is_admin:
+            return jsonify({'message': 'Not authorized to perform this function'})
+        user = User.get_user(user_id)
+        return user_schema.dump(user), 200
 
+        
+    
+    #getest
     @staticmethod
     @login_required
     def put(current_user, user_id):
         """
-        Edit user
+        Edit user. Users can only edit their own user settings, exception is made for admins
         """
+        if current_user.user_id != user_id and current_user.is_admin == False:
+            return {"message": "Not authorized to edit this user!"}
 
         json_data = request.get_json()
         if not json_data:

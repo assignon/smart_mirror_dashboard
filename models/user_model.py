@@ -1,8 +1,6 @@
 from datetime import datetime
 from settings import db, bcrypt, ma
 from flask_bcrypt import generate_password_hash, check_password_hash
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, create_refresh_token
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, exc
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import desc
