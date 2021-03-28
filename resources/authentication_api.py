@@ -22,7 +22,6 @@ def login_required(fun):
         
         try:
             data = jwt.decode(token, app.config['JWT_SECRET_KEY'])
-            print(data)
             current_user = User.query.filter_by(user_id = data['user_id']).first()
         except:
             return jsonify({'message':'Token is invalid!'})
