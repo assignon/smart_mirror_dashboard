@@ -3,6 +3,7 @@ from settings import db, bcrypt, ma
 from flask_bcrypt import generate_password_hash, check_password_hash
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, exc
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .base_model import BaseMixin
 
@@ -23,34 +24,30 @@ class User(db.Model):
     @staticmethod
     def create(name, login, password, is_admin):
         """
-        This function inserts a new row into the table and returns a tuple (boolean succes, obj)
-        obj contains instance of the class if succes = True, if False it contains the error message.
-        arguments should match the column names specified in the model
+        This function inserts a new row into the table and returns the new user
         """
         
-        succes = True
         user = User(name=name, login=login, password=bcrypt.generate_password_hash(password).decode('utf8'), is_admin=is_admin)
         db.session.add(user)
-        try:
-            db.session.commit()
-        except exc.IntegrityError as e:
-            db.session.rollback()
-            succes = False
-            user = e.orig.args 
+        db.session.commit()
 
-
-        return succes, user
+        return user
 
 
     @staticmethod
     def get_all_users():
-        return db.session.query(User).all()
+        users = db.session.query(User).all()
+        if users: 
+            return db.session.query(User).all()
+        else: raise NoResultFound
 
 
     @staticmethod
     def get_user(user_id):
         user = db.session.query(User).filter_by(user_id=user_id).first()
-        return user
+        if user: 
+            return user
+        else: raise NoResultFound
     
 
     @staticmethod
@@ -63,12 +60,14 @@ class User(db.Model):
         """
         
         user = User.get_user(user_id)
+        if user:
+            for column, value in kwargs.items():  
+                setattr(user, column, value) 
 
-        for column, value in kwargs.items():  
-            setattr(user, column, value) 
-
-        db.session.commit()
-        return user
+            db.session.commit()
+            return user
+        else: 
+            raise NoResultFound
     
 
     @staticmethod

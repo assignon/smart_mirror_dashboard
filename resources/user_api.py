@@ -1,7 +1,9 @@
 from flask_restful import Resource, reqparse, abort
 from flask import request, jsonify, make_response
-from settings import ma
+from settings import ma, db
 from marshmallow import ValidationError
+from sqlalchemy import exc
+from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 # models imports
 
@@ -26,7 +28,10 @@ class UserCollection(Resource):
         """
         if not current_user.is_admin:
             return jsonify({'message': 'Not authorized to perform this function'})
-        users = User.get_all_users()
+        try: 
+            users = User.get_all_users()
+        except NoResultFound:
+            return {'message': 'No users found in the database'}
         return users_schema.dump(users)
 
     #getest
@@ -51,11 +56,12 @@ class UserCollection(Resource):
         except ValidationError as err:
             return err.messages, 422
         
-        succes, user = User.create(**data)
-        if succes:
-            return user_schema.dump(user), 201
-        else:
-            return 500
+        try: user = User.create(**data)
+        except exc.IntegrityError as e:
+            db.session.rollback()
+            return{'error': e.orig.args}
+        
+        return user_schema.dump(user), 201
 
 
     #getest
@@ -78,8 +84,14 @@ class UserApi(Resource):
         """
         if not current_user.is_admin:
             return jsonify({'message': 'Not authorized to perform this function'})
-        user = User.get_user(user_id)
+
+        try: 
+            user = User.get_user(user_id)
+        except NoResultFound:
+            return{'message': 'User does not exist!'}
+
         return user_schema.dump(user), 200
+
 
         
     
@@ -107,8 +119,14 @@ class UserApi(Resource):
             data = edit_user_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
-        
-        edited_user = User.update_user(user_id, **data)
+
+        try:        
+            edited_user = User.update_user(user_id, **data)
+        except exc.IntegrityError as e:
+            db.session.rollback()
+            return{'error': e.orig.args}
+        except NoResultFound:
+            return{'error': 'User does not exist'}
         return user_schema.dump(edited_user), 200
 
                 
