@@ -3,7 +3,7 @@ from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 from settings import ma
 from marshmallow import ValidationError
-
+from .authentication_api import login_required
 # models imports
 
 from models.guest_model import Guest
@@ -12,13 +12,17 @@ from models.guest_model import Guest
 from schemas.guest_schema import GuestSchema, EditGuestSchema
 
 class GuestCollection(Resource):
-    def get(self):
+    @staticmethod
+    @login_required
+    def get(current_user):
         """
         get all guests
         """
         pass
-
-    def post(self):
+    
+    @staticmethod
+    @login_required
+    def post(current_user):
         """
         add a new guest
         """
@@ -26,14 +30,18 @@ class GuestCollection(Resource):
 
 
 class Guest(Resource):
-    def get(self, guest_id):
+    
+    @staticmethod
+    @login_required
+    def get(current_user, guest_id):
         """
         get specific guest
         """
         pass
     
-
-    def put(self, guest_id):
+    @staticmethod
+    @login_required
+    def put(current_user, guest_id):
         """
         edit guest
         """
