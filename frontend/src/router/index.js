@@ -2,8 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Login from "../views/Login.vue";
 import Checkin from "../views/checkin";
-import Gastenlijst from "@/views/Gastenlijst";
-import Gastenbestand from "@/views/Gastenbestand";
+import Gastenlijst from "@/views/Ingecheckt";
+import Gastenbestand from "@/views/Clients";
 import Instellingen from "@/views/Instellingen";
 
 Vue.use(VueRouter);
@@ -24,13 +24,13 @@ const routes = [
     component: Checkin
   },
   {
-    path: "/gastenlijst",
-    name: "Gastenlijst",
+    path: "/ingecheckt",
+    name: "Ingecheckt",
     component: Gastenlijst
   },
   {
-    path: "/gastenbestand",
-    name: "Gastenbestand",
+    path: "/clients",
+    name: "Clients",
     component: Gastenbestand
   },
   {

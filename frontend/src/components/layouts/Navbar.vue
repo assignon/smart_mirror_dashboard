@@ -13,7 +13,7 @@
         <router-link to="/ingecheckt" class="navbar-item"
           >Ingecheckt</router-link
         >
-        <router-link to="/zoeken" class="navbar-item">Zoeken</router-link>
+        <router-link to="/clients" class="navbar-item">Zoeken</router-link>
       </div>
       <div class="navbar-end">
         <div class="navbar-item">

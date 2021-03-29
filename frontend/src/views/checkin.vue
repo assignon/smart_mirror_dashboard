@@ -6,11 +6,19 @@
         <v-text-field label="Naam" v-model="message1" outlined dense></v-text-field>
         <v-text-field label="Email" v-model="message1" outlined dense></v-text-field>
         <v-text-field label="Telefoon" v-model="message1" outlined dense></v-text-field>
+        <v-btn class="mx-2" @click="onButtonClick(message1)">
+          Check-in
+        </v-btn>
       </div>
       <div class="col">
         <v-text-field label="Afspraak met" v-model="message1" outlined dense></v-text-field>
         <v-text-field label="Kenteken " v-model="message1" outlined dense></v-text-field>
         <v-text-field label="Bedrijf" v-model="message1" outlined dense></v-text-field>
+        <v-select
+            :items="items"
+            label="Bewaartermijn"
+            outlined dense
+        ></v-select>
       </div>
       <div class="col">
         <v-img
@@ -25,14 +33,22 @@
     </div>
     <div class="row mt-15">
       <div class="col">
-        <v-text-field label="Naam" outlined dense></v-text-field>
-        <v-text-field label="Email" outlined dense></v-text-field>
-        <v-text-field label="Telefoon" outlined dense></v-text-field>
+        <v-text-field label="Naam" v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Email" v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Telefoon" v-model="message1" outlined dense></v-text-field>
+        <v-btn class="mx-2" @click="onButtonClick(message1)">
+          Check-in
+        </v-btn>
       </div>
       <div class="col">
-        <v-text-field label="Afspraak met" outlined dense></v-text-field>
-        <v-text-field label="Kenteken " outlined dense></v-text-field>
-        <v-text-field label="Bedrijf" outlined dense></v-text-field>
+        <v-text-field label="Afspraak met" v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Kenteken " v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Bedrijf" v-model="message1" outlined dense></v-text-field>
+        <v-select
+            :items="items"
+            label="Bewaartermijn"
+            outlined dense
+        ></v-select>
       </div>
       <div class="col">
         <v-img
@@ -51,10 +67,17 @@
 <script>
 export default {
   name: "Checkin",
+  methods: {
+    onButtonClick() {
+      //Todo API call + desserts.id
+      console.log('/')
+    }
+  },
   component: {},
   data() {
     return {
       message1: "Wes",
+      items: ['1 DAG','1 JAAR'],
     };
   }
 };
