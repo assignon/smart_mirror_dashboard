@@ -90,7 +90,7 @@ class AppointmentApi(Resource):
             db.session.rollback()
             return{'error': e.orig.args}
         except NoResultFound:
-            return{'error': 'Guest does not exist'}
+            return{'error': 'Appointment does not exist'}
 
         return appointment_schema.dump(edited_appointment), 200
 

@@ -43,8 +43,7 @@ class Login(Resource):
             return {'message': 'User does not exist'}
 
         if user.check_password(auth.password):
-            token = jwt.encode({'user_id': user.user_id, 'exp': datetime.datetime.utcnow()+ datetime.timedelta(days=1)}, app.config['JWT_SECRET_KEY'])
-            print(token)
+            token = jwt.encode({'user_id': user.user_id, 'exp': datetime.datetime.utcnow()+ datetime.timedelta(days=1)}, app.config['JWT_SECRET_KEY']).decode('utf-8')
             return jsonify({'x-access-token': token})
         return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
