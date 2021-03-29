@@ -3,8 +3,12 @@
 </template>
 
 <script>
+
 export default {
-  name: "Instellingen"
+  name: "Instellingen",
+  components: {
+    
+  }
 };
 </script>
 

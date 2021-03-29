@@ -1,19 +1,75 @@
 <template>
   <div id="checkin">
-    <h1>Welkom bij de Smart Mirror Dashboard</h1>
+    <h2 class="mt-16">Nieuwe gemelde gasten</h2>
+    <div class="row mt-15">
+      <div class="col">
+        <v-text-field label="Naam" v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Email" v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Telefoon" v-model="message1" outlined dense></v-text-field>
+      </div>
+      <div class="col">
+        <v-text-field label="Afspraak met" v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Kenteken " v-model="message1" outlined dense></v-text-field>
+        <v-text-field label="Bedrijf" v-model="message1" outlined dense></v-text-field>
+      </div>
+      <div class="col">
+        <v-img
+            contain
+            lazy-src="https://picsum.photos/id/11/10/6"
+            max-height="300"
+            max-width="290"
+            src="https://picsum.photos/id/11/500/300"
+        ></v-img>
+      </div>
+
+    </div>
+    <div class="row mt-15">
+      <div class="col">
+        <v-text-field label="Naam" outlined dense></v-text-field>
+        <v-text-field label="Email" outlined dense></v-text-field>
+        <v-text-field label="Telefoon" outlined dense></v-text-field>
+      </div>
+      <div class="col">
+        <v-text-field label="Afspraak met" outlined dense></v-text-field>
+        <v-text-field label="Kenteken " outlined dense></v-text-field>
+        <v-text-field label="Bedrijf" outlined dense></v-text-field>
+      </div>
+      <div class="col">
+        <v-img
+            contain
+            lazy-src="https://picsum.photos/id/11/10/6"
+            max-height="300"
+            max-width="290"
+            src="https://picsum.photos/id/11/500/300"
+        ></v-img>
+      </div>
+
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "Checkin",
-  component: {
-  },
+  component: {},
   data() {
-    return {};
+    return {
+      message1: "Wes",
+    };
   }
 };
 </script>
 
 <style scoped>
+.row {
+  width: 1000px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+div .col {
+  width: 32%;
+}
 </style>

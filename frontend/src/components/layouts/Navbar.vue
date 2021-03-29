@@ -1,14 +1,11 @@
 <template>
-  <div
-    v-if="!$route.name.startsWith('Login')"
-    class="hidden-sm-and-down"
-    role="navigation"
-    aria-label="main navigation"
-  >
+  <div v-if="!$route.name.startsWith('Login')" class="hidden-sm-and-down mt-9 mb-9" role="navigation"
+       aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <strong class="is-size-4">Soggeti Mirror</strong>
+        <v-img src="@/assets/logo.svg"></v-img>
       </a>
+      <strong class="is-size-4">Smart Mirror</strong>
     </div>
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
@@ -52,10 +49,11 @@ div {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  align-content: center;
-  gap: 15px;
+  align-items: center;
+  gap: 30px;
 }
 div a {
+  text-decoration: none;
   font-weight: bold;
   color: #2c3e50;
   width: 100%;

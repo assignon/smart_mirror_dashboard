@@ -9,6 +9,7 @@
       ></v-text-field>
       <v-text-field
           label="Password"
+          type="password"
       ></v-text-field>
       <v-btn
           elevation="6"
@@ -48,7 +49,7 @@ export default {
 
     },
     login() {
-      if (this.input.username != "" && this.input.password != "") {
+      if (this.input.username != "a" && this.input.password != "a") {
         this.startSession("string", true, 1)
         this.$router.push({name: "Checkin"})
       } else {
