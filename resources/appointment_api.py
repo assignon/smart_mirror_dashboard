@@ -85,7 +85,7 @@ class AppointmentApi(Resource):
             return err.messages, 422
 
         try:        
-            edited_appointment = Appointment.update_guest(appoinment_id, **data)
+            edited_appointment = Appointment.update_appointment(appoinment_id, **data)
         except exc.IntegrityError as e:
             db.session.rollback()
             return{'error': e.orig.args}
