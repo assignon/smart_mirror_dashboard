@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
 from models.appointment_model import Appointment
+from .helper import remove_whitespace
 
 
 appointment_schema = AppointmentSchema()
@@ -93,8 +94,3 @@ class AppointmentApi(Resource):
             return{'error': 'Appointment does not exist'}
 
         return appointment_schema.dump(edited_appointment), 200
-
-def remove_whitespace(json_data):
-    for key, value in json_data.items():
-        if type(value) == str:
-            json_data[key] = value.strip()

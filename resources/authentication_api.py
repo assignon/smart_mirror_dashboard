@@ -8,7 +8,7 @@ from settings import app, ma
 from marshmallow import ValidationError
 from models.user_model import User
 
-#getest
+
 def login_required(fun):
     @wraps(fun)
     def check_token(*args,**kwargs):
@@ -31,7 +31,7 @@ def login_required(fun):
 
 
 class Login(Resource):
-    #getest    
+        
     def get(self):
         auth = request.authorization
         if not auth or not auth.username or not auth.password:

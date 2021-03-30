@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
+from .helper import remove_whitespace
 # models imports
 
 from models.guest_model import Guest
@@ -18,7 +19,7 @@ guests_schema = GuestSchema(many=True)
 edit_guest_schema = EditGuestSchema()
 
 class GuestCollection(Resource):
-    #getest
+
     @staticmethod
     @login_required
     def get(current_user):
@@ -29,7 +30,6 @@ class GuestCollection(Resource):
         return guests_schema.dump(guests)
 
 
-    #getest    
     @staticmethod
     @login_required
     def post(current_user):
@@ -62,7 +62,6 @@ class GuestCollection(Resource):
         return guest_schema.dump(guest), 201
         
 
-    #getest
     @staticmethod
     @login_required
     def delete(current_user, guest_id):
@@ -71,7 +70,7 @@ class GuestCollection(Resource):
 
 
 class GuestApi(Resource):
-    #getest
+
     @staticmethod
     @login_required
     def get(current_user, guest_id):
@@ -85,7 +84,7 @@ class GuestApi(Resource):
 
         return guest_schema.dump(guest), 200
     
-    #getest
+
     @staticmethod
     @login_required
     def put(current_user, guest_id):
@@ -117,9 +116,3 @@ class GuestApi(Resource):
             return{'error': 'Guest does not exist'}
 
         return guest_schema.dump(edited_guest), 200
-
-
-def remove_whitespace(json_data):
-    for key, value in json_data.items():
-        if type(value) == str:
-            json_data[key] = value.strip()

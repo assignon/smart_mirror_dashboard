@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
+from .helper import remove_whitespace
 # models imports
 
 from models.user_model import User
@@ -19,7 +20,6 @@ edit_user_schema = EditUserSchema()
 
 class UserCollection(Resource):
 
-    #getest
     @staticmethod
     @login_required
     def get(current_user):
@@ -34,7 +34,6 @@ class UserCollection(Resource):
             return {'message': 'No users found in the database'}
         return users_schema.dump(users)
 
-    #getest
     @staticmethod
     @login_required
     def post(current_user):
@@ -64,7 +63,6 @@ class UserCollection(Resource):
         return user_schema.dump(user), 201
 
 
-    #getest
     @staticmethod
     @login_required
     def delete(current_user, user_id):
@@ -95,7 +93,6 @@ class UserApi(Resource):
 
         
     
-    #getest
     @staticmethod
     @login_required
     def put(current_user, user_id):
@@ -128,10 +125,3 @@ class UserApi(Resource):
         except NoResultFound:
             return{'error': 'User does not exist'}
         return user_schema.dump(edited_user), 200
-
-                
-
-def remove_whitespace(json_data):
-    for key, value in json_data.items():
-        if type(value) == str:
-            json_data[key] = value.strip()
