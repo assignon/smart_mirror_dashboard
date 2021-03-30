@@ -1,6 +1,6 @@
 <template>
-  <div id="checkin">
-    <h2 class="mt-16">Nieuwe gemelde gasten</h2>
+  <div>
+    <h1 class="mt-16">Nieuwe gemelde gasten</h1>
     <div class="row mt-15">
       <div class="col">
         <v-text-field label="Naam" v-model="message1" outlined dense></v-text-field>

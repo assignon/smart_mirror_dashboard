@@ -1,5 +1,5 @@
 <template>
-  <h1>ok</h1>
+  <h1>Clients</h1>
 </template>
 
 <script>
