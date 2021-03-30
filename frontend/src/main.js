@@ -9,11 +9,17 @@ import "./registerServiceWorker";
 import VAnimateCss from "v-animate-css";
 import Vuex from "vuex";
 import Axios from "axios";
+import socketio from 'socket.io';
+import VueSocketIO from 'vue-socket.io';
 
 // vue session
 import VueSession from "vue-session";
 
 import vuetify from "./plugins/vuetify";
+
+export const SocketInstance = socketio('http://127.0.0.1:5678');
+
+Vue.use(VueSocketIO, SocketInstance)
 
 Vue.config.productionTip = false;
 Vue.use(VAnimateCss);

@@ -20,11 +20,31 @@ export default {
       n:0,
       msgServer: '',
       // ws: new WebSocket("ws://192.168.178.194:5678/")
+      host_name: '127.0.0.1',
+      port: 5678,
+      isConnected: false,
+
     };
   },
 
   created() {
     this.ws_test()
+  },
+
+   sockets: {
+    connect() {
+      // Fired when the socket connects.
+      this.isConnected = true;
+    },
+
+    disconnect() {
+      this.isConnected = false;
+    },
+
+    // Fired when the server sends something on the "messageChannel" channel.
+    messageChannel(data) {
+      this.socketMessage = data
+    }
   },
 
   methods: {
@@ -57,43 +77,57 @@ export default {
     },
 
     async ws_test(){
-      // const ws = new WebSocket("ws://192.168.178.194:5678/")
-      const opened = await this.connection(new WebSocket("ws://192.168.178.194:5678/"))
-      // let ws = new WebSocket("ws://192.168.178.194:5678/")
-      let self = this
+
+      // let socket = io.connect(`http://${self.host_name}:${self.port}`);
+
+      // let socket = io();
+      // this.$socket.on('connect', function() {
+      //     this.$socket.emit('my event', {data: 'I\'m connected!'});
+      // });
+
+      // this.$socket.on('after connect', function(msg){
+      //   console.log('After connect', msg);
+      // });
+
+    //   // const ws = new WebSocket("ws://192.168.178.194:5678/")
+    //    let self = this
+    //   const opened = await this.connection(new WebSocket(`ws://${self.host_name}:${self.port}/`))
+    //   // let ws = new WebSocket("ws://192.168.178.194:5678/")
       
 
-     if(opened){
-       const ws = new WebSocket("ws://192.168.178.194:5678/")
-        ws.onopen = function(){
-          console.log('connected');
-          ws.send('new message')
-        }
-        ws.onmessage = function(event){
-          console.log(event.data);
-          self.msgServer = event.data
-          ws.send(`hallo there ${event.data}, hoe gaat het?`)
-        }
-     }
-      // ws.onclose = function(){
-      //   console.log('closed');
-      // }
+    //  if(opened){
+    //    const ws = new WebSocket(`ws://${self.host_name}:${self.port}/`)
+    //     ws.onopen = function(){
+    //       console.log('connected');
+    //       ws.send('new message')
+    //     }
+    //     ws.onmessage = function(event){
+    //       console.log(event.data);
+    //       self.msgServer = event.data
+    //       ws.send(`hallo there ${event.data}, hoe gaat het?`)
+    //     }
+    //  }
+    //   // ws.onclose = function(){
+    //   //   console.log('closed');
+    //   // }
     },
 
     send(){
-      let ws = new WebSocket("ws://192.168.178.194:5678/")
-      let self = this
-      this.n+=1
-      ws.onopen = function(){
-        console.log('connected', self.n);
-        ws.send(self.n)
-      }
-       ws.onmessage = function(event){
-        console.log(event.data);
-        // if(event.data == 'yan'){
-        //   // ws.close()
-        // }
-      }
+      console.log('hallo');
+      // let self = this
+      // let ws = new WebSocket(`ws://${self.host_name}:${self.port}/`)
+  
+      // this.n+=1
+      // ws.onopen = function(){
+      //   console.log('connected', self.n);
+      //   ws.send(self.n)
+      // }
+      //  ws.onmessage = function(event){
+      //   console.log(event.data);
+      //   // if(event.data == 'yan'){
+      //   //   // ws.close()
+      //   // }
+      // }
       
     }
   },
