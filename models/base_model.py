@@ -11,20 +11,11 @@ class BaseMixin(object):
     @classmethod
     def create(cls, **kw):
         """
-        This function inserts a new row into the table and returns a tuple (boolean succes, obj)
-        obj contains instance of the class if succes = True, if False it contains the error message.
-        arguments should match the column names specified in the model
+        This function inserts a new row into the table and returns the row that has been added.
         """
         
-        succes = True
         obj = cls(**kw)
         db.session.add(obj)
-        try:
-            db.session.commit()
-        except exc.IntegrityError as e:
-            db.session.rollback()
-            succes = False
-            obj = e.orig.args 
+        db.session.commit()
 
-
-        return succes, obj
+        return obj

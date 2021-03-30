@@ -2,6 +2,7 @@ from datetime import datetime
 from settings import db
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import exc
 from .base_model import BaseMixin
@@ -58,7 +59,7 @@ class Guest(BaseMixin, db.Model):
     
 
     @staticmethod
-    def update_guest(guest_id, new_appointment=False,**kwargs):
+    def update_guest(guest_id, **kwargs):
         """
         This function updates the guest in the database and returns the updated guest.
         Input:
@@ -66,20 +67,15 @@ class Guest(BaseMixin, db.Model):
             **kwargs: key value pairs, keys used should be the same as the columns specified in the model 
         """
         guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()
-        # terugkerende klant heeft afspraak met dezelfde employee
-        if 'employee_name' not in kwargs.keys() and new_appointment:
-            most_recent_employee = guest.appointments[0].employee_name
-            Appointment.create(employee_name=most_recent_employee, guest_id=guest_id)
 
-        for column, value in kwargs.items():  
-            # klant heeft afspraak met ander employee
-            if column == 'employee_name' and new_appointment:
-                Appointment.create(employee_name=value, guest_id=guest_id)
-            else:
+        if guest:
+            for column, value in kwargs.items():  
                 setattr(guest, column, value) 
 
             db.session.commit()
-        return guest
+            return guest
+        else: 
+            raise NoResultFound
         
 
     @staticmethod
@@ -87,9 +83,12 @@ class Guest(BaseMixin, db.Model):
         """
         This function returns a guest object based on the guest_id
         """
+
         guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()     
-        
-        return guest
+        if guest:
+            return guest
+        else: 
+            raise NoResultFound
     
     @staticmethod
     def delete_guest(guest_id):

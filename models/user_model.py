@@ -1,16 +1,14 @@
 from datetime import datetime
-from settings import db, bcrypt
+from settings import db, bcrypt, ma
 from flask_bcrypt import generate_password_hash, check_password_hash
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, create_refresh_token
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, exc
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
-from sqlalchemy import exc
 from .base_model import BaseMixin
 
 
-class User(BaseMixin, db.Model):
+class User(db.Model):
     __tablename__ = 'User'
 
     user_id = Column(Integer, primary_key=True)
@@ -23,12 +21,35 @@ class User(BaseMixin, db.Model):
     def __repr__(self):
         return self.name
 
-    
+    @staticmethod
+    def create(name, login, password, is_admin):
+        """
+        This function inserts a new row into the table and returns the new user
+        """
+        
+        user = User(name=name, login=login, password=bcrypt.generate_password_hash(password).decode('utf8'), is_admin=is_admin)
+        db.session.add(user)
+        db.session.commit()
+
+        return user
+
+
+    @staticmethod
+    def get_all_users():
+        users = db.session.query(User).all()
+        if users: 
+            return db.session.query(User).all()
+        else: raise NoResultFound
+
+
     @staticmethod
     def get_user(user_id):
         user = db.session.query(User).filter_by(user_id=user_id).first()
-        return user
+        if user: 
+            return user
+        else: raise NoResultFound
     
+
     @staticmethod
     def update_user(user_id, **kwargs):
         """
@@ -39,34 +60,23 @@ class User(BaseMixin, db.Model):
         """
         
         user = User.get_user(user_id)
+        if user:
+            for column, value in kwargs.items():  
+                setattr(user, column, value) 
 
-        for column, value in kwargs.items():  
-            setattr(user, column, value) 
-
-        db.session.commit()
-        return user
+            db.session.commit()
+            return user
+        else: 
+            raise NoResultFound
     
+
     @staticmethod
     def delete_user(user_id):
         User.query.filter_by(user_id=user_id).delete()
         db.session.commit()
 
 
-    def hash_pass(self):
-        self.password = bcrypt.generate_password_hash(self.password).decode('utf8')
-        db.session.commit()
-        
-    def check_pass(self, password):
+    def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
     
-    def signin(self):
-        # # login basis user sended data verification
-        
-        # # aad expiration time for the created user token 
-        # expires = datetime.timedelta(days=1)
-        # token = create_access_token(indentity=str(user.id), expires_delta=expires)
-        # refresh_token = create_refresh_token(identity = str(user.id))
-        
-        # return {'token': token, 'user_id': user.id, 'admin': user.is_admin}
-        pass
-    
+

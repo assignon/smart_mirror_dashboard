@@ -1,16 +1,25 @@
-# from flask_restful import Api
-# import app
-
+from settings import rest_api
 # models imports
-from resources.user_api import *
+from resources.user_api import UserCollection, UserApi
+from resources.authentication_api import Login, Logout
+from resources.guest_api import GuestCollection, GuestApi
+from resources.appointment_api import AppointmentCollection, AppointmentApi
 
-# initialize restful api with flask app
-# rest_api = Api(app)
+
 def api_routes(rest_api):
     # routes map
     routes = [
-        {'name': GetUser, 'path': '/user/get_user'}
+        {'name': UserCollection, 'path': ('/users', '/users/<int:user_id>')},
+        {'name': UserApi, 'path': '/user/<int:user_id>'},
+        {'name': Login, 'path': '/login'},
+        {'name': GuestCollection, 'path': ('/guests', '/guests/<int:guest_id>')},
+        {'name': GuestApi, 'path': '/guest/<int:guest_id>'},
+        {'name': AppointmentCollection, 'path': ('/appointments', '/appointments/<int:appointment_id>')},
+        {'name': AppointmentApi, 'path': ('/appointment', '/appointment/<int:appointment_id>')}
     ]
     # add api routes and make it accessible
     for route in routes:
-        rest_api.add_resource(route['name'], route['path'])
+        if type(route['path']) == tuple:
+            rest_api.add_resource(route['name'], *route['path'])
+        else:
+            rest_api.add_resource(route['name'], route['path'])
