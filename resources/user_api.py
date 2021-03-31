@@ -2,7 +2,6 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
 from flask_socketio import SocketIO, emit
-from .wsocket import Wsocket
 # models imports
 from models.user_model import *
 
