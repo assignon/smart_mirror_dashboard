@@ -14,6 +14,7 @@
           >Ingecheckt</router-link
         >
         <router-link to="/clients" class="navbar-item">Zoeken</router-link>
+        <router-link to="/instellingen" class="navbar-item">Instellingen</router-link>
       </div>
       <div class="navbar-end">
         <div class="navbar-item">

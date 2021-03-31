@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1>Ingecheckte Gasten</h1>
-    <v-data-table :headers="headers" :items="desserts" hide-default-footer>
+    <h1 class="mb-9">Ingecheckte Gasten</h1>
+    <v-data-table :headers="headers" :items="ingecheckt" hide-default-footer>
       <template v-slot:item="row">
         <tr>
           <td>{{ row.item.name }}</td>
@@ -49,7 +49,7 @@ export default {
         {text: 'Check-in', value: 'checkin'},
         {text: 'Check-out', value: 'checkout'},
       ],
-      desserts: [
+      ingecheckt: [
         {
           id: '78',
           name: 'Frozen Yogurt',
@@ -82,6 +82,6 @@ div {
   margin: auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
 }
 </style>

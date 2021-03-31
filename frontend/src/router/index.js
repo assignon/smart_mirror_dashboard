@@ -3,7 +3,7 @@ import VueRouter from "vue-router";
 import Login from "../views/Login.vue";
 import Checkin from "../views/checkin";
 import Gastenlijst from "@/views/Ingecheckt";
-import Gastenbestand from "@/views/Clients";
+import Clients from "@/views/Clients";
 import Instellingen from "@/views/Instellingen";
 
 Vue.use(VueRouter);
@@ -31,7 +31,7 @@ const routes = [
   {
     path: "/clients",
     name: "Clients",
-    component: Gastenbestand
+    component: Clients
   },
   {
     path: "/instellingen",
