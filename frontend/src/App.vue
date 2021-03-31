@@ -1,25 +1,29 @@
 <template>
-  <v-app id='app'>
+  <v-app id="app">
     <v-main>
-      <Nav v-if="!$route.name.startsWith('Login')" class='hidden-md-and-up' />
-      <router-view class="animated fadeIn"></router-view>
+      <Navbar />
+      <router-view class="animated fadeIn" @authenticated="setAuthenticated" />
     </v-main>
   </v-app>
 </template>
 
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>-->
 <script>
-import Nav from "./components/layouts/Nav";
+import Navbar from "@/components/layouts/Navbar";
 export default {
   name: "App",
   components: {
-    Nav,
+    Navbar
   },
   data: () => ({
-    //
+    return: {
+      authenticated: false,
+    }
   }),
-  created(){
-    
+  created() {
+    if (!this.$session.get("authenticated")) {
+      this.$router.push({name: "Login"})
+    }
   },
   methods: {
     // createSession() {
@@ -43,6 +47,7 @@ body {
   margin: 0px;
   padding: 0px;
 }
+
 #app {
   /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;

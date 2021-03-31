@@ -2,21 +2,33 @@
   <div class="login-core">
     <h1 class="display-3">Login page</h1>
     <h1>{{msgServer}}</h1>
-    <v-btn @click='send'>send to server</v-btn>
+    <h1 class="display-3 mb-10 mt-16">Soggeti Mirror Login</h1>
+    <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
+    <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
+    <v-form class="login-form">
+      <v-text-field
+          label="Username"
+      ></v-text-field>
+      <v-text-field
+          label="Password"
+          type="password"
+      ></v-text-field>
+      <v-btn
+          elevation="6"
+          v-on:click="login()"
+      >Login
+      </v-btn>
+    </v-form>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
 import io from "socket.io-client";
-// let socket = io.connect('http://192.168.178.52:5000');
 
 export default {
   name: "Login",
-
   components: {},
-
   data() {
     return {
       n:0,
@@ -24,7 +36,10 @@ export default {
       host_name: '127.0.0.1',
       port: 5678,
       isConnected: false,
-
+      input: {
+        username: "",
+        password: ""
+      }
     };
   },
 
@@ -32,22 +47,6 @@ export default {
     let socket = io.connect('http://192.168.178.52:5000');
     this.ws_test(socket)
   },
-
-  //  sockets: {
-  //   connect() {
-  //     // Fired when the socket connects.
-  //     this.isConnected = true;
-  //   },
-
-  //   disconnect() {
-  //     this.isConnected = false;
-  //   },
-
-  //   // Fired when the server sends something on the "messageChannel" channel.
-  //   messageChannel(data) {
-  //     this.socketMessage = data
-  //   }
-  // },
 
   methods: {
     startSession(token, su, userId) {
@@ -97,36 +96,18 @@ export default {
         self.msgServer = `${msg.name} is niet herkend en is voor de eerst met id: ${msg.guest_id}`
       });
 
-    //   // const ws = new WebSocket("ws://192.168.178.194:5678/")
-    //    let self = this
-    //   const opened = await this.connection(new WebSocket(`ws://${self.host_name}:${self.port}/`))
-    //   // let ws = new WebSocket("ws://192.168.178.194:5678/")
-      
-
-    //  if(opened){
-    //    const ws = new WebSocket(`ws://${self.host_name}:${self.port}/`)
-    //     ws.onopen = function(){
-    //       console.log('connected');
-    //       ws.send('new message')
-    //     }
-    //     ws.onmessage = function(event){
-    //       console.log(event.data);
-    //       self.msgServer = event.data
-    //       ws.send(`hallo there ${event.data}, hoe gaat het?`)
-    //     }
-    //  }
-    //   // ws.onclose = function(){
-    //   //   console.log('closed');
-    //   // }
     },
 
-    send(){
-      console.log('hallo');   
-    }
-  },
+    login() {
+      if (this.input.username != "a" && this.input.password != "a") {
+        this.startSession("string", true, 1)
+        this.$router.push({name: "Checkin"})
+      } else {
+        console.log('Vul een gebruikersnaam en wachtwoord in');
+      }
+    },
 
-
-  // signin(){
+    // signin(){
   //   let self = this;
   //   let formErrMsg = document.querySelector('.err-msg')
   //   let validationErrMsg = document.querySelector('.v-messages__message');
@@ -153,16 +134,27 @@ export default {
   //       formErrMsg.innerHTML = 'Email and password should not be empty';
   //   }
   // }
+  },
+
 };
 </script>
 
 <style scoped>
 .login-core {
-  height: 100vh;
+
+}
+
+.login-form {
+  height: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 20px;
+}
+
+.login-form .v-text-field {
+  width: 10%;
 }
 </style>
