@@ -7,7 +7,7 @@
   </v-app>
 </template>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>-->
 <script>
 import Nav from "./components/layouts/Nav";
 export default {

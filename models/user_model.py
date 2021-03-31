@@ -46,3 +46,38 @@ class UserModel(db.Model):
     
     def get_user(self):
         return jsonify(dict({'id': 1, 'name': 'Yanick', 'admin': True, 'token': 'wsdhj98743puihsadnv36'}))
+    
+
+class SocketUserManager(db.Model):
+    """
+    manage the connected and disconnected user to the socket
+
+    Args:
+        db (obj): [Db object]
+    """
+    _id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    
+    def connected_user(self, user_id):
+        """
+        add connected user to the socket
+
+        Args:
+            user_id (int): [user id]
+        """
+        pass
+    
+    def disconnected_user(self, user_id):
+        """
+        remove disconnecte user fron the socket
+
+        Args:
+            user_id (int): [user id]
+        """
+        pass
+    
+    def get_connected_user(self):
+        """
+        get all connected user id
+        """
+        pass

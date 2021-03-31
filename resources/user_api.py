@@ -1,22 +1,12 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify, make_response
 from flask_jwt_extended import jwt_required
-# import asyncio
-# import websockets
+from flask_socketio import SocketIO, emit
 from .wsocket import Wsocket
 # models imports
 from models.user_model import *
 
-model = UserModel()
-
-# async def test(websocket, path):
-#     # name = input('geef je naam')
-    
-#     await websocket.send('test')
-        
-#     greeting = await websocket.recv()
-#     print(greeting)
-    
+model = UserModel() 
 class CreateUser(Resource):
     def post(self):
         pass
@@ -24,14 +14,9 @@ class CreateUser(Resource):
 class GetUser(Resource):
     # @jwt_required
     def get(self):
-    #    return model.get_user()
-        # loop = asyncio.new_event_loop()
-        # asyncio.set_event_loop(loop)
-    
-        # start_server = websockets.serve(test, "127.0.0.1", 5678)
-        # asyncio.get_event_loop().run_until_complete(start_server)
-        # asyncio.get_event_loop().run_forever()
-        # wsocket = Wsocket('hallo from server')
-        # wsocket.serve_ws()
+        from app import socketio
+
+        data = request.args
+        socketio.emit('face_scanned',  data)
         
         return 'run'

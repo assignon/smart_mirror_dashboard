@@ -9,6 +9,8 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
+import io from "socket.io-client";
+// let socket = io.connect('http://192.168.178.52:5000');
 
 export default {
   name: "Login",
@@ -19,7 +21,6 @@ export default {
     return {
       n:0,
       msgServer: '',
-      // ws: new WebSocket("ws://192.168.178.194:5678/")
       host_name: '127.0.0.1',
       port: 5678,
       isConnected: false,
@@ -28,24 +29,25 @@ export default {
   },
 
   created() {
-    this.ws_test()
+    let socket = io.connect('http://192.168.178.52:5000');
+    this.ws_test(socket)
   },
 
-   sockets: {
-    connect() {
-      // Fired when the socket connects.
-      this.isConnected = true;
-    },
+  //  sockets: {
+  //   connect() {
+  //     // Fired when the socket connects.
+  //     this.isConnected = true;
+  //   },
 
-    disconnect() {
-      this.isConnected = false;
-    },
+  //   disconnect() {
+  //     this.isConnected = false;
+  //   },
 
-    // Fired when the server sends something on the "messageChannel" channel.
-    messageChannel(data) {
-      this.socketMessage = data
-    }
-  },
+  //   // Fired when the server sends something on the "messageChannel" channel.
+  //   messageChannel(data) {
+  //     this.socketMessage = data
+  //   }
+  // },
 
   methods: {
     startSession(token, su, userId) {
@@ -76,18 +78,24 @@ export default {
       }
     },
 
-    async ws_test(){
+    async ws_test(socket){
 
-      // let socket = io.connect(`http://${self.host_name}:${self.port}`);
+      let self = this
 
-      // let socket = io();
-      // this.$socket.on('connect', function() {
-      //     this.$socket.emit('my event', {data: 'I\'m connected!'});
-      // });
+      socket.on('connect', function(msg) {
+          console.log(msg);
+          socket.emit('new_user', {user_id: 1});
+      });
 
-      // this.$socket.on('after connect', function(msg){
-      //   console.log('After connect', msg);
-      // });
+      socket.on('disconnect', function(msg){
+        console.log( msg);
+        socket.emit('user_disconnected', {user_id: 1});
+      });
+
+      socket.on('face_scanned', function(msg){
+        console.log('client scanned with id:', msg);
+        self.msgServer = `${msg.name} is niet herkend en is voor de eerst met id: ${msg.guest_id}`
+      });
 
     //   // const ws = new WebSocket("ws://192.168.178.194:5678/")
     //    let self = this
@@ -113,22 +121,7 @@ export default {
     },
 
     send(){
-      console.log('hallo');
-      // let self = this
-      // let ws = new WebSocket(`ws://${self.host_name}:${self.port}/`)
-  
-      // this.n+=1
-      // ws.onopen = function(){
-      //   console.log('connected', self.n);
-      //   ws.send(self.n)
-      // }
-      //  ws.onmessage = function(event){
-      //   console.log(event.data);
-      //   // if(event.data == 'yan'){
-      //   //   // ws.close()
-      //   // }
-      // }
-      
+      console.log('hallo');   
     }
   },
 
