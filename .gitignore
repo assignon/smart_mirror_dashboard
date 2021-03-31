@@ -1,1 +1,7 @@
 /.vscode
+.venv/
+/__pycache__/
+/models/__pycache__/
+/resources/__pycache__/
+/env/
+/schemas/__pycache__/

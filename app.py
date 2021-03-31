@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from flask_socketio import SocketIO, emit, send
 # from flask_bcrypt import Bcrypt
 from flask_restful import Api
-from settings import app
+from settings import app, rest_api
 from routes import api_routes
 
 app.secret_key = "sunnySideUp-smartMirror"

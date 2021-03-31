@@ -1,48 +1,73 @@
 from datetime import datetime
-from settings import db, bcrypt
-# from flask_bcrypt import generate_password_hash, check_password_hash
-# from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, create_refresh_token
-from flask import jsonify, make_response
+from settings import db, bcrypt, ma
+from flask_bcrypt import generate_password_hash, check_password_hash
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, exc
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql.expression import desc
+from .base_model import BaseMixin
 
-# db = setting['db']
 
-class UserModel(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(length=50), nullable=False)
-    login = db.Column(db.String(length=30), unique=True, nullable=False)
-    password = db.Column(db.String(length=30), nullable=False)
-    is_admin = db.Column(db.Boolean, nullable=False)
-    
-    # def __init__(self, name, login, password, is_admin):
-    #     self.name = name
-    #     self.login = login
-    #     self.password = password
-    #     self.is_admin = is_admin
-    
+class User(db.Model):
+    __tablename__ = 'User'
+
+    user_id = Column(Integer, primary_key=True)
+    name = Column(String(length=50), nullable=False)
+    login = Column(String(length=30), unique=True, nullable=False)
+    password = Column(String(length=30), nullable=False)
+    is_admin = Column(Boolean, nullable=False)
+
+
     def __repr__(self):
-        return str(self.name)
-    
-    def hash_pass(self):
-        self.password = bcrypt.generate_password_hash(self.password).decode('utf8')
-        
-    def check_pass(self, password):
-        return bcrypt.check_password_hash(self.password, password)
-    
-    def new_user(self):
-        # add new user to DB
-        pass
+        return self.name
 
-    def signin(self):
-        # # login basis user sended data verification
+    @staticmethod
+    def create(name, login, password, is_admin):
+        """
+        This function inserts a new row into the table and returns the new user
+        """
         
-        # # aad expiration time for the created user token 
-        # expires = datetime.timedelta(days=1)
-        # token = create_access_token(indentity=str(user.id), expires_delta=expires)
-        # refresh_token = create_refresh_token(identity = str(user.id))
+        user = User(name=name, login=login, password=bcrypt.generate_password_hash(password).decode('utf8'), is_admin=is_admin)
+        db.session.add(user)
+        db.session.commit()
+
+        return user
+
+
+    @staticmethod
+    def get_all_users():
+        users = db.session.query(User).all()
+        if users: 
+            return db.session.query(User).all()
+        else: raise NoResultFound
+
+
+    @staticmethod
+    def get_user(user_id):
+        user = db.session.query(User).filter_by(user_id=user_id).first()
+        if user: 
+            return user
+        else: raise NoResultFound
+    
+
+    @staticmethod
+    def update_user(user_id, **kwargs):
+        """
+        This function updates the user in the database and returns the updated user.
+        Input:
+            user_id: id of the user that needs to be updated
+            **kwargs: key value pairs, keys used should be the same as the columns specified in the model 
+        """
         
-        # return {'token': token, 'user_id': user.id, 'admin': user.is_admin}
-        pass
+        user = User.get_user(user_id)
+        if user:
+            for column, value in kwargs.items():  
+                setattr(user, column, value) 
+
+            db.session.commit()
+            return user
+        else: 
+            raise NoResultFound
     
     def get_user(self):
         return jsonify(dict({'id': 1, 'name': 'Yanick', 'admin': True, 'token': 'wsdhj98743puihsadnv36'}))
@@ -81,3 +106,14 @@ class SocketUserManager(db.Model):
         get all connected user id
         """
         pass
+
+    @staticmethod
+    def delete_user(user_id):
+        User.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+    
+
