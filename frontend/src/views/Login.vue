@@ -1,7 +1,6 @@
 <template>
   <div class="login-core">
     <h1 class="display-3">Login page</h1>
-    <h1>{{msgServer}}</h1>
     <h1 class="display-3 mb-10 mt-16">Soggeti Mirror Login</h1>
     <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
     <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
@@ -24,7 +23,6 @@
 
 <script>
 // @ is an alias to /src
-import io from "socket.io-client";
 
 export default {
   name: "Login",
@@ -32,10 +30,6 @@ export default {
   data() {
     return {
       n:0,
-      msgServer: '',
-      host_name: '127.0.0.1',
-      port: 5678,
-      isConnected: false,
       input: {
         username: "",
         password: ""
@@ -44,8 +38,8 @@ export default {
   },
 
   created() {
-    let socket = io.connect('http://192.168.178.52:5000');
-    this.ws_test(socket)
+    this.userConnected()
+    this.userDisconnected()
   },
 
   methods: {
@@ -59,43 +53,26 @@ export default {
       this.$session.set("su", su);
     },
 
-    async connection (socket, timeout = 1000) {
-      const isOpened = () => (socket.readyState === WebSocket.OPEN)
-
-      if (socket.readyState !== WebSocket.CONNECTING) {
-        return isOpened()
-      }
-      else {
-        const intrasleep = 100
-        const ttl = timeout / intrasleep // time to loop
-        let loop = 0
-        while (socket.readyState === WebSocket.CONNECTING && loop < ttl) {
-          await new Promise(resolve => setTimeout(resolve, intrasleep))
-          loop++
-        }
-        return isOpened()
-      }
-    },
-
-    async ws_test(socket){
-
-      let self = this
-
-      socket.on('connect', function(msg) {
-          console.log(msg);
+    userConnected(){
+       // when users(receptionists) login add them to the socket
+       let socket = this.$store.state.socket
+       // listen to connect event
+       socket.on('connect', function(msg) {
+          console.log('connected', msg);
+          // send connected user id to flask backend
           socket.emit('new_user', {user_id: 1});
       });
+    },
 
+    userDisconnected(){
+      // when users(receptionists) logout remove them from the socket
+      let socket = this.$store.state.socket
+      // listen to disconnect event
       socket.on('disconnect', function(msg){
         console.log( msg);
+        // send disconnected user id to flask backend
         socket.emit('user_disconnected', {user_id: 1});
       });
-
-      socket.on('face_scanned', function(msg){
-        console.log('client scanned with id:', msg);
-        self.msgServer = `${msg.name} is niet herkend en is voor de eerst met id: ${msg.guest_id}`
-      });
-
     },
 
     login() {

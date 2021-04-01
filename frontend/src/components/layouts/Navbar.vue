@@ -35,10 +35,18 @@
 <script>
 export default {
   name: "Navbar",
+
+  data(){
+    return {
+      authenticated: false,
+    }
+  },
+
   methods: {
     setAuthenticated(status) {
       this.authenticated = status;
     },
+
     logout() {
       this.authenticated = false;
     }
