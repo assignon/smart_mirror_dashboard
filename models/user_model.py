@@ -71,6 +71,16 @@ class User(db.Model):
     
     def get_user(self):
         return jsonify(dict({'id': 1, 'name': 'Yanick', 'admin': True, 'token': 'wsdhj98743puihsadnv36'}))
+
+    
+    @staticmethod
+    def delete_user(user_id):
+        User.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
     
 
 class SocketUserManager(db.Model):
