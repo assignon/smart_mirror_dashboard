@@ -13,10 +13,10 @@ from models.guest_model import Guest
 # schema imports
 from schemas.guest_schema import GuestSchema, EditGuestSchema
 
-
 guest_schema = GuestSchema()
 guests_schema = GuestSchema(many=True)
 edit_guest_schema = EditGuestSchema()
+
 
 class GuestCollection(Resource):
 
@@ -29,7 +29,6 @@ class GuestCollection(Resource):
         guests = Guest.query.all()
         return guests_schema.dump(guests)
 
-
     @staticmethod
     @login_required
     def post(current_user):
@@ -39,28 +38,25 @@ class GuestCollection(Resource):
         json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
-        
+
         # remove whitespaces from input
-        
+
         remove_whitespace(json_data)
 
         # Validate and deserialize input
-        
+
         try:
             data = guest_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
-        
-        try: 
+
+        try:
             guest = Guest.create(**data)
         except exc.IntegrityError as e:
             db.session.rollback()
-            return{'error': e.orig.args}
-        
-        
-            
+            return {'error': e.orig.args}
+
         return guest_schema.dump(guest), 201
-        
 
     @staticmethod
     @login_required
@@ -77,13 +73,12 @@ class GuestApi(Resource):
         """
         get specific guest
         """
-        try: 
+        try:
             guest = Guest.get_guest(guest_id)
         except NoResultFound:
-            return{'message': 'Guest does not exist!'}
+            return {'message': 'Guest does not exist!'}
 
         return guest_schema.dump(guest), 200
-    
 
     @staticmethod
     @login_required
@@ -95,24 +90,24 @@ class GuestApi(Resource):
         json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
-        
+
         # remove whitespaces from input
-        
+
         remove_whitespace(json_data)
 
         # Validate and deserialize input
-        
+
         try:
             data = edit_guest_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
 
-        try:        
+        try:
             edited_guest = Guest.update_guest(guest_id, **data)
         except exc.IntegrityError as e:
             db.session.rollback()
-            return{'error': e.orig.args}
+            return {'error': e.orig.args}
         except NoResultFound:
-            return{'error': 'Guest does not exist'}
+            return {'error': 'Guest does not exist'}
 
         return guest_schema.dump(edited_guest), 200

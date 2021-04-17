@@ -9,11 +9,10 @@ class AppointmentSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
 
-
 # deze schema wordt gebruikt wanneer gegevens van een appointment aangepast moeten worden
 class EditAppointmentSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = Appointment 
+        model = Appointment
         include_fk = True
 
     guest_id = fields.Int(required=False)
