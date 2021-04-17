@@ -1,6 +1,7 @@
 from datetime import datetime
 from settings import db
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, \
+    Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
@@ -9,6 +10,7 @@ from .base_model import BaseMixin
 from .appointment_model import Appointment
 from .image_model import Image
 from datetime import datetime
+from sqlalchemy.sql import func
 
 
 class Guest(BaseMixin, db.Model):
@@ -20,6 +22,7 @@ class Guest(BaseMixin, db.Model):
     company = Column(String(length=30))
     phone_number = Column(String(length=15), unique=True, nullable=False)
     license_plate = Column(String(length=30), unique=True)
+    consent_duration_date = Column(Date, nullable=False, default=func.date())
     consent_duration = Column(Integer, nullable=False)
     appointments = relationship("Appointment", order_by="desc(Appointment.appointment_id)", lazy='joined',
                                 back_populates="guest")

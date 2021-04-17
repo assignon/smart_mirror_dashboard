@@ -33,12 +33,13 @@ def login_required(fun):
 
 class Login(Resource):
 
-    def get(self):
+    @staticmethod
+    def get():
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
             return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
-        user = User.query.filter_by(login=auth.username).first()
+        user = User.query.filter_by(email=auth.username).first()
 
         if not user:
             return {'message': 'User does not exist'}

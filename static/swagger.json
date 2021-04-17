@@ -1,0 +1,15 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "smart-mirror-dashboard API",
+    "version": "1.0.0",
+    "title": "Smart-Mirror-Dashboard API v1",
+    "contact": {
+      "email": "sebastiaan.cales@student.hu.nl"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  }
+}

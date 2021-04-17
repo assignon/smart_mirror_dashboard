@@ -14,7 +14,7 @@ class User(db.Model):
 
     user_id = Column(Integer, primary_key=True)
     name = Column(String(length=50), nullable=False)
-    login = Column(String(length=30), unique=True, nullable=False)
+    email = Column(String(length=30),nullable=False, unique=True)
     password = Column(String(length=30), nullable=False)
     is_admin = Column(Boolean, nullable=False)
 
@@ -22,12 +22,12 @@ class User(db.Model):
         return self.name
 
     @staticmethod
-    def create(name, login, password, is_admin):
+    def create(name, email, password, is_admin):
         """
         This function inserts a new row into the table and returns the new user
         """
 
-        user = User(name=name, login=login, password=bcrypt.generate_password_hash(password).decode('utf8'),
+        user = User(name=name, email=email, password=bcrypt.generate_password_hash(password).decode('utf8'),
                     is_admin=is_admin)
         db.session.add(user)
         db.session.commit()
@@ -69,8 +69,8 @@ class User(db.Model):
         else:
             raise NoResultFound
 
-    def get_user(self):
-        return jsonify(dict({'id': 1, 'name': 'Yanick', 'admin': True, 'token': 'wsdhj98743puihsadnv36'}))
+    # def get_user(self):
+    #     return jsonify(dict({'id': 1, 'name': 'Yanick', 'admin': True, 'token': 'wsdhj98743puihsadnv36'}))
 
     @staticmethod
     def delete_user(user_id):
