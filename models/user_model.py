@@ -1,12 +1,7 @@
-from datetime import datetime
 from settings import db, bcrypt, ma
-from flask_bcrypt import generate_password_hash, check_password_hash
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, \
-    exc
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String,  Boolean
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql.expression import desc
-from .base_model import BaseMixin
+
 
 
 class User(db.Model):
@@ -62,6 +57,9 @@ class User(db.Model):
         user = User.get_user(user_id)
         if user:
             for column, value in kwargs.items():
+                if column == "password":
+                    print('trying the new password')
+                    value = bcrypt.generate_password_hash(value).decode('utf8')
                 setattr(user, column, value)
 
             db.session.commit()
@@ -77,7 +75,7 @@ class User(db.Model):
         User.query.filter_by(user_id=user_id).delete()
         db.session.commit()
 
-    def check_password(self, password):
+    def check_password(self, password) -> bool:
         return bcrypt.check_password_hash(self.password, password)
 
 

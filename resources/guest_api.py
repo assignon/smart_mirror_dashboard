@@ -27,7 +27,7 @@ class GuestCollection(Resource):
         get all guests
         """
         guests = Guest.query.all()
-        return guests_schema.dump(guests)
+        return {'guests': guests_schema.dump(guests)}, 200
 
     @staticmethod
     @login_required
@@ -78,7 +78,7 @@ class GuestApi(Resource):
         except NoResultFound:
             return {'message': 'Guest does not exist!'}
 
-        return guest_schema.dump(guest), 200
+        return {'guest': guest_schema.dump(guest)}, 200
 
     @staticmethod
     @login_required
@@ -110,4 +110,4 @@ class GuestApi(Resource):
         except NoResultFound:
             return {'error': 'Guest does not exist'}
 
-        return guest_schema.dump(edited_guest), 200
+        return {'guest': guest_schema.dump(edited_guest)}, 200

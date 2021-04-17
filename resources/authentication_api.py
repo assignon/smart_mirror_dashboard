@@ -1,11 +1,9 @@
 from flask import request, jsonify, make_response
 from flask_restful import Resource, abort
-import uuid
 import jwt
 import datetime
 from functools import wraps
 from settings import app, ma
-from marshmallow import ValidationError
 from models.user_model import User
 
 
@@ -23,6 +21,8 @@ def login_required(fun):
         try:
             data = jwt.decode(token, app.config['JWT_SECRET_KEY'])
             current_user = User.query.filter_by(user_id=data['user_id']).first()
+            if current_user is None:
+                return jsonify({'error': 'The user_id is invalid'})
         except:
             return jsonify({'message': 'Token is invalid!'})
 

@@ -51,7 +51,7 @@ class AppointmentCollection(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
 
-        return appointment_schema.dump(appointment), 201
+        return {"appointment": appointment_schema.dump(appointment)}, 201
 
     @staticmethod
     @login_required
@@ -90,4 +90,4 @@ class AppointmentApi(Resource):
         except NoResultFound:
             return {'error': 'Appointment does not exist'}
 
-        return appointment_schema.dump(edited_appointment), 200
+        return {'appointment': appointment_schema.dump(edited_appointment)}, 200

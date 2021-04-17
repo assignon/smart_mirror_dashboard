@@ -1,11 +1,7 @@
-from datetime import datetime
 from settings import db
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, \
-    Boolean
+from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql.expression import desc
-from sqlalchemy import exc
 from .base_model import BaseMixin
 from .appointment_model import Appointment
 from .image_model import Image

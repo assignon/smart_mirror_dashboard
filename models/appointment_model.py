@@ -1,10 +1,7 @@
-from datetime import datetime
 from settings import db
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import desc
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import exc
 from .base_model import BaseMixin
 
 
@@ -14,8 +11,7 @@ class Appointment(BaseMixin, db.Model):
     appointment_id = Column(Integer, primary_key=True)
     checked_in = Column(DateTime)
     checked_out = Column(DateTime)
-    # pass id = NULL means guest doesnt have a pass
-    pass_id = Column(Integer)
+    has_pass = Column(Boolean)
     employee_name = Column(String(length=50))
     guest_id = Column(Integer, ForeignKey('Guest.guest_id',
                                           onupdate="CASCADE", ondelete="CASCADE"), nullable=False)

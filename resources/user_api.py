@@ -32,18 +32,20 @@ class GetUser(Resource):
 from models.user_model import User
 
 # schema imports
-from schemas.user_schema import UserSchema, EditUserSchema
+from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
 
-user_schema = UserSchema()
+user_schema: UserSchema = UserSchema()
+user_response_schema = UserSchema(exclude=['password'])
 users_schema = UserSchema(many=True)
 edit_user_schema = EditUserSchema()
+edit_user_password_schema = EditUserPasswordSchema()
 
 
 class UserCollection(Resource):
 
     @staticmethod
     @login_required
-    def get(current_user):
+    def get(current_user: User):
         """
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
@@ -53,14 +55,17 @@ class UserCollection(Resource):
             users = User.get_all_users()
         except NoResultFound:
             return {'message': 'No users found in the database'}
-        return users_schema.dump(users)
+        return {"users": users_schema.dump(users)}
 
     @staticmethod
     @login_required
-    def post(current_user):
+    def post(current_user: User):
         """
         Add a new user to the database
         """
+        if not current_user.is_admin:
+            return jsonify({'message': 'Not authorized to perform this function'})
+
         json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
@@ -82,7 +87,7 @@ class UserCollection(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
 
-        return user_schema.dump(user), 201
+        return {"user": user_schema.dump(user)}, 201
 
     @staticmethod
     @login_required
@@ -97,7 +102,7 @@ class UserApi(Resource):
 
     @staticmethod
     @login_required
-    def get(current_user, user_id):
+    def get(current_user: User, user_id: int):
         """
         get user based on userid
         """
@@ -109,18 +114,18 @@ class UserApi(Resource):
         except NoResultFound:
             return {'message': 'User does not exist!'}
 
-        return user_schema.dump(user), 200
+        return {"user": user_response_schema.dump(user)}, 200
 
     @staticmethod
     @login_required
-    def put(current_user, user_id):
+    def put(current_user: User, user_id: int):
         """
         Edit user. Users can only edit their own user settings, exception is made for admins
         """
-        if current_user.user_id != user_id and current_user.is_admin == False:
+        if current_user.user_id != user_id and current_user.is_admin is not False:
             return {"message": "Not authorized to edit this user!"}
 
-        json_data = request.get_json()
+        json_data: dict = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
 
@@ -131,7 +136,15 @@ class UserApi(Resource):
         # Validate and deserialize input
 
         try:
-            data = edit_user_schema.load(json_data)
+            if json_data['new_password'] != '' and current_user.check_password(json_data['password']):
+                data = edit_user_password_schema.load(json_data)
+                data['password'] = data.pop('new_password')
+            elif json_data['new_password'] != '' and not current_user.check_password((json_data['password'])):
+                return jsonify({'error': 'incorrect password'})
+            else:
+                json_data.pop('new_password', None)
+                json_data.pop('password', None)
+                data = edit_user_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
 
@@ -142,4 +155,5 @@ class UserApi(Resource):
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'User does not exist'}
-        return user_schema.dump(edited_user), 200
+
+        return {"user": user_schema.dump(edited_user)}, 200
