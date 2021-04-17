@@ -18,11 +18,12 @@ class AppointmentCollection(Resource):
 
     @staticmethod
     @login_required
-    def get():
+    def get(current_user):
         """
-        nog niet zeker wat dit moet gaan doyen
+        Haalt alle appointments op waarvan de checkout NULL is
         """
-        pass
+        appointments = Appointment.get_open_appointments()
+        return {"appointments": appointments_schema.dump(appointments)}
 
     @staticmethod
     @login_required
