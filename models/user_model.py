@@ -16,6 +16,10 @@ class User(db.Model):
     def __repr__(self):
         return self.name
 
+
+    @staticmethod
+    def test():
+        return db.engine.table_names()
     @staticmethod
     def create(name, email, password, is_admin):
         """
