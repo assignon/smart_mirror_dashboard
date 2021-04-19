@@ -69,6 +69,23 @@ class GuestCollection(Resource):
         return 200
 
 
+class GuestScanned(Resource):
+    # @jwt_required
+    """
+    get result data from desktop app when guest scanned
+
+    Args:
+        Resource (api obj): [flask rest api object]
+    """
+    def get(self):
+        from app import socketio
+        # get data sended from mirror after scan
+        data = request.args
+        # send scan data to frontend
+        socketio.emit('face_scanned',  data)
+        
+        return 'Data received'
+    
 class GuestApi(Resource):
 
     @staticmethod

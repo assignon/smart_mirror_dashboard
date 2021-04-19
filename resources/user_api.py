@@ -9,23 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 from .helper import remove_whitespace
 # models imports
-
-# model = UserModel() 
-class CreateUser(Resource):
-    def post(self):
-        pass
-
-class GetUser(Resource):
-    # @jwt_required
-    def get(self):
-        from app import socketio
-
-        data = request.args
-        socketio.emit('face_scanned',  data)
-        
-        return 'run'
 from models.user_model import User
-
 # schema imports
 from schemas.user_schema import UserSchema, EditUserSchema
 

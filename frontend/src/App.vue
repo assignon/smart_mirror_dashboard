@@ -2,13 +2,14 @@
   <v-app id="app">
     <v-main>
       <Navbar />
-      <router-view class="animated fadeIn" @authenticated="setAuthenticated" />
+      <!-- <router-view class="animated fadeIn" @authenticated="setAuthenticated" /> -->
+      <router-view class="animated fadeIn" />
     </v-main>
   </v-app>
 </template>
 
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>-->
 <script>
+import io from "socket.io-client";
 import Navbar from "@/components/layouts/Navbar";
 export default {
   name: "App",
@@ -21,6 +22,8 @@ export default {
     }
   }),
   created() {
+    // connect socket io
+    this.$store.state.socket = io.connect('http://192.168.178.52:5000')
     if (!this.$session.get("authenticated")) {
       this.$router.push({name: "Login"})
     }
