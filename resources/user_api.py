@@ -94,7 +94,11 @@ class UserCollection(Resource):
     def delete(current_user, user_id):
         if not current_user.is_admin:
             return jsonify({'message': 'Not authorized to perform this function'})
-        User.delete_user(user_id)
+        
+        try: 
+            User.delete_user(user_id)
+        except:
+            return 400
         return 200
 
 

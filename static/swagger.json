@@ -11,5 +11,67 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     }
+  },
+  "tags":[
+    {
+      "name": "UserCollection",
+      "description": "Operations about the whole User table"
+    },
+    {
+      "name": "User",
+      "description": "Operations about specific User"
+    },
+    {
+      "name": "GuestCollection",
+      "description": "Operations about the whole Guest table"
+    },
+    {
+      "name": "Guest",
+      "description": "Operations about specific Guest"
+    },
+    {
+      "name": "AppointmentCollection",
+      "description": "Operations about the whole Appointment table"
+    },
+    {
+      "name": "Appointment",
+      "description": "Operations about specific Appointment"
+    }
+
+
+],
+  "paths":{
+    "/users":{
+      "get":{
+        "tags": ["UserCollection"],
+        "summary": "get all the Users that exists in the database",
+        "description": "This resource represents the collection of all users in the system. Each user is identified by a numeric `user_id`."
+      },
+      "post":{
+        "tags": ["UserCollection"],
+        "summary": "add a new user to the database",
+        "description": ""
+      }
+    },
+    "/users/{user_id}":{
+      "delete":{
+        "tags": ["UserCollection"],
+        "summary": "delete user from the database",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to delete",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "responses":{
+          "200":{
+            "description": "successful operation"},
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+    }
   }
 }
