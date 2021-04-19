@@ -18,7 +18,7 @@ class Guest(BaseMixin, db.Model):
     company = Column(String(length=30))
     phone_number = Column(String(length=15), unique=True, nullable=False)
     license_plate = Column(String(length=30), unique=True)
-    consent_duration_date = Column(Date, nullable=False, default=func.date())
+    consent_duration_date = Column(Date, nullable=False, default=datetime.today)
     consent_duration = Column(Integer, nullable=False)
     appointments = relationship("Appointment", order_by="desc(Appointment.appointment_id)", lazy='joined',
                                 back_populates="guest")
