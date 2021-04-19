@@ -1,5 +1,6 @@
 <template>
     <div class='checkin-temp-core' v-if='$store.state.appointmentArr.length>0'>
+    <!-- <div class='checkin-temp-core'> -->
         <div class="row mt-15 animated fadeInUp">
             <div class="col">
                 <v-text-field label="Naam" v-model="name" outlined dense></v-text-field>
@@ -79,7 +80,7 @@ export default {
                 self.appointment = data.appointment
                 self.licensePlate = data.license_plate
                 self.company = data.company
-                self.retention = data.retention
+                self.retention = data.retention==1 ? '1 DAG' : '1 JAAR'
             });
 
         },
