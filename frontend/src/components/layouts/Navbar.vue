@@ -1,20 +1,24 @@
 <template>
-  <div v-if="!$route.name.startsWith('Login')" class="hidden-sm-and-down mt-9 mb-9" role="navigation"
-       aria-label="main navigation">
+  <div
+    v-if="!$route.name.startsWith('Login')"
+    class="hidden-sm-and-down mt-9 mb-9"
+    role="navigation"
+    aria-label="main navigation"
+  >
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <v-img src="@/assets/logo.svg"></v-img>
+        <v-img src="@/assets/logo.svg" height="10%"></v-img>
       </a>
-      <strong class="is-size-4">Smart Mirror</strong>
     </div>
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
-        <router-link to="/checkin" class="navbar-item">Checkin</router-link>
         <router-link to="/ingecheckt" class="navbar-item"
-          >Ingecheckt</router-link
+          >In/Uit-checken</router-link
         >
-        <router-link to="/clients" class="navbar-item">Zoeken</router-link>
-        <router-link to="/instellingen" class="navbar-item">Instellingen</router-link>
+        <router-link to="/clients" class="navbar-item">Gasten</router-link>
+        <router-link to="/instellingen" class="navbar-item">
+          Instellingen</router-link
+        >
       </div>
       <div class="navbar-end">
         <div class="navbar-item">
@@ -36,10 +40,10 @@
 export default {
   name: "Navbar",
 
-  data(){
+  data() {
     return {
-      authenticated: false,
-    }
+      authenticated: true
+    };
   },
 
   methods: {
@@ -64,7 +68,10 @@ div {
 div a {
   text-decoration: none;
   font-weight: bold;
-  color: #2c3e50;
-  width: 100%;
+  color: #0070AD;
+}
+.router-link-exact-active{
+  border-bottom: 2px solid #FF304C;
+  color: #FF304C;
 }
 </style>
