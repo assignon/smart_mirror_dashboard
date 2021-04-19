@@ -3,23 +3,18 @@ from sqlalchemy import Column, Integer, String,  Boolean
 from sqlalchemy.orm.exc import NoResultFound
 
 
-
 class User(db.Model):
     __tablename__ = 'User'
 
     user_id = Column(Integer, primary_key=True)
     name = Column(String(length=50), nullable=False)
     email = Column(String(length=30),nullable=False, unique=True)
-    password = Column(String(length=30), nullable=False)
+    password = Column(String(length=100), nullable=False)
     is_admin = Column(Boolean, nullable=False)
 
     def __repr__(self):
         return self.name
 
-
-    @staticmethod
-    def test():
-        return db.engine.table_names()
     @staticmethod
     def create(name, email, password, is_admin):
         """

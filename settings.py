@@ -34,12 +34,6 @@ app.config.from_envvar('ENV_FILE_LOCATION')
 bcrypt = Bcrypt(app)
 
 ## Db configurations
-# sqlite conf
-# db_file = "sqlite:///{}".format(os.path.join(PROJECT_DIR, 'smart_mirror.db'))
-
-
-# connection_url = "mssql+pyodbc://?odbc_connect=DRIVER%3DODBC+Driver+17+for+SQL+Server%3BSERVER%3Dsunny-side-up" \
-#                  ".database.windows.net%3BPORT%3D1433%3BDATABASE%3Dsmart-mirror%3BUID%3Dtientjie%3BPWD%3Dsunny-side-UP "
 
 
 import urllib
