@@ -7,9 +7,12 @@ from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
 
+
 # from flask_restful import Api
 # if 'app' not in sys.modules:
-#     from app import app 
+#     from app import app
+
+
 
 app = Flask(__name__, static_url_path='/static', template_folder="templates")
 
@@ -31,9 +34,22 @@ app.config.from_envvar('ENV_FILE_LOCATION')
 bcrypt = Bcrypt(app)
 
 ## Db configurations
-# sqlite conf
-db_file = "sqlite:///{}".format(os.path.join(PROJECT_DIR, 'smart_mirror.db'))
-app.config['SQLALCHEMY_DATABASE_URI'] = db_file
+
+
+import urllib
+
+server = 'sunny-side-up.database.windows.net'
+database = 'smart-mirror'
+username = 'tientjie'
+password = 'sunny-side-UP'
+driver = 'ODBC Driver 17 for SQL Server'
+
+params = urllib.parse.quote_plus('DRIVER={ODBC Driver 17 for SQL Server};SERVER=sunny-side-up.database.windows.net'
+                                 ';DATABASE=smart-mirror;UID=tientjie;PWD=sunny-side-UP')
+connection_url = "mssql+pyodbc:///?odbc_connect=%s" % params
+
+app.config['SQLALCHEMY_DATABASE_URI'] = connection_url
+
 app.config['JWT_SECRET_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 
 # initialize db
