@@ -10,9 +10,9 @@ class GuestSchema(ma.SQLAlchemyAutoSchema):
 
         model = Guest
         load_instance = True 
-        include_relationships = True
+        # include_relationships = True
 
-    appointments = ma.Nested(lambda: AppointmentSchema, many=True, only=("appointment_id", "employee_name"))
+    # appointments = ma.Nested(lambda: AppointmentSchema, many=True, exclude=('guest',))
         
 
 
@@ -35,7 +35,7 @@ class AppointmentSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_relationships = True
 
-    guest = ma.Nested(GuestSchema, only= ('guest_id', 'name'))
+    guest = ma.Nested(GuestSchema)
         
 
 # deze schema wordt gebruikt wanneer gegevens van een appointment aangepast moeten worden
