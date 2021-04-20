@@ -5,7 +5,8 @@ from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
-from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
+# from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
+from schemas.schemas import AppointmentSchema, EditAppointmentSchema
 from models.appointment_model import Appointment
 from .helper import remove_whitespace
 
@@ -23,6 +24,7 @@ class AppointmentCollection(Resource):
         Haalt alle appointments op waarvan de checkout NULL is
         """
         appointments = Appointment.get_open_appointments()
+        print(appointments[0].guest)
         return {"appointments": appointments_schema.dump(appointments)}
 
     @staticmethod

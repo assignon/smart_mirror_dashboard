@@ -1,3 +1,51 @@
+from models.guest_model import Guest
+from models.appointment_model import Appointment
+from settings import ma
+from marshmallow import validates, validate, ValidationError, fields
+from marshmallow_sqlalchemy.fields import Nested
+
+
+class GuestSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+
+        model = Guest
+        load_instance = True 
+        include_relationships = True
+
+    appointments = ma.Nested(lambda: AppointmentSchema, many=True, only=("appointment_id", "employee_name"))
+        
+
+
+# deze schema wordt gebruikt wanneer gegevens van een gast aangepast moeten worden
+class EditGuestSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Guest
+
+    name = fields.Str(required=False, validate=validate.Length(min=3, max=30))
+    email = fields.Email(required=False)
+    company = fields.Str(required=False, validate=validate.Length(min=3, max=30))
+    phone_number = fields.Str(required=False, validate=validate.Length(min=8, max=15))
+    license_plate = fields.Str(required=False, validate=validate.Length(min=3, max=30))
+    consent_duration = fields.Int(required=False, validate=validate.Range(min=0))
+
+
+class AppointmentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Appointment
+        load_instance = True
+        include_relationships = True
+
+    guest = ma.Nested(GuestSchema, only= ('guest_id', 'name'))
+        
+
+# deze schema wordt gebruikt wanneer gegevens van een appointment aangepast moeten worden
+class EditAppointmentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Appointment
+        include_fk = True
+
+    guest_id = fields.Int(required=False)
+
 from models.user_model import User
 from settings import ma
 from marshmallow import validates, validate, ValidationError, fields

@@ -32,7 +32,8 @@ class GetUser(Resource):
 from models.user_model import User
 
 # schema imports
-from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
+# from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
+from schemas.schemas import UserSchema, EditUserSchema, EditUserPasswordSchema
 
 user_schema: UserSchema = UserSchema()
 user_response_schema = UserSchema(exclude=['password'])
