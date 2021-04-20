@@ -36,7 +36,8 @@ from models.user_model import User
 from schemas.schemas import UserSchema, EditUserSchema, EditUserPasswordSchema
 
 user_schema: UserSchema = UserSchema()
-user_response_schema = UserSchema(exclude=['password'])
+user_response_schema = UserSchema(exclude=['password',])
+users_response_schema = UserSchema(many=True, exclude= ['password',])
 users_schema = UserSchema(many=True)
 edit_user_schema = EditUserSchema()
 edit_user_password_schema = EditUserPasswordSchema()
@@ -51,12 +52,12 @@ class UserCollection(Resource):
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'})
+            return jsonify({'message': 'Not authorized to perform this function'}), 401
         try:
             users = User.get_all_users()
         except NoResultFound:
-            return {'message': 'No users found in the database'}
-        return {"users": users_schema.dump(users)}
+            return {'message': 'No users found in the database'}, 400
+        return {"users": users_response_schema.dump(users)}, 200
 
     @staticmethod
     @login_required
@@ -65,7 +66,7 @@ class UserCollection(Resource):
         Add a new user to the database
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'})
+            return jsonify({'message': 'Not authorized to perform this function'}), 401
 
         json_data = request.get_json()
         if not json_data:
@@ -88,7 +89,7 @@ class UserCollection(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
 
-        return {"user": user_schema.dump(user)}, 201
+        return {"user": user_response_schema.dump(user)}, 201
 
     @staticmethod
     @login_required
