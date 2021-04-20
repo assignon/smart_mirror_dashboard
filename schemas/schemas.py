@@ -9,7 +9,6 @@ class GuestSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
 
         model = Guest
-        load_instance = True 
         # include_relationships = True
 
     # appointments = ma.Nested(lambda: AppointmentSchema, many=True, exclude=('guest',))
@@ -32,7 +31,6 @@ class EditGuestSchema(ma.SQLAlchemyAutoSchema):
 class AppointmentSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Appointment
-        load_instance = True
         include_relationships = True
 
     guest = ma.Nested(GuestSchema)

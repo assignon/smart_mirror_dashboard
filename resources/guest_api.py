@@ -50,7 +50,6 @@ class GuestCollection(Resource):
             data = guest_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
-
         try:
             guest = Guest.create(**data)
         except exc.IntegrityError as e:
