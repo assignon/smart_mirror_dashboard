@@ -120,7 +120,7 @@
         "parameters":[{
           "name": "user_id",
           "in": "path",
-          "description": "id of user to delete",
+          "description": "id of user to get",
           "required": true,
           "type": "integer",
           "format": "int64"
@@ -391,14 +391,14 @@
         }
     }
   },
-  "/user/{user_id}":{
+  "/guest/{guest_id}":{
     "get":{
-      "tags": ["User"],
-      "summary": "get specific user from the database",
+      "tags": ["Guest"],
+      "summary": "get specific guest from the database",
       "parameters":[{
-        "name": "user_id",
+        "name": "guest_id",
         "in": "path",
-        "description": "id of user to delete",
+        "description": "id of guest to get",
         "required": true,
         "type": "integer",
         "format": "int64"
@@ -410,7 +410,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/GetUser"
+                "$ref": "#/components/schemas/GetGuest"
               }
             }
           }
@@ -418,24 +418,24 @@
       }
     },
     "put":{
-      "tags": ["User"],
-      "summary": "Edit the specified user",
-      "description": "Edit the specified user, none of the fields in the schema are required but if you want to change the 'password' it is expected that there is also a 'new_password' field in the request body",
+      "tags": ["Guest"],
+      "summary": "Edit the specified guest",
+      "description": "Edit the specified guest, none of the fields in the schema are required ",
       "parameters":[{
-        "name": "user_id",
+        "name": "guest_id",
         "in": "path",
-        "description": "id of user to edit",
+        "description": "id of guest to edit",
         "required": true,
         "type": "integer",
         "format": "int64"
       }],
       "requestBody": {
-        "description": "Edit the user settings, like email or password.",
+        "description": "Edit the guest information",
         "required": true,
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/EditUser"
+              "$ref": "#/components/schemas/EditGuest"
             }
           }
         }
@@ -447,7 +447,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/GetUser"
+                "$ref": "#/components/schemas/GetGuest"
               }
             }
           }
@@ -457,7 +457,122 @@
         }
     }
 
-  }}
+  },
+  "/appointments":{
+    "get":{
+      "tags": ["AppointmentCollection"],
+      "summary": "get all the Appointments that exists  where 'checked_out' is null in the database",
+      "description": "This resource represents the collection of all Appointments in the system. Each appointment is identified by a numeric `appointment_id`.",
+      "responses": {
+        "200": {
+          "description": "get appointments response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GetAppointment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post":{
+      "tags": ["AppointmentCollection"],
+      "summary": "add a new appointment to the database",
+      "requestBody": {
+        "description": "Appointment to add in the system",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateAppointment"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetAppointment"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+  "/appointments/{appointment_id}":{
+    "delete":{
+      "tags": ["AppointmentCollection"],
+      "summary": "delete appointment from the database",
+      "parameters":[{
+        "name": "appointment_id",
+        "in": "path",
+        "description": "id of appointment to delete",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "responses":{
+        "200":{
+          "description": "successful operation"},
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+  "/appointment/{appointment_id}":{
+    "put":{
+      "tags": ["Appointment"],
+      "summary": "Edit the specified appointment",
+      "description": "Edit the specified appointment, none of the fields in the schema are required ",
+      "parameters":[{
+        "name": "appointment_id",
+        "in": "path",
+        "description": "id of appointment to edit",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditAppointment"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetAppointment"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+
+  }
+}
   ,
   "components": {
     "schemas": {
@@ -581,13 +696,146 @@
           "consent_duration_date": {
             "type": "string"
           },
+          "consent_duration": {
+            "type": "integer",
+            "format": "int64"
+          }
+
+        }
+      },
+      "EditGuest": {
+        "type": "object",
+        "properties": {
+          "guest_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "license_plate": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "consent_duration_date": {
+            "type": "string"
+          },
           "consent_duration_time": {
             "type": "integer",
             "format": "int64"
           }
 
         }
-      }  
+      },
+      "GetAppointment": {
+        "type": "object",
+        "properties": {
+          "appointment_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "checked_in": {
+            "type": "string"
+          },
+          "checked_out": {
+            "type": "string"
+          },
+          "has_pass": {
+            "type": "boolean"
+          },
+          "employee_name": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "guest": {
+            "properties": {
+              "guest_id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "license_plate": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phone_number": {
+                "type": "string",
+              },
+              "company": {
+                "type": "string"
+              },
+              "consent_duration_date": {
+                "type": "string"
+              },
+              "consent_duration_time": {
+                "type": "integer",
+                "format": "int64"
+              }
+  
+          }
+        }
+
+          }
+        }
+      ,
+      "CreateAppointment": {
+        "type": "object",
+        "required": [
+          "employee_name", "guest_id"
+        ],
+        "properties":{
+          "checked_in": {
+            "type": "string"
+          },
+          "checked_out": {
+            "type": "string"
+          },
+          "has_pass": {
+            "type": "boolean"
+          },
+          "employee_name": {
+            "type": "string"
+          },
+          "guest_id": {
+            "type": "integer",
+            "format": "int64"
+          }
+
+        
+      }},
+      "EditAppointment": {
+        "type": "object",
+        "properties": {
+          "checked_in": {
+            "type": "string"
+          },
+          "checked_out": {
+            "type": "string"
+          },
+          "has_pass": {
+            "type": "boolean"
+          },
+          "employee_name": {
+            "type": "string"
+          }
+
+        }
+      }
+        
     }
   }
 }

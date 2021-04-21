@@ -40,9 +40,22 @@ class AppointmentSchema(ma.SQLAlchemyAutoSchema):
 class EditAppointmentSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Appointment
-        include_fk = True
+    
+    checked_in = fields.DateTime(required=False)
+    checked_out = fields.DateTime(required=False)
+    has_pass = fields.Boolean(required=False)
+    employee_name = fields.Str(required=False)
 
-    guest_id = fields.Int(required=False)
+
+class CreateAppointmentSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Appointment
+    
+    checked_in = fields.DateTime(required=False)
+    checked_out = fields.DateTime(required=False)
+    has_pass = fields.Boolean(required=False)
+    employee_name = fields.Str(required=True)
+    guest_id = fields.Int(required=True)
 
 from models.user_model import User
 from settings import ma

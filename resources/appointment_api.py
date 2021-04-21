@@ -6,12 +6,13 @@ from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 # from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
-from schemas.schemas import AppointmentSchema, EditAppointmentSchema
+from schemas.schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
 from .helper import remove_whitespace
 
 appointment_schema = AppointmentSchema()
 appointments_schema = AppointmentSchema(many=True)
+create_appointment_schema = CreateAppointmentSchema()
 edit_appointment_schema = EditAppointmentSchema()
 
 
@@ -44,7 +45,7 @@ class AppointmentCollection(Resource):
         # Validate and deserialize input
 
         try:
-            data = appointment_schema.load(json_data)
+            data = create_appointment_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
 
