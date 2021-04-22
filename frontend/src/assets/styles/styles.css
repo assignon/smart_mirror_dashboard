@@ -1,0 +1,6 @@
+.custom_table thead th:first-child {
+  border-radius: 6px 0 0 0;
+}
+.custom_table thead th:last-child {
+  border-radius: 0 6px 0 0;
+}
