@@ -1,38 +1,49 @@
 <template>
-  <div>
-    <h1 class="mb-9">Gasten zoeken</h1>
-    <v-text-field
-            v-model="message2"
-            Naam
-            label="Naam"
-            clearable
-          ></v-text-field>
-    <v-btn class="mx-2 mt-3 mb-3" elevation="2" @click="onButtonClick(row.item)">
-              Nieuwe Gast
-            </v-btn>
-    <v-data-table :headers="headers" :items="clients" hide-default-footer>
-      <template v-slot:item="row">
-        <tr>
-          <td>{{ row.item.name }}</td>
-          <td>{{ row.item.tel }}</td>
-          <td>{{ row.item.email }}</td>
-          <td>{{ row.item.company }}</td>
-          <td>{{ row.item.plate }}</td>
-          <td>
-            <v-btn class="mx-2" elevation="2" @click="onButtonClick(row.item)">
-              Verwijderen
-            </v-btn>
-          </td>
-          <td>
-            <v-btn class="mx-2" elevation="2" @click="onButtonClick(row.item)">
-              Bewerken
-            </v-btn>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
-  </div>
-
+  <section class="primary-section">
+    <div class="main-container">
+      <div>
+        <h1 class="mb-3 mt-12">Gasten zoeken</h1>
+      </div>
+      <div>
+        <v-text-field
+        v-model="message2"
+        Naam
+        label="Zoeken op naam"
+        clearable
+        class="mb-6"
+      ></v-text-field>
+        <v-data-table :headers="headers" :items="clients" hide-default-footer>
+        <template v-slot:item="row">
+          <tr>
+            <td>{{ row.item.name }}</td>
+            <td>{{ row.item.tel }}</td>
+            <td>{{ row.item.email }}</td>
+            <td>{{ row.item.company }}</td>
+            <td>{{ row.item.plate }}</td>
+            <td>
+              <v-btn
+                class="mx-2 red darken-3"
+                elevation="2"
+                @click="onButtonClick(row.item)"
+              >
+                Verwijderen
+              </v-btn>
+            </td>
+            <td>
+              <v-btn
+                class="mx-2 green darken-3"
+                elevation="2"
+                @click="onButtonClick(row.item)"
+              >
+                Bewerken
+              </v-btn>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -42,39 +53,48 @@ export default {
     return {
       headers: [
         {
-          text: 'Naam',
-          align: 'start',
+          text: "Naam",
+          align: "start",
           sortable: true,
-          value: 'name',
+          value: "name",
+          class: "blue white--text rounded-tl-lg darken-1"
         },
-        {text: 'Telefoon', value: 'tel'},
-        {text: 'E-mail', value: 'email'},
-        {text: 'Bedrijf', value: 'company'},
-        {text: 'Kenteken', value: 'plate'},
-        {text: 'Verwijderen', value: 'plate'},
-        {text: 'Bewerken', value: 'plate'},
+        { text: "Telefoon", value: "tel" ,class: "blue white--text darken-1",},
+        { text: "E-mail", value: "email" ,class: "blue white--text darken-1",},
+        { text: "Bedrijf", value: "company" ,class: "blue white--text darken-1",},
+        { text: "Kenteken", value: "plate" ,class: "blue white--text darken-1",},
+        { text: "Verwijderen", value: "plate" ,class: "blue white--text darken-1",},
+        { text: "Bewerken", value: "plate" ,class: "blue white--text rounded-tr-lg darken-1",}
       ],
       clients: [
         {
-          id: '78',
-          name: 'Frozen Yogurt',
-          tel: '0293827267',
-          email: 'e@mail.com',
-          company: 'Sogetto',
-          plate: 'dk-si-ks',
+          id: "78",
+          name: "Frozen Yogurt",
+          tel: "0293827267",
+          email: "e@mail.com",
+          company: "Sogetto",
+          plate: "dk-si-ks"
         }
-      ],
-    }
-  },
+      ]
+    };
+  }
 };
 </script>
 
 <style scoped>
-div {
+.main-container {
   width: 900px;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+}
+
+.primary-section {
+  background-color: beige;
+  min-height: 500px;
+}
+
+h1 {
+  text-align: left;
 }
 </style>

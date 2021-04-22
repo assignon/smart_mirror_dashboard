@@ -1,26 +1,29 @@
 <template>
-  <div>
-    <h1 class="mb-9">Ingecheckte Gasten</h1>
-    <v-data-table :headers="headers" :items="ingecheckt" hide-default-footer>
-      <template v-slot:item="row">
-        <tr>
-          <td>{{ row.item.name }}</td>
-          <td>{{ row.item.tel }}</td>
-          <td>{{ row.item.email }}</td>
-          <td>{{ row.item.company }}</td>
-          <td>{{ row.item.plate }}</td>
-          <td>{{ row.item.checkin }}</td>
-          <td>
-            <v-btn class="mx-2" elevation="2" @click="onButtonClick(row.item)">
-              Check-Out
-            </v-btn>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
+  <section class="primary-section">
+    <div class="main-container">
+      <h1 class="mb-9 mt-12">Ingecheckte Gasten</h1>
+      <div>
+        <v-data-table :headers="headers" :items="ingecheckt" hide-default-footer>
+        <template v-slot:item="row">
+          <tr>
+            <td>{{ row.item.name }}</td>
+            <td>{{ row.item.tel }}</td>
+            <td>{{ row.item.email }}</td>
+            <td>{{ row.item.company }}</td>
+            <td>{{ row.item.plate }}</td>
+            <td>{{ row.item.checkin }}</td>
+            <td>
+              <v-btn class="mx-2 red darken-3" elevation="2" @click="onButtonClick(row.item)">
+                Check-Out
+              </v-btn>
+            </td>
+          </tr>
+        </template>
+      </v-data-table>
+      </div>
 
-  </div>
-
+    </div>
+  </section>
 </template>
 
 <script>
@@ -41,13 +44,14 @@ export default {
           align: 'start',
           sortable: true,
           value: 'name',
+          class: "blue white--text rounded-tl-lg darken-1"
         },
-        {text: 'Telefoon', value: 'tel'},
-        {text: 'E-mail', value: 'email'},
-        {text: 'Bedrijf', value: 'company'},
-        {text: 'Kenteken', value: 'plate'},
-        {text: 'Check-in', value: 'checkin'},
-        {text: 'Check-out', value: 'checkout'},
+        {text: 'Telefoon', value: 'tel', class: "blue white--text darken-1"},
+        {text: 'E-mail', value: 'email', class: "blue white--text darken-1"},
+        {text: 'Bedrijf', value: 'company', class: "blue white--text darken-1"},
+        {text: 'Kenteken', value: 'plate', class: "blue white--text darken-1"},
+        {text: 'Check-in', value: 'checkin', class: "blue white--text darken-1"},
+        {text: 'Check-out', value: 'checkout', class: "blue white--text rounded-tr-lg darken-1"},
       ],
       ingecheckt: [
         {
@@ -77,11 +81,19 @@ export default {
 </script>
 
 <style scoped>
-div {
+.main-container {
   width: 900px;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+}
+
+.primary-section {
+  background-color: beige;
+  min-height: 500px;
+}
+
+h1 {
+  text-align: left;
 }
 </style>

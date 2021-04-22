@@ -1,7 +1,6 @@
 <template>
   <div class="login-core">
-    <h1 class="display-3">Login page</h1>
-    <h1 class="display-3 mb-10 mt-16">Soggeti Mirror Login</h1>
+    <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
     <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
     <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
     <v-form class="login-form">
@@ -15,6 +14,7 @@
       <v-btn
           elevation="6"
           v-on:click="login()"
+          class="blue darken-1"
       >Login
       </v-btn>
     </v-form>
@@ -78,7 +78,7 @@ export default {
     login() {
       if (this.input.username != "a" && this.input.password != "a") {
         this.startSession("string", true, 1)
-        this.$router.push({name: "Checkin"})
+        this.$router.push({name: "Ingecheckt"})
       } else {
         console.log('Vul een gebruikersnaam en wachtwoord in');
       }

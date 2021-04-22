@@ -1,6 +1,11 @@
-.custom_table thead th:first-child {
-  border-radius: 6px 0 0 0;
+.main-container {
+  width: 900px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
 }
-.custom_table thead th:last-child {
-  border-radius: 0 6px 0 0;
+
+.primary-section {
+  background-color: beige;
+  min-height: 500px;
 }

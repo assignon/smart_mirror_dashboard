@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="!$route.name.startsWith('Login')"
-    class="hidden-sm-and-down mt-9 mb-9"
+    class="hidden-sm-and-down mt-9"
     role="navigation"
     aria-label="main navigation"
   >
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <v-img src="@/assets/logo.svg" height="10%"></v-img>
+        <v-img src="@/assets/SogetiLabs_Logo_Primary_3COL_RGB (002).png" max-height="88" max-width="248"></v-img>
       </a>
     </div>
     <div id="navbar" class="navbar-menu">
@@ -69,6 +69,7 @@ div a {
   text-decoration: none;
   font-weight: bold;
   color: #0070AD;
+  padding-bottom: 22px  ;
 }
 .router-link-exact-active{
   border-bottom: 2px solid #FF304C;
