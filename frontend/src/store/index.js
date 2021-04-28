@@ -3,6 +3,8 @@ import Vuex from "vuex";
 import dashboard from "./modules/dashboard"; // store file from modules map import example
 import axios from "axios";
 
+import { auth } from "./modules/auth";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -12,8 +14,8 @@ export default new Vuex.Store({
     AUTHENTICATED: undefined,
     usertoken: undefined,
     // socket io host name and initialization
-    IOHOST: 'http://192.168.178.52:5000',
-     socket: null,
+    IOHOST: "http://192.168.178.52:5000",
+    socket: null,
     // vuetify form validators
     rules: {
       required: value => !!value || "This field is required",
@@ -25,7 +27,7 @@ export default new Vuex.Store({
       v => !!v || "Email is required",
       v => /.+@.+/.test(v) || "Email is not valid"
     ],
-    appointmentArr: [], // will contain all appointment in the DB
+    appointmentArr: [] // will contain all appointment in the DB
   },
 
   getters: {
@@ -262,6 +264,7 @@ export default new Vuex.Store({
   },
 
   modules: {
-    dashboard: dashboard
+    dashboard: dashboard,
+    auth: auth
   }
 });

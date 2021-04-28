@@ -91,7 +91,7 @@ export default {
 
 .primary-section {
   background-color: beige;
-  min-height: 500px;
+  min-height: 80vh;
 }
 
 h1 {

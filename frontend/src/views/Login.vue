@@ -1,21 +1,13 @@
 <template>
   <div class="login-core">
-    <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
     <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
     <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
     <v-form class="login-form">
-      <v-text-field
-          label="Username"
-      ></v-text-field>
-      <v-text-field
-          label="Password"
-          type="password"
-      ></v-text-field>
-      <v-btn
-          elevation="6"
-          v-on:click="login()"
-          class="blue darken-1"
-      >Login
+      <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
+      <v-text-field v-model="input.username" label="Email"></v-text-field>
+      <v-text-field v-model="input.password" label="Password" type="password"></v-text-field>
+      <v-btn elevation="6" v-on:click="signIn()" class="blue darken-1"
+        >Login
       </v-btn>
     </v-form>
   </div>
@@ -29,17 +21,16 @@ export default {
   components: {},
   data() {
     return {
-      n:0,
+      n: 0,
       input: {
-        username: "",
+        email: "",
         password: ""
       }
     };
   },
-
   created() {
-    this.userConnected()
-    this.userDisconnected()
+    this.userConnected();
+    this.userDisconnected();
   },
 
   methods: {
@@ -53,72 +44,74 @@ export default {
       this.$session.set("su", su);
     },
 
-    userConnected(){
-       // when users(receptionists) login add them to the socket
-       let socket = this.$store.state.socket
-       // listen to connect event
-       socket.on('connect', function(msg) {
-          console.log('connected', msg);
-          // send connected user id to flask backend
-          socket.emit('new_user', {user_id: 1});
+    userConnected() {
+      // when users(receptionists) login add them to the socket
+      let socket = this.$store.state.socket;
+      // listen to connect event
+      socket.on("connect", function(msg) {
+        console.log("connected", msg);
+        // send connected user id to flask backend
+        socket.emit("new_user", { user_id: 1 });
       });
     },
 
-    userDisconnected(){
+    userDisconnected() {
       // when users(receptionists) logout remove them from the socket
-      let socket = this.$store.state.socket
+      let socket = this.$store.state.socket;
       // listen to disconnect event
-      socket.on('disconnect', function(msg){
-        console.log( msg);
+      socket.on("disconnect", function(msg) {
+        console.log(msg);
         // send disconnected user id to flask backend
-        socket.emit('user_disconnected', {user_id: 1});
+        socket.emit("user_disconnected", { user_id: 1 });
       });
     },
 
-    login() {
-      if (this.input.username != "a" && this.input.password != "a") {
-        this.startSession("string", true, 1)
-        this.$router.push({name: "Ingecheckt"})
+    // login() {
+    //   if (this.input.username !== "a" && this.input.password !== "a") {
+    //     this.startSession("string", true, 1);
+    //     this.$router.push({ name: "Ingecheckt" });
+    //   } else {
+    //     console.log("Vul een gebruikersnaam en wachtwoord in");
+    //   }
+    // }
+
+    signIn() {
+      let self = this;
+      let formErrMsg = document.querySelector(".err-msg");
+      let validationErrMsg = document.querySelector(".v-messages__message");
+      if (
+        !document.body.contains(validationErrMsg) &&
+        self.email != null &&
+        self.password != null
+      ) {
+        this.$store.dispatch("publicPostReq", {
+          url: "Login",
+          params: {
+            email: self.email,
+            password: self.password
+          },
+          auth: null,
+          csrftoken: null,
+          callback: function(data) {
+            console.log(data);
+            if (data.authenticate) {
+              self.startSession(data.token, data.is_superuser, data.id);
+              self.$router.push({ name: "Dashboard" });
+            } else {
+              formErrMsg.innerHTML = data.msg;
+            }
+          }
+        });
       } else {
-        console.log('Vul een gebruikersnaam en wachtwoord in');
+        formErrMsg.innerHTML = "Email and password should not be empty";
       }
-    },
-
-    // signin(){
-  //   let self = this;
-  //   let formErrMsg = document.querySelector('.err-msg')
-  //   let validationErrMsg = document.querySelector('.v-messages__message');
-  //   if(!document.body.contains(validationErrMsg) && self.email != null && self.password != null){
-  //     this.$store.dispatch("publicPostReq", {
-  //       url: "signin",
-  //       params: {
-  //           email: self.email,
-  //           password: self.password
-  //       },
-  //       auth: null,
-  //       csrftoken: null,
-  //       callback: function(data) {
-  //           console.log(data);
-  //           if(data.authenticate){
-  //             self.startSession(data.token, data.is_superuser, data.id)
-  //             self.$router.push({name: "Dashboard"})
-  //           }else{
-  //               formErrMsg.innerHTML = data.msg
-  //           }
-  //       },
-  //     });
-  //   }else{
-  //       formErrMsg.innerHTML = 'Email and password should not be empty';
-  //   }
-  // }
-  },
-
+    }
+  }
 };
 </script>
 
 <style scoped>
 .login-core {
-
 }
 
 .login-form {

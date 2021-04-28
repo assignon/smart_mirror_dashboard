@@ -1,4 +1,5 @@
 <template>
+  <!-- Hide Nav if route is Login -->
   <div
     v-if="!$route.name.startsWith('Login')"
     class="hidden-sm-and-down mt-9"

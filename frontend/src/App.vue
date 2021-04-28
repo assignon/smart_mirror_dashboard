@@ -1,6 +1,7 @@
 <template>
   <v-app id="app">
     <v-main>
+      <!-- Navbar component -->
       <Navbar />
       <!-- <router-view class="animated fadeIn" @authenticated="setAuthenticated" /> -->
       <router-view class="animated fadeIn" />
