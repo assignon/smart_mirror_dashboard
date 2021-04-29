@@ -1,11 +1,13 @@
 from datetime import datetime
 from settings import db
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, Date
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean, \
+    Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import desc
 from sqlalchemy.sql import func
 from sqlalchemy import exc
 from .base_model import BaseMixin
+
 
 class Image(BaseMixin, db.Model):
     __tablename__ = 'Image'
@@ -17,7 +19,6 @@ class Image(BaseMixin, db.Model):
         'Guest.guest_id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     guest = relationship("Guest", back_populates="images")
 
-
     @staticmethod
     def add_images(filepath_images, guest_id):
         """
@@ -26,7 +27,7 @@ class Image(BaseMixin, db.Model):
         new_images = [Image(filepath=filepath_image, guest_id=guest_id) for filepath_image in filepath_images]
         db.session.add_all(new_images)
         db.session.commit()
-    
+
     @staticmethod
     def get_images(guest_id=False):
         """get all labeled images from the image table, returns images of guest if specified"""
@@ -35,7 +36,6 @@ class Image(BaseMixin, db.Model):
         else:
             images = db.session.query(Image).all()
         return images
-    
 
     @staticmethod
     def update_image(image_id, **kwargs):
@@ -47,8 +47,8 @@ class Image(BaseMixin, db.Model):
         """
         image = db.session.query(Image).filter_by(image_id=image_id).first()
 
-        for column, value in kwargs.items():  
-            setattr(image, column, value) 
+        for column, value in kwargs.items():
+            setattr(image, column, value)
 
         db.session.commit()
         return image

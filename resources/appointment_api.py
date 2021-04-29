@@ -5,25 +5,28 @@ from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
-from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
+# from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
+from schemas.schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
 from .helper import remove_whitespace
 
-
 appointment_schema = AppointmentSchema()
 appointments_schema = AppointmentSchema(many=True)
+create_appointment_schema = CreateAppointmentSchema()
 edit_appointment_schema = EditAppointmentSchema()
 
 
 class AppointmentCollection(Resource):
-    
+
     @staticmethod
     @login_required
-    def get():
+    def get(current_user):
         """
-        nog niet zeker wat dit moet gaan doen
+        Haalt alle appointments op waarvan de checkout NULL is
         """
-        pass
+        appointments = Appointment.get_open_appointments()
+        print(appointments[0].guest)
+        return {"appointments": appointments_schema.dump(appointments)}
 
     @staticmethod
     @login_required
@@ -34,27 +37,26 @@ class AppointmentCollection(Resource):
         json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
-        
+
         # remove whitespaces from input
-        
+
         remove_whitespace(json_data)
 
         # Validate and deserialize input
-        
+
         try:
-            data = appointment_schema.load(json_data)
+            data = create_appointment_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
-        
-        try: 
+
+        try:
             appointment = Appointment.create(**data)
         except exc.IntegrityError as e:
             db.session.rollback()
-            return{'error': e.orig.args}
-        
-        return appointment_schema.dump(appointment), 201
-    
-    
+            return {'error': e.orig.args}
+
+        return {"appointment": appointment_schema.dump(appointment)}, 201
+
     @staticmethod
     @login_required
     def delete(current_user, appoinment_id):
@@ -63,7 +65,6 @@ class AppointmentCollection(Resource):
 
 
 class AppointmentApi(Resource):
-    
 
     @staticmethod
     @login_required
@@ -73,24 +74,24 @@ class AppointmentApi(Resource):
 
         if not json_data:
             return {"message": "No input data provided"}, 400
-        
+
         # remove whitespaces from input
-        
+
         remove_whitespace(json_data)
 
         # Validate and deserialize input
-        
+
         try:
             data = edit_appointment_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
 
-        try:        
+        try:
             edited_appointment = Appointment.update_appointment(appoinment_id, **data)
         except exc.IntegrityError as e:
             db.session.rollback()
-            return{'error': e.orig.args}
+            return {'error': e.orig.args}
         except NoResultFound:
-            return{'error': 'Appointment does not exist'}
+            return {'error': 'Appointment does not exist'}
 
-        return appointment_schema.dump(edited_appointment), 200
+        return {'appointment': appointment_schema.dump(edited_appointment)}, 200
