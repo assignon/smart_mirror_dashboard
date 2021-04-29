@@ -25,7 +25,7 @@ export default {
   created() {
     // connect socket io
     // this.$store.state.socket = io.connect('http://192.168.178.52:5000')
-    this.$store.state.socket = io.connect('https://3ecd079b3bb2.ngrok.io')
+    this.$store.state.socket = io.connect('https://7ff49c837740.ngrok.io')
     if (!this.$session.get("authenticated")) {
       this.$router.push({name: "Login"})
     }
