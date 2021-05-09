@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
 # from flask_bcrypt import Bcrypt
 from flask_restful import Api
@@ -9,6 +10,13 @@ app.secret_key = "sunnySideUp-smartMirror"
 # bcrypt = Bcrypt(app)
 rest_api = Api(app)
 socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080')
+
+CORS(app)
+cors = CORS(app, resources={
+    r"/*": {
+        "origins": "*"
+    }
+})
 
 
 @app.route('/')

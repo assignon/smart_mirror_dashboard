@@ -1,31 +1,45 @@
 <template>
   <div class="login-core">
-    <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
-    <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
-    <v-form class="login-form">
-      <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
-      <v-text-field v-model="input.username" label="Email"></v-text-field>
-      <v-text-field v-model="input.password" label="Password" type="password"></v-text-field>
-      <v-btn elevation="6" v-on:click="signIn()" class="blue darken-1"
-        >Login
+    <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
+    <form @submit.prevent="signIn" class="login-form">
+      <!--      <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
+      <!--      <input type="password" name="password" v-model="input.password" placeholder="Password">-->
+      <v-text-field
+          name="email"
+          v-model="input.email"
+          label="Email"
+      ></v-text-field>
+      <v-text-field
+          name="password"
+          v-model="input.password"
+          label="Password"
+          type="password"
+      ></v-text-field>
+      <v-btn elevation="6" v-on:click="submit" class="blue darken-1">
+        Login
       </v-btn>
-    </v-form>
+    </form>
+    <p class="err-msg"></p>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 
+// import axios from "axios";
+// import { mapActions } from "vuex";
+import axios from "axios";
+
 export default {
   name: "Login",
   components: {},
   data() {
     return {
-      n: 0,
       input: {
         email: "",
         password: ""
-      }
+      },
+      showError: false
     };
   },
   created() {
@@ -48,10 +62,10 @@ export default {
       // when users(receptionists) login add them to the socket
       let socket = this.$store.state.socket;
       // listen to connect event
-      socket.on("connect", function(msg) {
+      socket.on("connect", function (msg) {
         console.log("connected", msg);
         // send connected user id to flask backend
-        socket.emit("new_user", { user_id: 1 });
+        socket.emit("new_user", {user_id: 1});
       });
     },
 
@@ -59,10 +73,10 @@ export default {
       // when users(receptionists) logout remove them from the socket
       let socket = this.$store.state.socket;
       // listen to disconnect event
-      socket.on("disconnect", function(msg) {
+      socket.on("disconnect", function (msg) {
         console.log(msg);
         // send disconnected user id to flask backend
-        socket.emit("user_disconnected", { user_id: 1 });
+        socket.emit("user_disconnected", {user_id: 1});
       });
     },
 
@@ -74,37 +88,85 @@ export default {
     //     console.log("Vul een gebruikersnaam en wachtwoord in");
     //   }
     // }
+    async submit() {
+      let formErrMsg = document.querySelector(".err-msg");
+      const auth = {
+        username: this.input.email,
+        password: this.input.password
+      };
+      const url = "login";
+      this.success = false;
+      this.error = null;
+
+      if (this.input.email != null && this.input.password != null) {
+        try {
+          const res = await axios.get(url, { auth }).then(res => res.data);
+          if (res["x-access-token"]) {
+            console.log(res["x-access-token"]);
+            // self.startSession(res["x-access-token"], 1, 1);
+            await this.$router.push("/ingecheckt");
+          } else {
+            formErrMsg.innerHTML = res.msg;
+          }
+          this.success = true;
+        } catch (err) {
+          this.error = err.message;
+        }
+      } else {
+        formErrMsg.innerHTML = "Email and password should not be empty";
+      }
+    },
 
     signIn() {
-      let self = this;
       let formErrMsg = document.querySelector(".err-msg");
-      let validationErrMsg = document.querySelector(".v-messages__message");
+      // let validationErrMsg = document.querySelector(".v-messages__message");
       if (
-        !document.body.contains(validationErrMsg) &&
-        self.email != null &&
-        self.password != null
+          // !document.body.contains(validationErrMsg) &&
+          this.input.email != null &&
+          this.input.password != null
       ) {
-        this.$store.dispatch("publicPostReq", {
-          url: "Login",
+        this.$store.dispatch("getAxiosCall", {
+          url: "http://127.0.0.1:5000/login",
           params: {
-            email: self.email,
-            password: self.password
+            email: this.input.email,
+            password: this.input.password
           },
           auth: null,
           csrftoken: null,
-          callback: function(data) {
+          callback: function (data) {
             console.log(data);
-            if (data.authenticate) {
+            if (data["x-access-token"]) {
               self.startSession(data.token, data.is_superuser, data.id);
-              self.$router.push({ name: "Dashboard" });
+              self.$router.push({name: "Checkin"});
             } else {
-              formErrMsg.innerHTML = data.msg;
+              // formErrMsg.innerHTML = data.msg;
             }
           }
         });
       } else {
         formErrMsg.innerHTML = "Email and password should not be empty";
       }
+      let body = {
+        body: {
+          email: this.email,
+          password: this.password
+        }
+      };
+      axios
+          .get("http://127.0.0.1:5000/login", body, {
+            headers: {
+              "X-CSRFToken": null,
+              Authorization: null
+            }
+          })
+          .then(response => {
+            let res = response.data;
+            console.log(res);
+            // payload.callback(res);
+          })
+          .catch(error => {
+            console.log(error);
+          });
     }
   }
 };

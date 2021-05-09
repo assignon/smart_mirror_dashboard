@@ -28,12 +28,12 @@ Vue.use(VueSession, { persist: true });
 
 Axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 Axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
+Axios.defaults.baseURL = "http://127.0.0.1:5000/";
 Axios.defaults.withCredentials = false;
 
 Vue.prototype.$axios = Axios;
 
 new Vue({
-  created() {},
   router,
   store,
   vuetify,
