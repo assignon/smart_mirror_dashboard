@@ -19,7 +19,7 @@ edit_appointment_schema = EditAppointmentSchema()
 class AppointmentCollection(Resource):
 
     @staticmethod
-    @login_required
+    # @login_required
     def get(current_user):
         """
         Haalt alle appointments op waarvan de checkout NULL is

@@ -86,15 +86,16 @@ export default {
 
   created() {
     this.scannedGuestData()
+    this.getScannedGuestData()
   },
 
   methods: {
-    getScanneadGuestData(){
+    getScannedGuestData(){
       // get and display all scanned, in and outchecked guest data from DB in case de page is reloaded
       let self = this;
 
       this.$store.dispatch("getReq", {
-          url: "guests/scanned_guest",
+          url: "appointments",
           params: {
           },
           auth: self.$session.get('token'),

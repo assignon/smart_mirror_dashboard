@@ -28,7 +28,7 @@ Vue.use(VueSession, { persist: true });
 
 Axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 Axios.defaults.xsrfCookieName = "XCSRF-TOKEN";
-Axios.defaults.baseURL = "https://7f80b261fd40.ngrok.io/";
+Axios.defaults.baseURL = "https://7f80b261fd40.ngrok.io";
 Axios.defaults.withCredentials = false;
 
 Vue.prototype.$axios = Axios;
