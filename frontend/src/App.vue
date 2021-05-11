@@ -23,7 +23,7 @@ export default {
   }),
   created() {
     // connect socket io
-    this.$store.state.socket = io.connect('http://192.168.178.52:5000')
+    this.$store.state.socket = io.connect('http://192.168.2.15:5000')
     if (!this.$session.get("authenticated")) {
       this.$router.push({name: "Login"})
     }
