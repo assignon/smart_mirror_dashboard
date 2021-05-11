@@ -98,7 +98,7 @@ export default {
       this.success = false;
       this.error = null;
 
-      if (this.input.email != null && this.input.password != null) {
+      if (this.input.email != '' && this.input.password != '') {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {

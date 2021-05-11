@@ -5,6 +5,7 @@
       <Navbar />
       <!-- <router-view class="animated fadeIn" @authenticated="setAuthenticated" /> -->
       <router-view class="animated fadeIn" />
+      <div class='footer'><p>Sogeti labs © 2021</p></div>
     </v-main>
   </v-app>
 </template>
@@ -24,10 +25,10 @@ export default {
   }),
   created() {
     // connect socket io
-    this.$store.state.socket = io.connect('http://192.168.178.52:5000')
-    if (!this.$session.get("authenticated")) {
-      this.$router.push({name: "Login"})
-    }
+    this.$store.state.socket = io.connect('https://7f80b261fd40.ngrok.io/')
+    // if (!this.$session.get("authenticated")) {
+    //   this.$router.push({name: "Login"})
+    // }
   },
   methods: {
     // createSession() {
@@ -65,5 +66,19 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.footer{
+  width: 100%;
+  height: 7vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.footer p{
+  text-align: left;
+  color: #0070ad;
+  margin-left: 30px;
+  position: relative;
+  top: 10px;
 }
 </style>

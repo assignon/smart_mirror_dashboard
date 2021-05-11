@@ -40,6 +40,7 @@ export default {
 <style scoped>
 .main-container {
   width: 900px;
+  height: 80vh;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
