@@ -12,13 +12,13 @@
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
               <td>
-                <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='!row.item.checkin'>
+                <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'>
                   <strong style="color:white;text-transform:capitalize">Check-In</strong>
                 </v-btn>
-                <strong v-else>{{ row.item.time }}</strong>
+                <strong v-else>{{ row.item.checkin }}</strong>
               </td>
               <td>
-                <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='!row.item.checkin'>
+                <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'>
                   <strong style='color:white;text-transform:capitalize'>Check-Uit</strong>
                 </v-btn>
               </td>
@@ -57,30 +57,7 @@ export default {
         {text: 'Check-in', value: 'checkin', class: "blue white--text darken-1"},
         {text: 'Check-out', value: 'checkout', class: "blue white--text rounded-tr-lg darken-1"},
       ],
-      ingecheckt: [
-        {
-          id: 78,
-          name: 'Appel',
-          tel: '0293827267',
-          email: 'e@mail.com',
-          company: 'Sogetto',
-          plate: 'dk-si-ks',
-          checkin: false,
-          checkout: false,
-          time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
-        },
-        {
-          id: 18,
-          name: 'Frozen Yogurt',
-          tel: '0293827267',
-          email: 'e@mail.com',
-          company: 'Sogetto',
-          plate: 'dk-si-ks',
-          checkin: false,
-          checkout: false,
-          time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
-        },
-      ],
+      ingecheckt: [],
     }
   },
 
@@ -101,9 +78,22 @@ export default {
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
           callback: function(data) {
-              console.log(data);
-              self.ingecheckt.push(data)
-              // store.getters["setData"]([store.state.product.productsArr, [data]]);
+              console.log(data.appointments[0][0].guest);
+              
+              data.appointments[0].forEach(data => {
+                console.log(data);
+                let guestData = {
+                  id: data.guest.guest_id,
+                  name: data.guest.name,
+                  tel: data.guest.phone_number,
+                  email: data.guest.email,
+                  company: data.guest.company,
+                  plate: data.guest.license_plate,
+                  checkin: data.checked_in,
+                  checkout: data.checked_out,
+                }
+                self.ingecheckt.push(guestData)
+              })
           },
       });
     },
@@ -133,7 +123,7 @@ export default {
 
     checkGuestIn(guestData){
       // let self = this;
-
+      console.log(guestData);
       guestData.checkin = true
       // this.$store.dispatch("putReq", {
       //     url: "guests/checkin",
@@ -143,7 +133,7 @@ export default {
       //     auth: self.$session.get('token'),
       //     csrftoken: self.$session.get('token'),
       //     callback: function(data) {
-      //         console.log(data);
+      //         // console.log(data);
       //     },
       // });
       // console.log('checkin', guestData);
@@ -152,12 +142,12 @@ export default {
     checkGuestOut(guestData){
       let self = this;
       // let currentGuest  = document.getElementById(guestData.id)
-
-      // remove current guest data from array
-      let currentGuestId = guestData.id
-      // self.ingecheckt.filter((item) => item.id !== currentGuestId);
-      let guestCheckedOut = self.ingecheckt.findIndex(item => item.id === currentGuestId);
-      self.ingecheckt.splice(guestCheckedOut, 1)
+      console.log(guestData);
+      // // remove current guest data from array
+      // let currentGuestId = guestData.id
+      // // self.ingecheckt.filter((item) => item.id !== currentGuestId);
+      // let guestCheckedOut = self.ingecheckt.findIndex(item => item.id === currentGuestId);
+      // self.ingecheckt.splice(guestCheckedOut, 1)
 
       // currentGuest.classList.remove('zoomIn')
       // setTimeout(() => {
