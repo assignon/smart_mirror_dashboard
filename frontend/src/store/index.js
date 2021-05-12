@@ -10,7 +10,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   namespaced: true,
   state: {
-    HOST: window.location.port != "" ? "https://35db6310a2ca.ngrok.io" : "live-server",
+    HOST: window.location.port != "" ? "https://c383e20eb537.ngrok.io" : "live-server",
     //  "http://127.0.0.1:8000",
     AUTHENTICATED: undefined,
     usertoken: undefined,
@@ -121,7 +121,7 @@ export default new Vuex.Store({
         body: payload.params
       };
       axios
-        .post(`${payload.host}/api/${payload.url}/`, body, {
+        .post(`${payload.host}/${payload.url}`, body, {
           headers: {
             "X-CSRFToken": payload.csrftoken,
             Authorization: `token ${payload.auth}`
@@ -169,7 +169,7 @@ export default new Vuex.Store({
         body: payload.params
       };
       axios
-        .put(`${payload.host}/api/${payload.url}/`, body, {
+        .put(`${payload.host}/${payload.url}`, body, {
           headers: {
             "X-CSRFToken": payload.csrftoken,
             Authorization: `token ${payload.auth}`
@@ -191,7 +191,7 @@ export default new Vuex.Store({
                payload: [object]: [data sended with the request]
        */
       axios
-        .delete(`${payload.host}/api/${payload.url}/`, {
+        .delete(`${payload.host}/${payload.url}`, {
           params: payload.params,
           headers: {
             "X-CSRFToken": payload.csrftoken,

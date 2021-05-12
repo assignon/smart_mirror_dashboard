@@ -72,18 +72,16 @@ export default {
       let self = this;
 
       this.$store.dispatch("getReq", {
-          url: "/appointments",
+          url: "appointments",
           params: {
           },
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
-          callback: function(data) {
-              console.log(data.appointments[0][0].guest);
-              
+          callback: function(data) {  
               data.appointments[0].forEach(data => {
-                console.log(data);
                 let guestData = {
                   id: data.guest.guest_id,
+                  appointment_id: data.appointment_id,
                   name: data.guest.name,
                   tel: data.guest.phone_number,
                   email: data.guest.email,
@@ -104,7 +102,6 @@ export default {
       let socket = self.$store.state.socket
 
       socket.on('face_scanned', function(data){
-          console.log('socket data', data);
           let guestData = {
             id: data.id,
             name: data.name,
@@ -112,9 +109,9 @@ export default {
             email: data.email,
             company: data.company,
             plate: data.license_plate,
-            checkin: false,
-            checkout: false,
-            time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
+            checkin: null,
+            checkout: null,
+            // time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
           }
           // add scanned guest data to the top of the table
           self.ingecheckt.unshift(guestData)
@@ -125,18 +122,17 @@ export default {
       // let self = this;
       console.log(guestData);
       guestData.checkin = true
-      // this.$store.dispatch("putReq", {
-      //     url: "guests/checkin",
-      //     params: {
-      //       guest_id: guestId
-      //     },
-      //     auth: self.$session.get('token'),
-      //     csrftoken: self.$session.get('token'),
-      //     callback: function(data) {
-      //         // console.log(data);
-      //     },
-      // });
-      // console.log('checkin', guestData);
+      this.$store.dispatch("putReq", {
+          url: "appointment/",
+          params: {
+            appointment_id: guestData.appointment_id
+          },
+          auth: self.$session.get('token'),
+          csrftoken: self.$session.get('token'),
+          callback: function(data) {
+            console.log(data);
+          },
+      });
     },
 
     checkGuestOut(guestData){
@@ -158,19 +154,17 @@ export default {
       //   currentGuest.style.display = 'none'
       // }, 500)
       
-      
-      // this.$store.dispatch("deleteReq", {
-      //     url: "guests/checkout",
-      //     params: {
-      //       guest_id: guestId
-      //     },
-      //     auth: self.$session.get('token'),
-      //     csrftoken: self.$session.get('token'),
-      //     callback: function(data) {
-      //         console.log(data);
-      //     },
-      // });
-      // console.log('checkout', guestData);
+      this.$store.dispatch("putReq", {
+          url: "appointment/",
+          params: {
+            appointment_id: guestData.appointment_id
+          },
+          auth: self.$session.get('token'),
+          csrftoken: self.$session.get('token'),
+          callback: function(data) {
+              console.log(data);
+          },
+      });
     },
   }
 };

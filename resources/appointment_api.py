@@ -66,8 +66,8 @@ class AppointmentCollection(Resource):
 
 class AppointmentApi(Resource):
 
-    @staticmethod
-    @login_required
+    # @staticmethod
+    # @login_required
     def put(current_user, appoinment_id):
 
         json_data = request.get_json()
