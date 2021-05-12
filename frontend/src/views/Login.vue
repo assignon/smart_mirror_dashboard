@@ -5,15 +5,15 @@
       <!--      <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
       <!--      <input type="password" name="password" v-model="input.password" placeholder="Password">-->
       <v-text-field
-          name="email"
-          v-model="input.email"
-          label="Email"
+        name="email"
+        v-model="input.email"
+        label="Email"
       ></v-text-field>
       <v-text-field
-          name="password"
-          v-model="input.password"
-          label="Password"
-          type="password"
+        name="password"
+        v-model="input.password"
+        label="Password"
+        type="password"
       ></v-text-field>
       <v-btn elevation="6" v-on:click="submit" class="blue darken-1">
         Login
@@ -62,10 +62,10 @@ export default {
       // when users(receptionists) login add them to the socket
       let socket = this.$store.state.socket;
       // listen to connect event
-      socket.on("connect", function (msg) {
+      socket.on("connect", function(msg) {
         console.log("connected", msg);
         // send connected user id to flask backend
-        socket.emit("new_user", {user_id: 1});
+        socket.emit("new_user", { user_id: 1 });
       });
     },
 
@@ -73,10 +73,10 @@ export default {
       // when users(receptionists) logout remove them from the socket
       let socket = this.$store.state.socket;
       // listen to disconnect event
-      socket.on("disconnect", function (msg) {
+      socket.on("disconnect", function(msg) {
         console.log(msg);
         // send disconnected user id to flask backend
-        socket.emit("user_disconnected", {user_id: 1});
+        socket.emit("user_disconnected", { user_id: 1 });
       });
     },
 
@@ -98,7 +98,7 @@ export default {
       this.success = false;
       this.error = null;
 
-      if (this.input.email != null && this.input.password != null) {
+      if (this.input.email != "" && this.input.password != "") {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
@@ -121,9 +121,9 @@ export default {
       let formErrMsg = document.querySelector(".err-msg");
       // let validationErrMsg = document.querySelector(".v-messages__message");
       if (
-          // !document.body.contains(validationErrMsg) &&
-          this.input.email != null &&
-          this.input.password != null
+        // !document.body.contains(validationErrMsg) &&
+        this.input.email != null &&
+        this.input.password != null
       ) {
         this.$store.dispatch("getAxiosCall", {
           url: "http://127.0.0.1:5000/login",
@@ -133,11 +133,11 @@ export default {
           },
           auth: null,
           csrftoken: null,
-          callback: function (data) {
+          callback: function(data) {
             console.log(data);
             if (data["x-access-token"]) {
               self.startSession(data.token, data.is_superuser, data.id);
-              self.$router.push({name: "Checkin"});
+              self.$router.push({ name: "Checkin" });
             } else {
               // formErrMsg.innerHTML = data.msg;
             }
@@ -153,20 +153,20 @@ export default {
         }
       };
       axios
-          .get("http://127.0.0.1:5000/login", body, {
-            headers: {
-              "X-CSRFToken": null,
-              Authorization: null
-            }
-          })
-          .then(response => {
-            let res = response.data;
-            console.log(res);
-            // payload.callback(res);
-          })
-          .catch(error => {
-            console.log(error);
-          });
+        .get("http://127.0.0.1:5000/login", body, {
+          headers: {
+            "X-CSRFToken": null,
+            Authorization: null
+          }
+        })
+        .then(response => {
+          let res = response.data;
+          console.log(res);
+          // payload.callback(res);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };
