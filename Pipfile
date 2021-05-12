@@ -25,6 +25,7 @@ python-dotenv = "*"
 flask-restful = "*"
 websockets = "*"
 flask-io = "*"
+pyodbc = "*"
 
 [dev-packages]
 

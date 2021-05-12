@@ -1,6 +1,6 @@
 <template>
   <div class="login-core">
-    <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
+    <h1 class="display-3 mb-15 mt-16">Sogeti Mirror Login</h1>
     <form @submit.prevent="signIn" class="login-form">
       <!--      <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
       <!--      <input type="password" name="password" v-model="input.password" placeholder="Password">-->
@@ -15,11 +15,14 @@
         label="Password"
         type="password"
       ></v-text-field>
-      <v-btn elevation="6" v-on:click="submit" class="blue darken-1">
-        Login
-      </v-btn>
+      <div class='btn-container'>
+        <p style='color:#0070ad;cursor:pointer'>Wachtwoord vergeten?</p>
+        <v-btn elevation="6" color='#0070ad' rounded v-on:click="submit" class="pa-5">
+          <span style='color:white;text-transform: capitalize'>Login <v-icon small>fas fa-chevron-right</v-icon></span>
+        </v-btn>
+      </div>
     </form>
-    <p class="err-msg"></p>
+    <Notifications :content='notificationText' color='red'/>
   </div>
 </template>
 
@@ -29,12 +32,16 @@
 // import axios from "axios";
 // import { mapActions } from "vuex";
 import axios from "axios";
-
+import Notifications from "../components/modals/Notifications";
 export default {
   name: "Login",
-  components: {},
+  components: {
+    Notifications
+  },
+
   data() {
     return {
+      notificationText: '',
       input: {
         email: "",
         password: ""
@@ -89,7 +96,8 @@ export default {
     //   }
     // }
     async submit() {
-      let formErrMsg = document.querySelector(".err-msg");
+      // let formErrMsg = document.querySelector(".err-msg");
+      let self = this;
       const auth = {
         username: this.input.email,
         password: this.input.password
@@ -98,7 +106,7 @@ export default {
       this.success = false;
       this.error = null;
 
-      if (this.input.email != "" && this.input.password != "") {
+      if (this.input.email != '' && this.input.password != '') {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
@@ -106,14 +114,18 @@ export default {
             // self.startSession(res["x-access-token"], 1, 1);
             await this.$router.push("/ingecheckt");
           } else {
-            formErrMsg.innerHTML = res.msg;
+            self.notificationText = res.message
+            self.$store.state.notificationStatus = true
+            // formErrMsg.innerHTML = res.msg;
           }
           this.success = true;
         } catch (err) {
           this.error = err.message;
         }
       } else {
-        formErrMsg.innerHTML = "Email and password should not be empty";
+        self.notificationText = "Email and password should not be empty"
+        self.$store.state.notificationStatus = true
+        // formErrMsg.innerHTML = "Email and password should not be empty";
       }
     },
 
@@ -174,6 +186,12 @@ export default {
 
 <style scoped>
 .login-core {
+  width: 100%;
+  height: 95vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .login-form {
@@ -187,6 +205,14 @@ export default {
 }
 
 .login-form .v-text-field {
-  width: 10%;
+  width: 50%;
+}
+.btn-container{
+  width: 50%;
+  height: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex-direction: column;
 }
 </style>
