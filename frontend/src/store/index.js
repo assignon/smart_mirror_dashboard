@@ -8,6 +8,7 @@ import { auth } from "./modules/auth";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  namespaced: true,
   state: {
     HOST: window.location.port != "" ? "http://127.0.0.1:5000" : "live-server",
     //  "http://127.0.0.1:8000",
@@ -93,7 +94,7 @@ export default new Vuex.Store({
                           payload: [object]: [data sended with the request]
                   */
       axios
-        .get(`${payload.host}/api/${payload.url}/`, {
+        .get(`${payload.host}/${payload.url}`, {
           params: payload.params,
           headers: {
             "X-CSRFToken": payload.csrftoken,
@@ -141,7 +142,7 @@ export default new Vuex.Store({
                payload: [object]: [data sended with the request]
        */
       axios
-        .post(`${payload.host}/api/${payload.url}/`, {
+        .post(`${payload.host}/${payload.url}`, {
           body: payload.params,
           headers: {
             "X-CSRFToken": payload.csrftoken,
