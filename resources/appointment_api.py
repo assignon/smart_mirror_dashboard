@@ -18,7 +18,7 @@ edit_appointment_schema = EditAppointmentSchema()
 
 class AppointmentCollection(Resource):
 
-    @staticmethod
+    # @staticmethod
     # @login_required
     def get(current_user):
         """

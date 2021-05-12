@@ -95,7 +95,7 @@ export default {
       let self = this;
 
       this.$store.dispatch("getReq", {
-          url: "appointments",
+          url: "/appointments",
           params: {
           },
           auth: self.$session.get('token'),

@@ -10,7 +10,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   namespaced: true,
   state: {
-    HOST: window.location.port != "" ? "http://127.0.0.1:5000" : "live-server",
+    HOST: window.location.port != "" ? "https://35db6310a2ca.ngrok.io" : "live-server",
     //  "http://127.0.0.1:8000",
     AUTHENTICATED: undefined,
     usertoken: undefined,
@@ -28,7 +28,8 @@ export default new Vuex.Store({
       v => !!v || "Email is required",
       v => /.+@.+/.test(v) || "Email is not valid"
     ],
-    appointmentArr: [] // will contain all appointment in the DB
+    appointmentArr: [], // will contain all appointment in the DB
+    notificationStatus: false,
   },
 
   getters: {
