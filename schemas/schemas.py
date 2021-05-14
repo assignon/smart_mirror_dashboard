@@ -1,8 +1,9 @@
 from models.guest_model import Guest
 from models.appointment_model import Appointment
+from marshmallow_sqlalchemy.fields import Nested
+from models.user_model import User
 from settings import ma
 from marshmallow import validates, validate, ValidationError, fields
-from marshmallow_sqlalchemy.fields import Nested
 
 
 class GuestSchema(ma.SQLAlchemyAutoSchema):
@@ -55,10 +56,6 @@ class CreateAppointmentSchema(ma.SQLAlchemyAutoSchema):
     has_pass = fields.Boolean(required=False)
     employee_name = fields.Str(required=True)
     guest_id = fields.Int(required=True)
-
-from models.user_model import User
-from settings import ma
-from marshmallow import validates, validate, ValidationError, fields
 
 
 def password_check(password):
