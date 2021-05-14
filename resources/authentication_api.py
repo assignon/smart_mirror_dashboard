@@ -53,7 +53,7 @@ class Login(Resource):
                 token = jwt.encode(
                     {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
                     app.config['JWT_SECRET_KEY'])
-            return jsonify({'x-access-token': token})
+            return jsonify({'x-access-token': token, 'user_id': user.user_id, 'superuser': user.is_admin})
         return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
 
