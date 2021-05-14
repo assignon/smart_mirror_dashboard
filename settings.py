@@ -35,18 +35,26 @@ bcrypt = Bcrypt(app)
 
 ## Db configurations
 
+"""AZURE CONNECTIE"""
+#import urllib
 
-import urllib
+# server = 'sunny-side-up.database.windows.net'
+# database = 'smart-mirror'
+# username = 'tientjie'
+# password = 'sunny-side-UP'
+# driver = 'ODBC Driver 17 for SQL Server'
+#
+# params = urllib.parse.quote_plus('DRIVER={ODBC Driver 17 for SQL Server};SERVER=sunny-side-up.database.windows.net'
+#                                  ';DATABASE=smart-mirror;UID=tientjie;PWD=sunny-side-UP')
+# connection_url = "mssql+pyodbc:///?odbc_connect=%s" % params
 
-server = 'sunny-side-up.database.windows.net'
-database = 'smart-mirror'
-username = 'tientjie'
-password = 'sunny-side-UP'
-driver = 'ODBC Driver 17 for SQL Server'
+"""AWS CONNECTIE"""
+username = 'admin'
+password ='sunny-side-UP'
+host = 'sunny-side-up.cakehm4llypf.eu-west-3.rds.amazonaws.com'
+db_name = 'smart_mirror'
 
-params = urllib.parse.quote_plus('DRIVER={ODBC Driver 17 for SQL Server};SERVER=sunny-side-up.database.windows.net'
-                                 ';DATABASE=smart-mirror;UID=tientjie;PWD=sunny-side-UP')
-connection_url = "mssql+pyodbc:///?odbc_connect=%s" % params
+connection_url = f'mysql+mysqldb://{username}:{password}@{host}/{db_name}'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connection_url
 
