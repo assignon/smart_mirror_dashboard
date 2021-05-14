@@ -25,10 +25,10 @@
     },
     {
       "name": "GuestCollection",
-      "description": "Operations about the whole Guest table"
+      "description": "Operations about the whole Guest table, IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com"
     },
     {
-      "name": "Guest",
+      "name": "Guest IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com",
       "description": "Operations about specific Guest"
     },
     {
@@ -659,7 +659,7 @@
             "type": "string"
           },
           "consent_expire_date": {
-            "type": "int"
+            "type": "integer"
           }
         }
       },
@@ -765,7 +765,7 @@
                 "type": "string"
               },
               "consent_expire_date": {
-                "type": "int"
+                "type": "integer"
               }
           }
         }
