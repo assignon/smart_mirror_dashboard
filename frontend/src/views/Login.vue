@@ -110,8 +110,8 @@ export default {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
-            console.log(res["x-access-token"]);
-            // self.startSession(res["x-access-token"], 1, 1);
+            // console.log(res["x-access-token"]);
+            self.startSession(res["x-access-token"], true, 1);
             await this.$router.push("/ingecheckt");
           } else {
             self.notificationText = res.message

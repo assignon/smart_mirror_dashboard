@@ -26,6 +26,7 @@ flask-restful = "*"
 websockets = "*"
 flask-io = "*"
 pyodbc = "*"
+mysqlclient = "*"
 
 [dev-packages]
 

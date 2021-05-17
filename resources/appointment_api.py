@@ -18,14 +18,15 @@ edit_appointment_schema = EditAppointmentSchema()
 
 class AppointmentCollection(Resource):
 
-    # @staticmethod
-    # @login_required
+    @staticmethod
+    @login_required
     def get(current_user):
         """
         Haalt alle appointments op waarvan de checkout NULL is
         """
         appointments = Appointment.get_open_appointments()
         print(appointments[0].guest)
+        print('request headerrrr', request.header)
         return {"appointments": appointments_schema.dump(appointments)}
 
     @staticmethod
