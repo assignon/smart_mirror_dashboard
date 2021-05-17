@@ -5,20 +5,22 @@
       <div v-if='ingecheckt.length>0' class='data-table-container'>
         <v-data-table :headers="headers" :items="ingecheckt" hide-default-footer>
           <template v-slot:item="row">
-            <tr class='animated fadeInUp' :id='row.item.id'>
+            <tr class='animated fadeInUp' :id='row.item.appointment_id'>
               <td>{{ row.item.name }}</td>
               <td>{{ row.item.tel }}</td>
               <td>{{ row.item.email }}</td>
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
               <td>
-                <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'>
+                <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
+                <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
                   <strong style="color:white;text-transform:capitalize">Check-In</strong>
                 </v-btn>
                 <strong v-else>{{ row.item.checkin }}</strong>
               </td>
               <td>
-                <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'>
+                <!-- <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'> -->
+                <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="confirmationDialog('checkout',row.item)" :disabled='row.item.checkin==null'>
                   <strong style='color:white;text-transform:capitalize'>Check-Uit</strong>
                 </v-btn>
               </td>
@@ -31,17 +33,44 @@
         <p>Geen nieuwe gemelde gasten</p>
       </div>
     </div>
+    <Notifications :content='notificationText' color='red'/>
+    <v-dialog
+      v-model="confirmDialog"
+      persistent
+      max-width="500"
+      style='background-color: white;'
+    >
+      <div class='dialog-content'>
+        <p class='mt-5 confirm-dialog-text'>
+         {{confirmDialogText}}
+        </p>
+        <div class='btn-container'>
+          <strong style='cursor:pointer;color:#ff304c;' class='pa-3' @click='confirmDialog=false'>NEE</strong>
+          <strong style='cursor:pointer;color:#0f78b2;' class='pa-3' @click="checkGuest(), confirmDialog=false">JA</strong>
+        </div>
+      </div>
+    </v-dialog>
   </section>
 </template>
 
 <script>
+import Notifications from "../components/modals/Notifications";
 export default {
   name: "Gastenlijst",
+
+  components: {
+    Notifications
+  },
 
   data() {
     //Return: Dummy Data, vervangen door JSON in formaat als hieronder.
     return {
       currentDate: new Date().toLocaleDateString(),
+      notificationText: '',
+      confirmDialog: false,
+      check: null, // determine of guest is checked in or out
+      currentGuestData: null,
+      confirmDialogText: null,
       headers: [
         {
           text: 'Naam',
@@ -77,8 +106,10 @@ export default {
           },
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
-          callback: function(data) {  
-              data.appointments[0].forEach(data => {
+          xaccesstoken: self.$session.get('token'),
+          callback: function(res) {  
+            if(res.status == 200){
+               res.data.appointments.forEach(data => {
                 let guestData = {
                   id: data.guest.guest_id,
                   appointment_id: data.appointment_id,
@@ -92,6 +123,11 @@ export default {
                 }
                 self.ingecheckt.push(guestData)
               })
+            }
+            else{
+              self.notificationText = 'Gasten worden opgehaald...'
+              self.$store.state.notificationStatus = true
+            }
           },
       });
     },
@@ -109,6 +145,7 @@ export default {
             email: data.email,
             company: data.company,
             plate: data.license_plate,
+            appointment_id: data.appointment_id,
             checkin: null,
             checkout: null,
             // time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
@@ -118,32 +155,58 @@ export default {
       });
     },
 
+    confirmationDialog(checkName, guestData){
+      let self = this
+      // display dialog
+      this.confirmDialog = true;
+      // get current guest data
+      this.currentGuestData = guestData
+      this.check = checkName
+      if(checkName == 'checkin'){
+        self.confirmDialogText = 'Weet u zeker dat u deze gast wilt inchecken?'
+      }else{
+         self.confirmDialogText = 'Weet u zeker dat u deze gast wilt uitchecken?'
+      }
+    },
+
+    checkGuest(){
+      let self = this
+      if (self.check == 'checkin'){
+        self.checkGuestIn(self.currentGuestData)
+      }else{
+        self.checkGuestOut(self.currentGuestData)
+      }
+    },
+
     checkGuestIn(guestData){
-      // let self = this;
+      let self = this;
       console.log(guestData);
-      guestData.checkin = true
       this.$store.dispatch("putReq", {
-          url: "appointment/",
+          url: `appointment/${guestData.appointment_id}`,
           params: {
-            appointment_id: guestData.appointment_id
+            // appoinment_id: guestData.appointment_id,
+            checked_in: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(),
           },
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
+          xaccesstoken: self.$session.get('token'),
           callback: function(data) {
-            console.log(data);
+            data
+            guestData.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+            self.getScannedGuestData()
           },
       });
     },
 
     checkGuestOut(guestData){
       let self = this;
-      // let currentGuest  = document.getElementById(guestData.id)
+      let currentGuest  = document.getElementById(guestData.id)
       console.log(guestData);
-      // // remove current guest data from array
-      // let currentGuestId = guestData.id
-      // // self.ingecheckt.filter((item) => item.id !== currentGuestId);
-      // let guestCheckedOut = self.ingecheckt.findIndex(item => item.id === currentGuestId);
-      // self.ingecheckt.splice(guestCheckedOut, 1)
+      // remove current guest data from array
+      let currentGuestId = guestData.appointment_id
+      // self.ingecheckt.filter((item) => item.id !== currentGuestId);
+      let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
+      self.ingecheckt.splice(guestCheckedOut, 1)
 
       // currentGuest.classList.remove('zoomIn')
       // setTimeout(() => {
@@ -151,18 +214,19 @@ export default {
       // }, 100)
       // remove defenitely from the DOM
       // setTimeout(() => {
-      //   currentGuest.style.display = 'none'
+        currentGuest.style.display = 'none'
       // }, 500)
       
       this.$store.dispatch("putReq", {
-          url: "appointment/",
+          url: `appointment/${guestData.appointment_id}`,
           params: {
-            appointment_id: guestData.appointment_id
+            checked_out: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(),
           },
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
           callback: function(data) {
-              console.log(data);
+            data
+            self.getScannedGuestData()
           },
       });
     },
@@ -207,5 +271,22 @@ tr td{
   font-size: 20px;
   font-weight: bold;
   color: white;
+}
+.dialog-content{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+.btn-container{
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
 }
 </style>

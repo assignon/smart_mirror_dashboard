@@ -24,13 +24,13 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <router-link
-              v-if="authenticated"
-              to="/login"
-              v-on:click.native="logout()"
-              replace
-              >Logout</router-link
-            >
+            <p
+              v-if="$session.get('authenticated')"
+              @click="logout()"
+              
+              >
+              Logout
+            </p>
           </div>
         </div>
       </div>
@@ -53,7 +53,20 @@ export default {
     },
 
     logout() {
-      this.authenticated = false;
+      let self = this;
+      this.$store.dispatch("getReq", {
+        url: "logout",
+        params: {
+        },
+        auth: self.$session.get('token'),
+        csrftoken: self.$session.get('token'),
+        callback: function(res) {
+            if(res.data.logout){
+                self.$session.destroy();
+                self.$router.push({name: 'Login'})
+            }
+        },
+      });
     }
   }
 };

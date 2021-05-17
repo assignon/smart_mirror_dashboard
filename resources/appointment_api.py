@@ -8,6 +8,7 @@ from .authentication_api import login_required
 from schemas.schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
 from .helper import remove_whitespace
+import datetime
 
 appointment_schema = AppointmentSchema()
 appointments_schema = AppointmentSchema(many=True)
@@ -24,8 +25,6 @@ class AppointmentCollection(Resource):
         Haalt alle appointments op waarvan de checkout NULL is
         """
         appointments = Appointment.get_open_appointments()
-        print(appointments[0].guest)
-        print('request headerrrr', request.header)
         return {"appointments": appointments_schema.dump(appointments)}
 
     @staticmethod
@@ -66,11 +65,13 @@ class AppointmentCollection(Resource):
 
 class AppointmentApi(Resource):
 
-    # @staticmethod
-    # @login_required
-    def put(current_user, appoinment_id):
+    @staticmethod
+    @login_required
+    def put(current_user, appointment_id):
 
         json_data = request.get_json()
+        now = datetime.datetime.now()
+        print('json_dataaaaaaaa', json_data['body'])
 
         if not json_data:
             return {"message": "No input data provided"}, 400
@@ -78,16 +79,28 @@ class AppointmentApi(Resource):
         # remove whitespaces from input
 
         remove_whitespace(json_data)
-
+        try:
+            if json_data['body']['checked_in']:
+                json_data['body']['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
+            elif json_data['body']['checked_out']:
+                json_data['body']['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
+        except KeyError as e:
+            try:
+                json_data['body']['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
+            except KeyError as e:
+                print('errorrr',e)
+                pass
+ 
         # Validate and deserialize input
 
         try:
-            data = edit_appointment_schema.load(json_data)
+            data = edit_appointment_schema.load(json_data['body'])
+            print('daatttaaa', data)
         except ValidationError as err:
             return err.messages, 422
 
         try:
-            edited_appointment = Appointment.update_appointment(appoinment_id, **data)
+            edited_appointment = Appointment.update_appointment(appointment_id, **data)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}

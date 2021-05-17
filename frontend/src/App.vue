@@ -25,10 +25,10 @@ export default {
   }),
   created() {
     // connect socket io
-    this.$store.state.socket = io.connect('https://c383e20eb537.ngrok.io/')
-    // if (!this.$session.get("authenticated")) {
-    //   this.$router.push({name: "Login"})
-    // }
+    this.$store.state.socket = io.connect(`${this.$store.state.HOST}/`)
+    if (!this.$session.get("authenticated")) {
+      this.$router.push({name: "Login"})
+    }
   },
   methods: {
     // createSession() {

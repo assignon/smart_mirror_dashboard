@@ -12,6 +12,7 @@ def api_routes(rest_api):
         {'name': UserCollection, 'path': ('/users', '/users/<int:user_id>')},
         {'name': UserApi, 'path': '/user/<int:user_id>'},
         {'name': Login, 'path': '/login'},
+        {'name': Logout, 'path': '/logout'},
         {'name': GuestScanned, 'path': '/guests/scanned'},
         {'name': GuestCollection, 'path': ('/guests', '/guests/<int:guest_id>')},
         {'name': GuestApi, 'path': '/guest/<int:guest_id>'},
