@@ -67,10 +67,10 @@ class AppointmentApi(Resource):
 
     @staticmethod
     @login_required
-    def put(current_user, appoinment_id):
+    def put(current_user, appointment_id):
 
         json_data = request.get_json()
-
+        print(json_data)
         if not json_data:
             return {"message": "No input data provided"}, 400
 
@@ -84,9 +84,10 @@ class AppointmentApi(Resource):
             data = edit_appointment_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
+        print(data)
 
         try:
-            edited_appointment = Appointment.update_appointment(appoinment_id, **data)
+            edited_appointment = Appointment.update_appointment(appointment_id, **data)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
