@@ -1,8 +1,9 @@
 from models.guest_model import Guest
 from models.appointment_model import Appointment
+from marshmallow_sqlalchemy.fields import Nested
+from models.user_model import User
 from settings import ma
 from marshmallow import validates, validate, ValidationError, fields
-from marshmallow_sqlalchemy.fields import Nested
 
 
 class GuestSchema(ma.SQLAlchemyAutoSchema):
@@ -14,7 +15,6 @@ class GuestSchema(ma.SQLAlchemyAutoSchema):
     # appointments = ma.Nested(lambda: AppointmentSchema, many=True, exclude=('guest',))
         
 
-
 # deze schema wordt gebruikt wanneer gegevens van een gast aangepast moeten worden
 class EditGuestSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -25,7 +25,7 @@ class EditGuestSchema(ma.SQLAlchemyAutoSchema):
     company = fields.Str(required=False, validate=validate.Length(min=3, max=30))
     phone_number = fields.Str(required=False, validate=validate.Length(min=8, max=15))
     license_plate = fields.Str(required=False, validate=validate.Length(min=3, max=30))
-    consent_duration = fields.Int(required=False, validate=validate.Range(min=0))
+    consent_expire_date = fields.Int(required=False, validate=validate.Range(min=0))
 
 
 class AppointmentSchema(ma.SQLAlchemyAutoSchema):
@@ -56,10 +56,6 @@ class CreateAppointmentSchema(ma.SQLAlchemyAutoSchema):
     has_pass = fields.Boolean(required=False)
     employee_name = fields.Str(required=True)
     guest_id = fields.Int(required=True)
-
-from models.user_model import User
-from settings import ma
-from marshmallow import validates, validate, ValidationError, fields
 
 
 def password_check(password):
