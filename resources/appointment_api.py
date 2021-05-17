@@ -5,7 +5,6 @@ from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
-# from schemas.appointment_schema import AppointmentSchema, EditAppointmentSchema
 from schemas.schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
 from .helper import remove_whitespace
