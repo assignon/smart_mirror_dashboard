@@ -43,7 +43,6 @@ class Appointment(BaseMixin, db.Model):
         appointment = Appointment.query.filter_by(appointment_id=appointment_id).first()
 
         if appointment:
-
             for column, value in kwargs.items():
                 setattr(appointment, column, value)
 

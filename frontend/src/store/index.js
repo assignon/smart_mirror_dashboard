@@ -1,19 +1,23 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
 import dashboard from "./modules/dashboard"; // store file from modules map import example
-
 import axios from "axios";
+
+import { auth } from "./modules/auth";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  namespaced: true,
   state: {
-    HOST: window.location.port != "" ? "http://127.0.0.1:5000" : "live-server",
+    HOST: window.location.port != "" ? "https://38ee41076a9e.ngrok.io" : "live-server",
     //  "http://127.0.0.1:8000",
     AUTHENTICATED: undefined,
     usertoken: undefined,
-    // vuetify form validator
+    // socket io host name and initialization
+    IOHOST: "http://192.168.178.52:5000",
+    socket: null,
+    // vuetify form validators
     rules: {
       required: value => !!value || "This field is required",
       min: v => v.length >= 8 || "8 characters minimal",
@@ -23,7 +27,9 @@ export default new Vuex.Store({
     emailRules: [
       v => !!v || "Email is required",
       v => /.+@.+/.test(v) || "Email is not valid"
-    ]
+    ],
+    appointmentArr: [], // will contain all appointment in the DB
+    notificationStatus: false,
   },
 
   getters: {
@@ -89,19 +95,19 @@ export default new Vuex.Store({
                           payload: [object]: [data sended with the request]
                   */
       axios
-        .get(`${payload.host}/api/${payload.url}/`, {
+        .get(`${payload.host}/${payload.url}`, {
           params: payload.params,
           headers: {
             "X-CSRFToken": payload.csrftoken,
-            Authorization: `token ${payload.auth}`
+            "x-access-token":payload.auth,
+            Authorization: `Bearer ${payload.auth}`
           }
         })
         .then(response => {
-          let res = response.data;
-          payload.callback(res);
+          payload.callback(response);
         })
         .catch(error => {
-          console.log(error);
+          console.log(error.response.status);
         });
     },
 
@@ -115,10 +121,11 @@ export default new Vuex.Store({
         body: payload.params
       };
       axios
-        .post(`${payload.host}/api/${payload.url}/`, body, {
+        .post(`${payload.host}/${payload.url}`, body, {
           headers: {
             "X-CSRFToken": payload.csrftoken,
-            Authorization: `token ${payload.auth}`
+            "x-access-token": payload.csrftoken,
+            Authorization: `Bearer ${payload.auth}`
           }
         })
         .then(response => {
@@ -137,11 +144,12 @@ export default new Vuex.Store({
                payload: [object]: [data sended with the request]
        */
       axios
-        .post(`${payload.host}/api/${payload.url}/`, {
+        .post(`${payload.host}/${payload.url}`, {
           body: payload.params,
           headers: {
             "X-CSRFToken": payload.csrftoken,
-            Authorization: `token ${payload.auth}`
+            "x-access-token": payload.csrftoken,
+            Authorization: `Bearer ${payload.auth}`
           }
         })
         .then(response => {
@@ -163,10 +171,11 @@ export default new Vuex.Store({
         body: payload.params
       };
       axios
-        .put(`${payload.host}/api/${payload.url}/`, body, {
+        .put(`${payload.host}/${payload.url}`, body, {
           headers: {
             "X-CSRFToken": payload.csrftoken,
-            Authorization: `token ${payload.auth}`
+            "x-access-token": payload.csrftoken,
+            Authorization: `Bearer ${payload.auth}`
           }
         })
         .then(response => {
@@ -185,11 +194,12 @@ export default new Vuex.Store({
                payload: [object]: [data sended with the request]
        */
       axios
-        .delete(`${payload.host}/api/${payload.url}/`, {
+        .delete(`${payload.host}/${payload.url}`, {
           params: payload.params,
           headers: {
             "X-CSRFToken": payload.csrftoken,
-            Authorization: `token ${payload.auth}`
+            "x-access-token": payload.csrftoken,
+            Authorization: `Bearer ${payload.auth}`
           }
         })
         .then(response => {
@@ -209,6 +219,7 @@ export default new Vuex.Store({
         params: payload.params,
         auth: payload.auth,
         csrftoken: payload.csrftoken,
+        xaccesstoken: payload.auth,
         callback: payload.callback,
         host: rootState.HOST
       });
@@ -220,6 +231,7 @@ export default new Vuex.Store({
         params: payload.params,
         auth: payload.auth,
         csrftoken: payload.csrftoken,
+        xaccesstoken: payload.auth,
         callback: payload.callback,
         host: rootState.HOST
       });
@@ -231,6 +243,7 @@ export default new Vuex.Store({
         params: payload.params,
         auth: payload.auth,
         csrftoken: payload.csrftoken,
+        xaccesstoken: payload.auth,
         callback: payload.callback,
         host: rootState.HOST
       });
@@ -242,6 +255,7 @@ export default new Vuex.Store({
         params: payload.params,
         auth: payload.auth,
         csrftoken: payload.csrftoken,
+        xaccesstoken: payload.auth,
         callback: payload.callback,
         host: rootState.HOST
       });
@@ -253,6 +267,7 @@ export default new Vuex.Store({
         params: payload.params,
         auth: payload.auth,
         csrftoken: payload.csrftoken,
+        xaccesstoken: payload.auth,
         callback: payload.callback,
         host: rootState.HOST
       });
@@ -260,6 +275,7 @@ export default new Vuex.Store({
   },
 
   modules: {
-    dashboard: dashboard
+    dashboard: dashboard,
+    auth: auth
   }
 });

@@ -1,31 +1,37 @@
 <template>
-  <div v-if="!$route.name.startsWith('Login')" class="hidden-sm-and-down mt-9 mb-9" role="navigation"
-       aria-label="main navigation">
+  <!-- Hide Nav if route is Login -->
+  <div
+    v-if="!$route.name.startsWith('Login')"
+    class="hidden-sm-and-down mt-9"
+    role="navigation"
+    aria-label="main navigation"
+  >
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <v-img src="@/assets/logo.svg"></v-img>
+        <v-img src="@/assets/SogetiLabs_Logo_Primary_3COL_RGB (002).png" max-height="88" max-width="248"></v-img>
       </a>
-      <strong class="is-size-4">Smart Mirror</strong>
     </div>
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
-        <router-link to="/checkin" class="navbar-item">Checkin</router-link>
         <router-link to="/ingecheckt" class="navbar-item"
-          >Ingecheckt</router-link
+          >In/Uit-checken</router-link
         >
-        <router-link to="/clients" class="navbar-item">Zoeken</router-link>
-        <router-link to="/instellingen" class="navbar-item">Instellingen</router-link>
+        <router-link to="/clients" class="navbar-item">Gasten</router-link>
+        <router-link to="/instellingen" class="navbar-item">
+          Instellingen</router-link
+        >
       </div>
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <router-link
-              v-if="authenticated"
-              to="/login"
-              v-on:click.native="logout()"
-              replace
-              >Logout</router-link
-            >
+            <p
+              style='color: #0070ad;cursor:pointer;font-weight:bold; position: relative;bottom:2px;'
+              v-if="$session.get('authenticated')"
+              @click="logout()"
+              
+              >
+              Logout
+            </p>
           </div>
         </div>
       </div>
@@ -35,12 +41,33 @@
 <script>
 export default {
   name: "Navbar",
+
+  data() {
+    return {
+      authenticated: true
+    };
+  },
+
   methods: {
     setAuthenticated(status) {
       this.authenticated = status;
     },
+
     logout() {
-      this.authenticated = false;
+      let self = this;
+      this.$store.dispatch("getReq", {
+        url: "logout",
+        params: {
+        },
+        auth: self.$session.get('token'),
+        csrftoken: self.$session.get('token'),
+        callback: function(res) {
+            if(res.data.logout){
+                self.$session.destroy();
+                self.$router.push({name: 'Login'})
+            }
+        },
+      });
     }
   }
 };
@@ -56,7 +83,11 @@ div {
 div a {
   text-decoration: none;
   font-weight: bold;
-  color: #2c3e50;
-  width: 100%;
+  color: #0070AD;
+  padding-bottom: 22px;
+}
+.router-link-exact-active{
+  border-bottom: 2px solid #FF304C;
+  color: #FF304C;
 }
 </style>

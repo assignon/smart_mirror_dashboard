@@ -2,7 +2,7 @@ from settings import rest_api
 # models imports
 from resources.user_api import UserCollection, UserApi
 from resources.authentication_api import Login, Logout, PasswordManager
-from resources.guest_api import GuestCollection, GuestApi
+from resources.guest_api import GuestCollection, GuestApi, GuestScanned
 from resources.appointment_api import AppointmentCollection, AppointmentApi
 
 
@@ -12,6 +12,8 @@ def api_routes(rest_api):
         {'name': UserCollection, 'path': ('/users', '/users/<int:user_id>')},
         {'name': UserApi, 'path': '/user/<int:user_id>'},
         {'name': Login, 'path': '/login'},
+        {'name': Logout, 'path': '/logout'},
+        {'name': GuestScanned, 'path': '/guests/scanned'},
         {'name': GuestCollection, 'path': ('/guests', '/guests/<int:guest_id>')},
         {'name': GuestApi, 'path': '/guest/<int:guest_id>'},
         {'name': AppointmentCollection, 'path': ('/appointments', '/appointments/<int:appointment_id>')},

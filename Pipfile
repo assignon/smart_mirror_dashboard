@@ -25,6 +25,10 @@ python-dotenv = "*"
 flask-restful = "*"
 websockets = "*"
 flask-io = "*"
+pyodbc = "*"
+mysqlclient = "*"
+marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 
