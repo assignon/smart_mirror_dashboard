@@ -1,4 +1,4 @@
-import os, smtplib, ssl
+import os, smtplib, ssl, uuid
 from dotenv import load_dotenv
 from flask import request, jsonify, make_response, session
 from flask_restful import Resource, abort
@@ -81,19 +81,20 @@ class PasswordManager(Resource):
         if 'email' not in json_data.keys():
             return {"message": "Email not provided in the data"}
 
-        user = db.session.query(User).filter_by(email=json_data['email']).first()
+        user: User = db.session.query(User).filter_by(email=json_data['email']).first()
         if user:
 
             # email versturen met random token
-            token = jwt.encode(
-                    {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
-                    app.config['JWT_SECRET_KEY']).decode('utf-8')
-            send_email(user, token)
-
+            # token = jwt.encode(
+            #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
+            #         app.config['JWT_SECRET_KEY']).decode('utf-8')
+            # send_email(user, token)
             # sla de token op in redis voor 24 uur.
-            redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
-
-            return {'message': 'Token has been sent to your email, use this token to change your password.'}
+            # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
+            new_password = str(uuid.uuid4())
+            User.update_user(user.user_id, password=new_password)
+            send_email(user, new_password)
+            return {'message': 'New password has been sent to your email.'}
         else:
             return {'message': 'This email is not recognized.'}
 
@@ -153,7 +154,7 @@ class PasswordManager(Resource):
 
 load_dotenv('../.env')
 
-def send_email(user, token):
+def send_email(user, new_password):
     port = 465  # For SSL
 
     # Create a secure SSL context
@@ -166,10 +167,13 @@ def send_email(user, token):
         Subject: Change Password\n
         
         Hi {user.name}, You forgot your password :(\n 
-        No worries! use this token to change your password: {token}\n
-        Be aware: This token expires in 24 hours
+        No worries! I made a new password just for you! :)\n
+        You can change this password in your settings.\n
+        \n
+        New Password: {new_password}
         
         This message is sent from Python."""
 
         server.login(sender, password)
         server.sendmail(sender, user.email, message)
+        
