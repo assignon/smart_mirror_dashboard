@@ -1,53 +1,52 @@
 <template>
   <div class="login-core">
-    <!--    <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
-    <!--    <input type="password" name="password" v-model="input.password" placeholder="Password">-->
-    <v-form class="login-form">
-      <h1 class="display-3 mb-15 mt-16">Soggeti Mirror Login</h1>
-      <v-text-field v-model="input.email" label="Email"></v-text-field>
-      <v-text-field v-model="input.password" label="Password" type="password"></v-text-field>
-      <v-btn elevation="6" v-on:click="signIn()" class="blue darken-1"
-        >Login
-      </v-btn>
-    </v-form>
-    <!-- snack bar -->
-    <v-snackbar
-      v-model="snackbar"
-      timeout="5000"
-      :top='true'
-      :right='true'
-    >
-      {{snackbarText}}
-
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          color="#1f88e5"
-          text
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
-          Close
+    <h1 class="display-3 mb-15 mt-16">Sogeti Mirror Login</h1>
+    <form @submit.prevent="signIn" class="login-form">
+      <!--      <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
+      <!--      <input type="password" name="password" v-model="input.password" placeholder="Password">-->
+      <v-text-field
+          name="email"
+          v-model="input.email"
+          label="Email"
+      ></v-text-field>
+      <v-text-field
+          name="password"
+          v-model="input.password"
+          label="Password"
+          type="password"
+      ></v-text-field>
+      <div class='btn-container'>
+        <p style='color:#0070ad;cursor:pointer'>Wachtwoord vergeten?</p>
+        <v-btn elevation="6" color='#0070ad' rounded v-on:click="submit" class="pa-5">
+          <span style='color:white;text-transform: capitalize'>Login <v-icon small>fas fa-chevron-right</v-icon></span>
         </v-btn>
-      </template>
-    </v-snackbar>
+      </div>
+    </form>
+    <Notifications :content='notificationText' color='red'/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 
+// import axios from "axios";
+// import { mapActions } from "vuex";
+import axios from "axios";
+import Notifications from "../components/modals/Notifications";
 export default {
   name: "Login",
-  components: {},
+  components: {
+    Notifications
+  },
+
   data() {
     return {
-      snackbar: false,
-      snackbarText: '',
-      n: 0,
+      notificationText: '',
       input: {
         email: "",
         password: ""
-      }
+      },
+      showError: false
     };
   },
   created() {
@@ -72,7 +71,7 @@ export default {
       // when users(receptionists) login add them to the socket
       let socket = this.$store.state.socket;
       // listen to connect event
-      socket.on("connect", function(msg) {
+      socket.on("connect", function (msg) {
         console.log("connected", msg);
         // send connected user id to flask backend
         socket.emit("new_user", { username: username });
@@ -95,10 +94,10 @@ export default {
       // when users(receptionists) logout remove them from the socket
       let socket = this.$store.state.socket;
       // listen to disconnect event
-      socket.on("disconnect", function(msg) {
+      socket.on("disconnect", function (msg) {
         console.log(msg);
         // send disconnected user id to flask backend
-        socket.emit("user_disconnected", { user_id: 1 });
+        socket.emit("user_disconnected", {user_id: 1});
       });
     },
 
@@ -110,42 +109,91 @@ export default {
     //     console.log("Vul een gebruikersnaam en wachtwoord in");
     //   }
     // }
+    async submit() {
+      // let formErrMsg = document.querySelector(".err-msg");
+      let self = this;
+      const auth = {
+        username: this.input.email,
+        password: this.input.password
+      };
+      const url = "login";
+      this.success = false;
+      this.error = null;
+
+      if (this.input.email != '' && this.input.password != '') {
+        try {
+          const res = await axios.get(url, { auth }).then(res => res.data);
+          if (res["x-access-token"]) {
+            // console.log(res["x-access-token"]);
+            self.startSession(res["x-access-token"], res['superuser'], res['user_id']);
+            await this.$router.push("/ingecheckt");
+          } else {
+            self.notificationText = res.message
+            self.$store.state.notificationStatus = true
+            // formErrMsg.innerHTML = res.msg;
+          }
+          this.success = true;
+        } catch (err) {
+          this.error = err.message;
+        }
+      } else {
+        self.notificationText = "Email and password should not be empty"
+        self.$store.state.notificationStatus = true
+        // formErrMsg.innerHTML = "Email and password should not be empty";
+      }
+    },
 
     signIn() {
-      let self = this;
-      // let formErrMsg = document.querySelector(".err-msg");
-      let validationErrMsg = document.querySelector(".v-messages__message");
+      let formErrMsg = document.querySelector(".err-msg");
+      // let validationErrMsg = document.querySelector(".v-messages__message");
       if (
-        !document.body.contains(validationErrMsg) &&
-        self.input.email != null &&
-        self.input.password != null
+          // !document.body.contains(validationErrMsg) &&
+          this.input.email != null &&
+          this.input.password != null
       ) {
-        // self.startSession(Math.random().toString(36).substr(2), true, 1, self.input.email)
-        let socket = this.$store.state.socket;
-        socket.emit("new_user", { username: self.input.email });
-        // self.userConnected(self.input.email)
-        // this.$store.dispatch("publicPostReq", {
-        //   url: "Login",
-        //   params: {
-        //     email: self.email,
-        //     password: self.password
-        //   },
-        //   auth: null,
-        //   csrftoken: null,
-        //   callback: function(data) {
-        //     console.log(data);
-        //     if (data.authenticate) {
-        //       self.startSession(data.token, data.is_superuser, data.id);
-        //       self.$router.push({ name: "Dashboard" });
-        //     } else {
-        //       formErrMsg.innerHTML = data.msg;
-        //     }
-        //   }
-        // });
+        this.$store.dispatch("getAxiosCall", {
+          url: "http://127.0.0.1:5000/login",
+          params: {
+            email: this.input.email,
+            password: this.input.password
+          },
+          auth: null,
+          csrftoken: null,
+          callback: function (data) {
+            console.log(data);
+            if (data["x-access-token"]) {
+              self.startSession(data.token, data.is_superuser, data.id);
+              self.$router.push({name: "Checkin"});
+            } else {
+              // formErrMsg.innerHTML = data.msg;
+            }
+          }
+        });
       } else {
         // formErrMsg.innerHTML = "Email and password should not be empty";
         alert('Email and password should not be empty')
       }
+      let body = {
+        body: {
+          email: this.email,
+          password: this.password
+        }
+      };
+      axios
+          .get("http://127.0.0.1:5000/login", body, {
+            headers: {
+              "X-CSRFToken": null,
+              Authorization: null
+            }
+          })
+          .then(response => {
+            let res = response.data;
+            console.log(res);
+            // payload.callback(res);
+          })
+          .catch(error => {
+            console.log(error);
+          });
     }
   }
 };
@@ -153,6 +201,12 @@ export default {
 
 <style scoped>
 .login-core {
+  width: 100%;
+  height: 95vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .login-form {
@@ -166,6 +220,14 @@ export default {
 }
 
 .login-form .v-text-field {
-  width: 10%;
+  width: 50%;
+}
+.btn-container{
+  width: 50%;
+  height: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex-direction: column;
 }
 </style>

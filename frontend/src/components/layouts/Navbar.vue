@@ -24,13 +24,14 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <router-link
-              v-if="authenticated"
-              to="/login"
-              v-on:click.native="logout()"
-              replace
-              >Logout</router-link
-            >
+            <p
+              style='color: #0070ad;cursor:pointer;font-weight:bold; position: relative;bottom:2px;'
+              v-if="$session.get('authenticated')"
+              @click="logout()"
+              
+              >
+              Logout
+            </p>
           </div>
         </div>
       </div>
@@ -53,7 +54,20 @@ export default {
     },
 
     logout() {
-      this.authenticated = false;
+      let self = this;
+      this.$store.dispatch("getReq", {
+        url: "logout",
+        params: {
+        },
+        auth: self.$session.get('token'),
+        csrftoken: self.$session.get('token'),
+        callback: function(res) {
+            if(res.data.logout){
+                self.$session.destroy();
+                self.$router.push({name: 'Login'})
+            }
+        },
+      });
     }
   }
 };
@@ -70,7 +84,7 @@ div a {
   text-decoration: none;
   font-weight: bold;
   color: #0070AD;
-  padding-bottom: 22px  ;
+  padding-bottom: 22px;
 }
 .router-link-exact-active{
   border-bottom: 2px solid #FF304C;

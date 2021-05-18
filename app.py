@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_socketio import SocketIO, emit, send, ConnectionRefusedError, disconnect
+from flask_cors import CORS
 # from flask_bcrypt import Bcrypt
 from flask_restful import Api
 from settings import app, rest_api
@@ -10,6 +11,13 @@ app.secret_key = "sunnySideUp-smartMirror"
 # bcrypt = Bcrypt(app)
 rest_api = Api(app)
 socketio = SocketIO(app, cors_allowed_origins='http://192.168.178.52:8080')
+
+CORS(app)
+cors = CORS(app, resources={
+    r"/*": {
+        "origins": "*"
+    }
+})
 
 
 @app.route('/')
