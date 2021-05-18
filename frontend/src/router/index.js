@@ -5,6 +5,8 @@ import Checkin from "../views/checkin";
 import Gastenlijst from "@/views/Ingecheckt";
 import Clients from "@/views/Clients";
 import Instellingen from "@/views/Instellingen";
+import WachtwoordVergeten from "@/views/WachtwoordVergeten"
+import WachtwoordOpvragen from "@/views/WachtwoordOpvragen"
 
 Vue.use(VueRouter);
 
@@ -37,6 +39,16 @@ const routes = [
     path: "/instellingen",
     name: "Instellingen",
     component: Instellingen
+  },
+  {
+    path: "/new_password",
+    name: "WachtwoordVergeten",
+    component: WachtwoordVergeten
+  },
+  {
+    path: "/forgot_password",
+    name: "WachtwoordOpvragen",
+    component: WachtwoordOpvragen
   }
   // {
   //   path: "/about",
