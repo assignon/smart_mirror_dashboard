@@ -79,7 +79,7 @@ class GuestScanned(Resource):
         data = request.args
         print('daattttaaaa', data)
         # send scan data to frontend
-        socketio.emit('face_scanned',  data)
+        socketio.emit('face_scanned',  data, broadcast=True, include_self=False)
         
         return 'Data received'
     

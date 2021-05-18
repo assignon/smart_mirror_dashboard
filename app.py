@@ -10,7 +10,8 @@ import time
 app.secret_key = "sunnySideUp-smartMirror"
 # bcrypt = Bcrypt(app)
 rest_api = Api(app)
-socketio = SocketIO(app, cors_allowed_origins='http://192.168.178.52:8080')
+socketio = SocketIO(app, cors_allowed_origins='*')
+# socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080') // use this live with the live url
 
 CORS(app)
 cors = CORS(app, resources={

@@ -46,7 +46,7 @@
         </p>
         <div class='btn-container'>
           <strong style='cursor:pointer;color:#ff304c;' class='pa-3' @click='confirmDialog=false'>NEE</strong>
-          <strong style='cursor:pointer;color:#0f78b2;' class='pa-3' @click="checkGuest(), confirmDialog=false">JA</strong>
+          <strong style='cursor:pointer;color:#0f78b2;' class='pa-3' @click="checkGuest()">JA</strong>
         </div>
       </div>
     </v-dialog>
@@ -181,6 +181,7 @@ export default {
     checkGuestIn(guestData){
       let self = this;
       console.log(guestData);
+      this.confirmDialog=false
       this.$store.dispatch("putReq", {
           url: `appointment/${guestData.appointment_id}`,
           params: {
@@ -193,15 +194,16 @@ export default {
           callback: function(data) {
             data
             guestData.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
-            self.getScannedGuestData()
+            // self.getScannedGuestData()
           },
       });
     },
 
     checkGuestOut(guestData){
       let self = this;
-      let currentGuest  = document.getElementById(guestData.id)
+      let currentGuest  = document.getElementById(guestData.appointment_id)
       console.log(guestData);
+      this.confirmDialog=false
       // remove current guest data from array
       let currentGuestId = guestData.appointment_id
       // self.ingecheckt.filter((item) => item.id !== currentGuestId);
@@ -226,7 +228,7 @@ export default {
           csrftoken: self.$session.get('token'),
           callback: function(data) {
             data
-            self.getScannedGuestData()
+            // self.getScannedGuestData()
           },
       });
     },

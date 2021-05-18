@@ -142,59 +142,6 @@ export default {
         // formErrMsg.innerHTML = "Email and password should not be empty";
       }
     },
-
-    signIn() {
-      let formErrMsg = document.querySelector(".err-msg");
-      // let validationErrMsg = document.querySelector(".v-messages__message");
-      if (
-          // !document.body.contains(validationErrMsg) &&
-          this.input.email != null &&
-          this.input.password != null
-      ) {
-        this.$store.dispatch("getAxiosCall", {
-          url: "http://127.0.0.1:5000/login",
-          params: {
-            email: this.input.email,
-            password: this.input.password
-          },
-          auth: null,
-          csrftoken: null,
-          callback: function (data) {
-            console.log(data);
-            if (data["x-access-token"]) {
-              self.startSession(data.token, data.is_superuser, data.id);
-              self.$router.push({name: "Checkin"});
-            } else {
-              // formErrMsg.innerHTML = data.msg;
-            }
-          }
-        });
-      } else {
-        // formErrMsg.innerHTML = "Email and password should not be empty";
-        alert('Email and password should not be empty')
-      }
-      let body = {
-        body: {
-          email: this.email,
-          password: this.password
-        }
-      };
-      axios
-          .get("http://127.0.0.1:5000/login", body, {
-            headers: {
-              "X-CSRFToken": null,
-              Authorization: null
-            }
-          })
-          .then(response => {
-            let res = response.data;
-            console.log(res);
-            // payload.callback(res);
-          })
-          .catch(error => {
-            console.log(error);
-          });
-    }
   }
 };
 </script>
