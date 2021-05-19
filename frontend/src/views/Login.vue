@@ -90,16 +90,16 @@ export default {
       });
     },
 
-    userDisconnected() {
-      // when users(receptionists) logout remove them from the socket
-      let socket = this.$store.state.socket;
-      // listen to disconnect event
-      socket.on("disconnect", function (msg) {
-        console.log(msg);
-        // send disconnected user id to flask backend
-        socket.emit("user_disconnected", {user_id: 1});
-      });
-    },
+    // userDisconnected() {
+    //   // when users(receptionists) logout remove them from the socket
+    //   let socket = this.$store.state.socket;
+    //   // listen to disconnect event
+    //   socket.on("disconnect", function (msg) {
+    //     console.log(msg);
+    //     // send disconnected user id to flask backend
+    //     socket.emit("user_disconnected", {user_id: 1});
+    //   });
+    // },
 
     // login() {
     //   if (this.input.username !== "a" && this.input.password !== "a") {

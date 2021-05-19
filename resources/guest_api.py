@@ -78,9 +78,14 @@ class GuestScanned(Resource):
         # get data sended from mirror after scan
         data = request.args
         # send scan data to frontend
-        socketio.emit('face_scanned',  data, broadcast=True, include_self=False)
+        try:
+            print(data)
+            socketio.emit('face_scanned',  data, broadcast=True)
+        except  Exception as e:
+            print('exxxceepttiiooonn', e)
+            return {"emited": False, 'msg': 'Lijk erop dat u uitgelogd bent'}
         
-        return 'Data received'
+        return {"emited": True, 'msg': 'Data verzonden'}
     
 class GuestApi(Resource):
 

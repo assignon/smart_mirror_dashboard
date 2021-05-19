@@ -13,15 +13,15 @@
               <td>{{ row.item.plate }}</td>
               <td>
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
-                <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
+                <v-btn class="mx-2 darken-3" :class='row.item.name.replace(/ /g,"")+row.item.appointment_id' color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
                   <strong style="color:white;text-transform:capitalize">Check-In</strong>
                 </v-btn>
                 <strong v-else>{{ row.item.checkin }}</strong>
               </td>
               <td>
                 <!-- <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'> -->
-                <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="confirmationDialog('checkout',row.item)" :disabled='row.item.checkin==null'>
-                  <strong style='color:white;text-transform:capitalize'>Check-Uit</strong>
+                <v-btn class="mx-2 darken-3" :class='row.item.name.replace(/ /g,"")+"-checkout-"+row.item.appointment_id' color='#ff304c' rounded elevation="2" @click="confirmationDialog('checkout',row.item)" :disabled='row.item.checkin==null'>
+                  <strong :class='row.item.name.replace(/ /g,"")' style='color:white;text-transform:capitalize'>Check-Uit</strong>
                 </v-btn>
               </td>
             </tr>
@@ -33,6 +33,7 @@
         <p>Geen nieuwe gemelde gasten</p>
       </div>
     </div>
+    
     <Notifications :content='notificationText' color='red'/>
     <v-dialog
       v-model="confirmDialog"
@@ -68,9 +69,11 @@ export default {
       currentDate: new Date().toLocaleDateString(),
       notificationText: '',
       confirmDialog: false,
+      checkedOutLoader: false,
       check: null, // determine of guest is checked in or out
       currentGuestData: null,
       confirmDialogText: null,
+      checkedConfirm: false, // check if guest ckeck confirmation dialog is JA or NEE
       headers: [
         {
           text: 'Naam',
@@ -90,16 +93,62 @@ export default {
     }
   },
 
+  watch: {
+   
+  },
+
   created() {
     this.scannedGuestData()
     this.getScannedGuestData()
+    let self = this
+
+    // guest checked in socket
+    this.$store.state.socket.on('checked_in', function(guestdata){
+      guestdata.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+
+      // document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id).innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
+      checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      checkinBtn.elevation = 0;
+      checkinBtn.style.backgroundColor = 'white'
+
+      let checkoutBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+'-checkout-'+guestdata.appointment_id)
+      checkoutBtn.disabled = false
+      checkoutBtn.classList.remove('v-btn--disabled')
+      checkoutBtn.style.backgroundColor = '#ff304c'
+      // reset checkin btn
+      setTimeout(() => {
+        let checkInBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
+        checkInBtn.firstChild.innerHTML = 'Check-In'
+        checkInBtn.firstChild.style.color = 'white'
+        checkInBtn.elevation = 2;
+        checkInBtn.style.backgroundColor = '#0f78b2'
+        checkInBtn.style.textTransform = 'capitalize'
+      }, 10)
+    })
+
+    // guest checked out socket
+    this.$store.state.socket.on('checked_out', function(guestData){
+      console.log('checked data', guestData);
+      guestData.checkout = true
+      document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Uit Checken ...'
+      setTimeout(() => {
+        let currentGuestId = guestData.appointment_id
+        let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
+        self.ingecheckt.splice(guestCheckedOut, 1)
+        // reset checkout btn text
+        document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Check-Uit'
+        // remove from DOM
+        // let currentGuest  = document.getElementById(guestData.appointment_id)
+        // currentGuest.style.display = 'none'
+      }, 2000)
+    })
   },
 
   methods: {
     getScannedGuestData(){
       // get and display all scanned, in and outchecked guest data from DB in case de page is reloaded
       let self = this;
-
       this.$store.dispatch("getReq", {
           url: "appointments",
           params: {
@@ -107,7 +156,19 @@ export default {
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
           xaccesstoken: self.$session.get('token'),
-          callback: function(res) {  
+          callback: function(res) { 
+             // check if token is valid
+            if(res.data.message == 'Token is invalid!'){
+              self.notificationText = 'Lijk erop dat u uitgelogd bent, u wordt doorgestuurd naar de login pagina.'
+              self.$store.state.notificationStatus = true
+              // destroy session
+              self.$session.destroy();
+              // sen d to login page
+              setTimeout(() => {
+                self.$router.push({name: 'Login'})
+              }, 3000)
+            }
+
             if(res.status == 200){
                res.data.appointments.forEach(data => {
                 let guestData = {
@@ -136,8 +197,8 @@ export default {
       // get and display current scanned guest
       let self = this
       let socket = self.$store.state.socket
-
       socket.on('face_scanned', function(data){
+        if(data){
           let guestData = {
             id: data.id,
             name: data.name,
@@ -152,6 +213,10 @@ export default {
           }
           // add scanned guest data to the top of the table
           self.ingecheckt.unshift(guestData)
+        }else{
+          self.notificationText = 'Lijk erop dat u uitgelogd bent'
+          self.$store.state.notificationStatus = true
+        }
       });
     },
 
@@ -172,17 +237,17 @@ export default {
     checkGuest(){
       let self = this
       if (self.check == 'checkin'){
+        // self.currentGuestData.checkin = true
         self.checkGuestIn(self.currentGuestData)
       }else{
+        // self.currentGuestData.checkout = true
         self.checkGuestOut(self.currentGuestData)
       }
     },
 
     checkGuestIn(guestData){
       let self = this;
-      // let socket = self.$store.state.socket
-
-      console.log(guestData);
+      let socket = self.$store.state.socket
       this.confirmDialog=false
       this.$store.dispatch("putReq", {
           url: `appointment/${guestData.appointment_id}`,
@@ -195,26 +260,28 @@ export default {
           xaccesstoken: self.$session.get('token'),
           callback: function(data) {
             data
-            // socket.on('checked', function(data){
-            //   console.log(data);
-            //   guestData.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
-            // })
-            
             // self.getScannedGuestData()
           },
       });
+      // let guestdata = guestData;
+      socket.emit("update_checkedin", guestData);
+      // socket.on('checked', function(data){
+      //   console.log('checked data', data);
+      //   console.log('hallo there')
+      //   guestdata.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      // })
     },
 
     checkGuestOut(guestData){
       let self = this;
-      let currentGuest  = document.getElementById(guestData.appointment_id)
-      console.log(guestData);
+      let socket = self.$store.state.socket
+      // let currentGuest  = document.getElementById(guestData.appointment_id)
+
       this.confirmDialog=false
       // remove current guest data from array
-      let currentGuestId = guestData.appointment_id
-      // self.ingecheckt.filter((item) => item.id !== currentGuestId);
-      let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
-      self.ingecheckt.splice(guestCheckedOut, 1)
+      // let currentGuestId = guestData.appointment_id
+      // let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
+      // self.ingecheckt.splice(guestCheckedOut, 1)
 
       // currentGuest.classList.remove('zoomIn')
       // setTimeout(() => {
@@ -222,7 +289,7 @@ export default {
       // }, 100)
       // remove defenitely from the DOM
       // setTimeout(() => {
-        currentGuest.style.display = 'none'
+        // currentGuest.style.display = 'none'
       // }, 500)
       
       this.$store.dispatch("putReq", {
@@ -237,6 +304,7 @@ export default {
             // self.getScannedGuestData()
           },
       });
+      socket.emit("update_checkedout", guestData);
     },
   }
 };

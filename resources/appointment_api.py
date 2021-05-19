@@ -103,12 +103,12 @@ class AppointmentApi(Resource):
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)
             # broadcast the update to all screens
-            socketio.emit('checked',  now.strftime("%Y-%m-%d %H:%M:%S"),
-                          broadcast=True)
+            # socketio.emit('checked',  now.strftime("%Y-%m-%d %H:%M:%S"),
+            #             broadcast=True)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'Appointment does not exist'}
-
+        
         return {'appointment': appointment_schema.dump(edited_appointment)}, 200

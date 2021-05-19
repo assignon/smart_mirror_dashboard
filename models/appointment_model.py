@@ -1,5 +1,5 @@
 from settings import db
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 from .base_model import BaseMixin
@@ -28,7 +28,7 @@ class Appointment(BaseMixin, db.Model):
 
     @staticmethod
     def get_open_appointments():
-        return db.session.query(Appointment).filter_by(checked_out=None).all()
+        return db.session.query(Appointment).filter_by(checked_out=None).order_by(desc(Appointment.appointment_id)).all()
         
 
     @staticmethod
