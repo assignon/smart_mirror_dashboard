@@ -74,29 +74,30 @@ class PasswordManager(Resource):
     @staticmethod
     def get():
 
-        json_data: dict = request.get_json()
-        if not json_data:
-            return {"message": "No input data provided"}, 400
-
-        if 'email' not in json_data.keys():
+        if not request.args:
+            return {"message": "No input data provided"}
+        email = request.args.get('email')
+        if request.args.get('email'):
+            user: User = db.session.query(User).filter_by(email=email).first()
+            if user:
+                # email versturen met random token
+                # token = jwt.encode(
+                #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
+                #         app.config['JWT_SECRET_KEY']).decode('utf-8')
+                # send_email(user, token)
+                # sla de token op in redis voor 24 uur.
+                # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
+                new_password = str(uuid.uuid4())
+                User.update_user(user.user_id, password=new_password)
+                send_email(user, new_password)
+                return {'succes': 'New password has been sent to your email.'}
+            else:
+                return {'message': 'This email is not recognized.'}
+        else:
             return {"message": "Email not provided in the data"}
 
-        user: User = db.session.query(User).filter_by(email=json_data['email']).first()
-        if user:
 
-            # email versturen met random token
-            # token = jwt.encode(
-            #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
-            #         app.config['JWT_SECRET_KEY']).decode('utf-8')
-            # send_email(user, token)
-            # sla de token op in redis voor 24 uur.
-            # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
-            new_password = str(uuid.uuid4())
-            User.update_user(user.user_id, password=new_password)
-            send_email(user, new_password)
-            return {'message': 'New password has been sent to your email.'}
-        else:
-            return {'message': 'This email is not recognized.'}
+
 
     @staticmethod
     def post():
@@ -147,7 +148,7 @@ class PasswordManager(Resource):
                 redis_db.delete(f"password_token:{user.user_id}")
                 return {"message": "Password has been updated, you can now login with your new password"}
             else:
-                return {"message": "Token is invalid"}
+                return {"message": "Token is invalid"}, 200
         except:
             return {"message": "Token is invalid"}
 
