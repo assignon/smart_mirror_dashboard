@@ -1,0 +1,278 @@
+<template>
+  <section class="primary-section">
+    <div class="main-container">
+      <div>
+        <!-- Title -->
+        <div>
+          <h1 class="mb-3 mt-12">Systeem gebruikers</h1>
+        </div>
+        <!-- New user button -->
+        <v-row justify="left">
+          <v-dialog v-model="add_dialog" persistent max-width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="blue darken-1 mt-9 mb-12"
+                rounded
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon color="white">mdi-account-plus-outline</v-icon>
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">Nieuwe gebruiker</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field label="Email*" required></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-select
+                        :items="['Ja', 'Nee']"
+                        label="Admin*"
+                        required
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-container>
+                <small>*Verplichte velden</small>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="add_dialog = false">
+                  Sluiten
+                </v-btn>
+                <v-btn color="green darken-1" text @click="add_dialog = false">
+                  Toevoegen
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-row>
+        <!-- Data Table for system users / Admin administration -->
+        <v-data-table :headers="headers" :items="users" hide-default-footer>
+          <template v-slot:item="row">
+            <tr>
+              <td>{{ row.item.id }}</td>
+              <td>{{ row.item.name }}</td>
+              <td>{{ row.item.email }}</td>
+              <td>{{ row.item.is_admin }}</td>
+              <!-- Delete Button -->
+              <td>
+                <v-btn
+                  class="mx-2 red darken-3"
+                  rounded
+                  elevation="2"
+                  @click.stop="del_dialog = true"
+                >
+                  <v-icon color="white">
+                    mdi-delete
+                  </v-icon>
+                </v-btn>
+                <v-dialog v-model="del_dialog" max-width="290">
+                  <v-card>
+                    <v-card-title class="headline">
+                      Weet je het zeker?
+                    </v-card-title>
+
+                    <v-card-text>
+                      Deze actie kan je niet ongedaan maken.
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+
+                      <v-btn
+                        color="red darken-1"
+                        align="center"
+                        text
+                        @click="del_dialog = false"
+                      >
+                        Verwijderen
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </td>
+              <!-- Edit Button -->
+              <td>
+                <v-dialog v-model="edit_dialog" persistent max-width="600px">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      class="mx-2 green darken-3"
+                      rounded
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon color="white">mdi-wrench</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      <span class="headline">Gebruiker bewerken</span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container>
+                        <v-row>
+                          <v-col cols="12">
+                            <v-text-field
+                              label="Email*"
+                              v-model="row.item.email"
+                              required
+                            ></v-text-field>
+                          </v-col>
+                          <v-col cols="12">
+                            <v-select
+                              :items="['True', 'False']"
+                              label="Admin*"
+                              v-model="row.item.admin"
+                              required
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                      <small>*Verplichte velden</small>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="edit_dialog = false"
+                      >
+                        Sluiten
+                      </v-btn>
+                      <v-btn
+                        color="green darken-1"
+                        text
+                        @click="edit_dialog = false"
+                      >
+                        Toevoegen
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+// import UserModal from "./components/UserModal";
+
+export default {
+  name: "Admin",
+  data() {
+    return {
+      add_dialog: false,
+      del_dialog: false,
+      edit_dialog: false,
+      headers: [
+        {
+          text: "ID",
+          align: "start",
+          sortable: true,
+          value: "id",
+          class: "blue white--text rounded-tl-lg darken-1"
+        },
+        {
+          text: "Name",
+          sortable: true,
+          value: "name",
+          class: "blue white--text darken-1"
+        },
+        {
+          text: "Email",
+          sortable: true,
+          value: "email",
+          class: "blue white--text darken-1"
+        },
+        {
+          text: "Admin",
+          sortable: true,
+          value: "admin",
+          class: "blue white--text darken-1"
+        },
+        {
+          text: "Verwijder",
+          sortable: false,
+          align: "center",
+          value: "delete",
+          class: "blue white--text darken-1"
+        },
+        {
+          text: "Bewerken",
+          sortable: false,
+          align: "center",
+          value: "delete",
+          class: "blue white--text rounded-tr-lg darken-1"
+        }
+      ],
+      users: [
+        {
+          id: "12",
+          name: "name",
+          is_admin: true,
+          email: "admin@outlook.com",
+        }
+      ]
+    };
+  },
+  created() {
+    this.allUsersData();
+  },
+  methods: {
+    allUsersData() {
+      let self = this;
+      this.$store.dispatch("getReq", {
+        url: "/users",
+        params: {},
+        auth: self.$session.get("token"),
+        csrftoken: self.$session.get("token"),
+        callback: function(data) {
+          console.log(data);
+          self.users.push(data);
+        }
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.new-user-button {
+  text-align: left;
+}
+
+.v-card__title {
+  display: revert;
+}
+
+.v-card-actions {
+  display: revert;
+}
+
+.main-container {
+  width: auto;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.primary-section {
+  background-color: beige;
+  min-height: 80vh;
+}
+
+h1 {
+  text-align: left;
+}
+</style>
