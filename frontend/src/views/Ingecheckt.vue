@@ -180,6 +180,8 @@ export default {
 
     checkGuestIn(guestData){
       let self = this;
+      // let socket = self.$store.state.socket
+
       console.log(guestData);
       this.confirmDialog=false
       this.$store.dispatch("putReq", {
@@ -193,7 +195,11 @@ export default {
           xaccesstoken: self.$session.get('token'),
           callback: function(data) {
             data
-            guestData.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+            // socket.on('checked', function(data){
+            //   console.log(data);
+            //   guestData.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+            // })
+            
             // self.getScannedGuestData()
           },
       });
@@ -240,9 +246,11 @@ export default {
 .primary-section {
   background-color: beige;
   min-height: 80vh;
+  height: auto;
 }
 .main-container {
   width: 100%;
+  height: auto;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -252,6 +260,8 @@ export default {
 }
 .data-table-container{
   width: 80%;
+  height: auto;
+  margin-bottom: 30px;
 }
 h1 {
   text-align: left;

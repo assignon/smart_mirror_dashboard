@@ -77,7 +77,6 @@ class GuestScanned(Resource):
         from app import socketio
         # get data sended from mirror after scan
         data = request.args
-        print('daattttaaaa', data)
         # send scan data to frontend
         socketio.emit('face_scanned',  data, broadcast=True, include_self=False)
         
