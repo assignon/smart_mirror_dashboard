@@ -5,15 +5,15 @@
       <div v-if='ingecheckt.length>0' class='data-table-container'>
         <v-data-table :headers="headers" :items="ingecheckt" hide-default-footer>
           <template v-slot:item="row">
-            <tr class='animated fadeInUp' :id='row.item.appointment_id'>
+            <tr class='animated fadeInUp table-tr' :id='row.item.appointment_id'>
               <td>{{ row.item.name }}</td>
               <td>{{ row.item.tel }}</td>
               <td>{{ row.item.email }}</td>
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
-              <td>
+              <td :class='row.item.name.replace(/ /g,"")+row.item.appointment_id'>
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
-                <v-btn class="mx-2 darken-3" :class='row.item.name.replace(/ /g,"")+row.item.appointment_id' color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
+                <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
                   <strong style="color:white;text-transform:capitalize">Check-In</strong>
                 </v-btn>
                 <strong v-else>{{ row.item.checkin }}</strong>
@@ -100,52 +100,82 @@ export default {
   created() {
     this.scannedGuestData()
     this.getScannedGuestData()
-    let self = this
+    // let self = this
 
     // guest checked in socket
     this.$store.state.socket.on('checked_in', function(guestdata){
       guestdata.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
 
-      // document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id).innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
-      let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
-      checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
-      checkinBtn.elevation = 0;
-      checkinBtn.style.backgroundColor = 'white'
+      document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id).innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      // let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
+      // checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      // checkinBtn.elevation = '0';
+      // checkinBtn.classList.add('v-btn--disabled')
+      // checkinBtn.style.backgroundColor = 'white'
 
+      // update checkout btn style
       let checkoutBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+'-checkout-'+guestdata.appointment_id)
       checkoutBtn.disabled = false
       checkoutBtn.classList.remove('v-btn--disabled')
       checkoutBtn.style.backgroundColor = '#ff304c'
-      // reset checkin btn
-      setTimeout(() => {
-        let checkInBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
-        checkInBtn.firstChild.innerHTML = 'Check-In'
-        checkInBtn.firstChild.style.color = 'white'
-        checkInBtn.elevation = 2;
-        checkInBtn.style.backgroundColor = '#0f78b2'
-        checkInBtn.style.textTransform = 'capitalize'
-      }, 10)
     })
 
-    // guest checked out socket
-    this.$store.state.socket.on('checked_out', function(guestData){
-      console.log('checked data', guestData);
-      guestData.checkout = true
-      document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Uit Checken ...'
-      setTimeout(() => {
-        let currentGuestId = guestData.appointment_id
-        let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
-        self.ingecheckt.splice(guestCheckedOut, 1)
-        // reset checkout btn text
-        document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Check-Uit'
-        // remove from DOM
-        // let currentGuest  = document.getElementById(guestData.appointment_id)
-        // currentGuest.style.display = 'none'
-      }, 2000)
-    })
+    // checkout socket
+    this.checkedOutSocket()
   },
 
   methods: {
+    checkedOutSocket(){
+      let self = this
+      let increase = 0
+      // let tableBody
+
+      // setTimeout(() => {
+      //   tableBody = self.ingecheckt.length > 0 ? tableBody = document.getElementsByTagName('tbody')[0].children.length : null
+      // }, 1000)
+
+       this.$store.state.socket.on('checked_out', function(guestData){
+        guestData.checkout = true
+        document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Uit Checken ...'
+    
+        setTimeout(() => {
+          // let currentGuestId = guestData.appointment_id
+          // let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
+          // self.ingecheckt.splice(guestCheckedOut, 1)
+
+          // reset checkout btn text
+          document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Check-Uit'
+          // // reset check in btn
+          // let checkInBtn = document.querySelector('.'+guestData.name.replace(/ /g,'')+guestData.appointment_id)
+          // checkInBtn.firstChild.innerHTML = 'Check-In'
+          // checkInBtn.firstChild.style.color = 'white'
+          // checkInBtn.elevation = '2';
+          // checkInBtn.style.backgroundColor = '#0f78b2'
+          // checkInBtn.style.textTransform = 'capitalize'
+          // checkInBtn.classList.remove('v-btn--disabled')
+
+          // remove from DOM
+          let currentGuest  = document.getElementById(guestData.appointment_id)
+          currentGuest.style.display = 'none'
+
+          // show no scan guest view when all guest checked out
+          // check if there is any tr in the DOM
+          increase += 1
+          // let ingechecktArrLen = self.ingecheckt.length
+          let updatedIngechecktArrLen = self.ingecheckt.length - increase
+
+          console.log(updatedIngechecktArrLen);
+          console.log(self.ingecheckt.length)
+          if(updatedIngechecktArrLen < 1){
+            // update ingecheckt array length to 0 if all guest checked out
+            // to be able to display the no guest scan view
+            self.ingecheckt = []
+            increase = 0
+          }
+        }, 2000)
+      })
+    },
+
     getScannedGuestData(){
       // get and display all scanned, in and outchecked guest data from DB in case de page is reloaded
       let self = this;
