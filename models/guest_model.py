@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 from .base_model import BaseMixin
 from .appointment_model import Appointment
-from .image_model import Image
+import redis
 from datetime import datetime
 from sqlalchemy.sql import func
 
@@ -18,11 +18,9 @@ class Guest(BaseMixin, db.Model):
     company = Column(String(length=30))
     phone_number = Column(String(length=15), unique=True, nullable=False)
     license_plate = Column(String(length=30), unique=True)
-    consent_duration_date = Column(Date, nullable=False, default=datetime.today)
-    consent_duration = Column(Integer, nullable=False)
+    consent_expire_date = Column(Integer)
     appointments = relationship("Appointment", order_by="desc(Appointment.appointment_id)", lazy='joined',
                                 back_populates="guest")
-    images = relationship("Image", order_by="desc(Image.image_id)", back_populates="guest")
 
     def __repr__(self):
         return f'Hallo ik ben {self.name}'
@@ -34,26 +32,6 @@ class Guest(BaseMixin, db.Model):
         """
         Appointment.create(employee_name=employee_name, guest_id=self.guest_id)
 
-    def add_images(self, filepath_images):
-        """
-        Hie komt functie om 1 of meedere afbeeldingen toe tevoegen aan guest
-        """
-
-        current_date = datetime.today()
-        new_images = [Image(filepath=filepath_image, guest_id=self.guest_id, date=current_date) for filepath_image in
-                      filepath_images]
-        db.session.add_all(new_images)
-        db.session.commit()
-
-    def get_images(self):
-
-        images = db.session.query(Image).filter_by(guest_id=self.guest_id).all()
-
-        return images
-
-    def delete_images(self):
-        db.session.query(Image).filter_by(guest_id=self.guest_id).delete()
-        db.session.commit()
 
     @staticmethod
     def update_guest(guest_id, **kwargs):
@@ -90,3 +68,9 @@ class Guest(BaseMixin, db.Model):
     def delete_guest(guest_id):
         db.session.query(Guest).filter_by(guest_id=guest_id).delete()
         db.session.commit()
+        r = redis.StrictRedis(host='redis-11905.c247.eu-west-1-1.ec2.cloud.redislabs.com', port=11905,
+                                    password='sunny-side-UP')
+
+        r.delete("guest:" + str(guest_id))
+        r.zrem("guest_ids", guest_id)
+

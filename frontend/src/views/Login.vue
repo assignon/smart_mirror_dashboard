@@ -50,12 +50,13 @@ export default {
     };
   },
   created() {
-    this.userConnected();
+    // this.userConnected();
     this.userDisconnected();
+    this.user_joinded()
   },
 
   methods: {
-    startSession(token, su, userId) {
+    startSession(token, su, userId, username) {
       // start a session
       this.$session.start();
       // store token en user id
@@ -63,29 +64,42 @@ export default {
       this.$session.set("userId", userId);
       this.$session.set("authenticated", true);
       this.$session.set("su", su);
+      this.$session.set("username", username);
     },
 
-    userConnected() {
+    userConnected(username) {
       // when users(receptionists) login add them to the socket
       let socket = this.$store.state.socket;
       // listen to connect event
       socket.on("connect", function(msg) {
         console.log("connected", msg);
         // send connected user id to flask backend
-        socket.emit("new_user", { user_id: 1 });
+        socket.emit("new_user", { username: username });
       });
     },
 
-    userDisconnected() {
-      // when users(receptionists) logout remove them from the socket
+    user_joinded(){
       let socket = this.$store.state.socket;
-      // listen to disconnect event
-      socket.on("disconnect", function(msg) {
-        console.log(msg);
-        // send disconnected user id to flask backend
-        socket.emit("user_disconnected", { user_id: 1 });
+      let self = this
+      // listen to connect event
+      socket.on("user_joined", function(data) {
+        self.snackbarText = data.username+' is verbonden'
+        self.snackbar = true
+        console.log(data.username+' is verbonden');
+        // alert(data.username+' is verbonden');
       });
     },
+
+    // userDisconnected() {
+    //   // when users(receptionists) logout remove them from the socket
+    //   let socket = this.$store.state.socket;
+    //   // listen to disconnect event
+    //   socket.on("disconnect", function (msg) {
+    //     console.log(msg);
+    //     // send disconnected user id to flask backend
+    //     socket.emit("user_disconnected", {user_id: 1});
+    //   });
+    // },
 
     // login() {
     //   if (this.input.username !== "a" && this.input.password !== "a") {
@@ -110,8 +124,8 @@ export default {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
-            console.log(res["x-access-token"]);
-            // self.startSession(res["x-access-token"], 1, 1);
+            // console.log(res["x-access-token"]);
+            self.startSession(res["x-access-token"], res['superuser'], res['user_id']);
             await this.$router.push("/ingecheckt");
           } else {
             self.notificationText = res.message
@@ -128,58 +142,6 @@ export default {
         // formErrMsg.innerHTML = "Email and password should not be empty";
       }
     },
-
-    signIn() {
-      let formErrMsg = document.querySelector(".err-msg");
-      // let validationErrMsg = document.querySelector(".v-messages__message");
-      if (
-        // !document.body.contains(validationErrMsg) &&
-        this.input.email != null &&
-        this.input.password != null
-      ) {
-        this.$store.dispatch("getAxiosCall", {
-          url: "http://127.0.0.1:5000/login",
-          params: {
-            email: this.input.email,
-            password: this.input.password
-          },
-          auth: null,
-          csrftoken: null,
-          callback: function(data) {
-            console.log(data);
-            if (data["x-access-token"]) {
-              self.startSession(data.token, data.is_superuser, data.id);
-              self.$router.push({ name: "Checkin" });
-            } else {
-              // formErrMsg.innerHTML = data.msg;
-            }
-          }
-        });
-      } else {
-        formErrMsg.innerHTML = "Email and password should not be empty";
-      }
-      let body = {
-        body: {
-          email: this.email,
-          password: this.password
-        }
-      };
-      axios
-        .get("http://127.0.0.1:5000/login", body, {
-          headers: {
-            "X-CSRFToken": null,
-            Authorization: null
-          }
-        })
-        .then(response => {
-          let res = response.data;
-          console.log(res);
-          // payload.callback(res);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
   }
 };
 </script>

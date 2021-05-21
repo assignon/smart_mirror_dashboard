@@ -1,4 +1,4 @@
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, session
 from flask_restful import Resource, abort
 import jwt
 import datetime
@@ -14,16 +14,16 @@ def login_required(fun):
 
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
-
         if not token:
             return jsonify({'message': 'Token is missing!'}, 401)
 
         try:
-            data = jwt.decode(token, app.config['JWT_SECRET_KEY'])
+            data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
             current_user = User.query.filter_by(user_id=data['user_id']).first()
             if current_user is None:
                 return jsonify({'error': 'The user_id is invalid'})
-        except:
+        except Exception as e:
+            print('excceepptttionnnn',e)
             return jsonify({'message': 'Token is invalid!'})
 
         return fun(current_user, *args, **kwargs)
@@ -58,4 +58,8 @@ class Login(Resource):
 
 
 class Logout(Resource):
-    pass
+    @staticmethod
+    @login_required
+    def get(current_user):
+        session.clear()
+        return make_response({'logout': True})

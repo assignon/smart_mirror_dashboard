@@ -1,4 +1,5 @@
 import os, sys
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
@@ -6,6 +7,7 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
+
 
 
 # from flask_restful import Api
@@ -35,18 +37,14 @@ bcrypt = Bcrypt(app)
 
 ## Db configurations
 
+load_dotenv('.env')
+"""AWS CONNECTIE"""
+username = os.getenv('AWS_USERNAME')
+password = os.getenv('AWS_PASSWORD')
+host = os.getenv('AWS_HOST')
+db_name = os.getenv('AWS_DB_NAME')
 
-import urllib
-
-server = 'sunny-side-up.database.windows.net'
-database = 'smart-mirror'
-username = 'tientjie'
-password = 'sunny-side-UP'
-driver = 'ODBC Driver 17 for SQL Server'
-
-params = urllib.parse.quote_plus('DRIVER={ODBC Driver 17 for SQL Server};SERVER=sunny-side-up.database.windows.net'
-                                 ';DATABASE=smart-mirror;UID=tientjie;PWD=sunny-side-UP')
-connection_url = "mssql+pyodbc:///?odbc_connect=%s" % params
+connection_url = f'mysql+mysqldb://{username}:{password}@{host}/{db_name}'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connection_url
 

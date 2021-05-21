@@ -25,10 +25,10 @@
     },
     {
       "name": "GuestCollection",
-      "description": "Operations about the whole Guest table"
+      "description": "Operations about the whole Guest table, IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com"
     },
     {
-      "name": "Guest",
+      "name": "Guest IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com",
       "description": "Operations about specific Guest"
     },
     {
@@ -658,20 +658,15 @@
           "company": {
             "type": "string"
           },
-          "consent_duration_date": {
-            "type": "string"
-          },
-          "consent_duration_time": {
-            "type": "integer",
-            "format": "int64"
+          "consent_expire_date": {
+            "type": "integer"
           }
-
         }
       },
       "CreateGuest": {
         "type": "object",
         "required": [
-          "name", "email", "password", "is_admin", "phone_number", "consent_duration_date", "consent_duration"
+          "name", "email", "password", "is_admin", "phone_number", "consent_expire_date"
         ],
         "properties": {
           "guest_id": {
@@ -693,12 +688,8 @@
           "company": {
             "type": "string"
           },
-          "consent_duration_date": {
-            "type": "string"
-          },
-          "consent_duration": {
-            "type": "integer",
-            "format": "int64"
+          "consent_expire_date": {
+            "type": "integer"
           }
 
         }
@@ -725,14 +716,9 @@
           "company": {
             "type": "string"
           },
-          "consent_duration_date": {
-            "type": "string"
-          },
-          "consent_duration_time": {
-            "type": "integer",
-            "format": "int64"
+          "consent_expire_date": {
+            "type": "integer"
           }
-
         }
       },
       "GetAppointment": {
@@ -778,14 +764,9 @@
               "company": {
                 "type": "string"
               },
-              "consent_duration_date": {
-                "type": "string"
-              },
-              "consent_duration_time": {
-                "type": "integer",
-                "format": "int64"
+              "consent_expire_date": {
+                "type": "integer"
               }
-  
           }
         }
 
