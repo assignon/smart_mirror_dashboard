@@ -51,7 +51,7 @@ export default {
   },
   created() {
     // this.userConnected();
-    this.userDisconnected();
+    // this.userDisconnected();
     this.user_joinded()
   },
 
