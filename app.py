@@ -1,22 +1,18 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_socketio import SocketIO, emit, send, ConnectionRefusedError, disconnect
 from flask_cors import CORS
-# from flask_bcrypt import Bcrypt
-from flask_restful import Api
 from settings import app, rest_api
 from routes import api_routes
-import time, datetime
 
 app.secret_key = "sunnySideUp-smartMirror"
-# bcrypt = Bcrypt(app)
+bcrypt = Bcrypt(app)
 rest_api = Api(app)
-socketio = SocketIO(app, cors_allowed_origins='*', async_mode=None)
-# socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080') // use this live with the live url
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 CORS(app)
 cors = CORS(app, resources={
     r"/*": {
-        "origins": "*"
+        "Access-Control-Allow-Origin": "*"
     }
 })
 
@@ -83,5 +79,5 @@ api_routes(rest_api)
 
 
 if __name__ == 'main':
-    socketio.run(app)
-    # app.run()
+    # socketio.run(app)
+    app.run()

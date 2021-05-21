@@ -124,8 +124,8 @@ export default {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
-            // console.log(res["x-access-token"]);
-            self.startSession(res["x-access-token"], res['superuser'], res['user_id']);
+            console.log(res);
+            self.startSession(res["x-access-token"], res["superuser"], res["user_id"]);
             await this.$router.push("/ingecheckt");
           } else {
             self.notificationText = res.message
@@ -167,10 +167,10 @@ export default {
 }
 
 .login-form .v-text-field {
-  width: 50%;
+  width: 22%;
 }
 .btn-container{
-  width: 50%;
+  width: 22%;
   height: auto;
   display: flex;
   justify-content: flex-end;
