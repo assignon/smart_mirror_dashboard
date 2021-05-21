@@ -5,13 +5,14 @@
       <div v-if='ingecheckt.length>0' class='data-table-container'>
         <v-data-table :headers="headers" :items="ingecheckt" hide-default-footer>
           <template v-slot:item="row">
-            <tr class='animated fadeInUp' :id='row.item.appointment_id'>
+            <tr class='animated fadeInUp table-tr' :id='row.item.appointment_id'>
               <td>{{ row.item.name }}</td>
               <td>{{ row.item.tel }}</td>
               <td>{{ row.item.email }}</td>
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
-              <td>
+              <td>{{ row.item.employee_name }}</td>
+              <td :class='row.item.name.replace(/ /g,"")+row.item.appointment_id'>
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
                 <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
                   <strong style="color:white;text-transform:capitalize">Check-In</strong>
@@ -20,8 +21,8 @@
               </td>
               <td>
                 <!-- <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'> -->
-                <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="confirmationDialog('checkout',row.item)" :disabled='row.item.checkin==null'>
-                  <strong style='color:white;text-transform:capitalize'>Check-Uit</strong>
+                <v-btn class="mx-2 darken-3" :class='row.item.name.replace(/ /g,"")+"-checkout-"+row.item.appointment_id' color='#ff304c' rounded elevation="2" @click="confirmationDialog('checkout',row.item)" :disabled='row.item.checkin==null'>
+                  <strong :class='row.item.name.replace(/ /g,"")' style='color:white;text-transform:capitalize'>Check-Uit</strong>
                 </v-btn>
               </td>
             </tr>
@@ -33,6 +34,7 @@
         <p>Geen nieuwe gemelde gasten</p>
       </div>
     </div>
+    
     <Notifications :content='notificationText' color='red'/>
     <v-dialog
       v-model="confirmDialog"
@@ -68,9 +70,11 @@ export default {
       currentDate: new Date().toLocaleDateString(),
       notificationText: '',
       confirmDialog: false,
+      checkedOutLoader: false,
       check: null, // determine of guest is checked in or out
       currentGuestData: null,
       confirmDialogText: null,
+      checkedConfirm: false, // check if guest ckeck confirmation dialog is JA or NEE
       headers: [
         {
           text: 'Naam',
@@ -83,6 +87,7 @@ export default {
         {text: 'E-mail', value: 'email', class: "blue white--text darken-1"},
         {text: 'Bedrijf', value: 'company', class: "blue white--text darken-1"},
         {text: 'Kenteken', value: 'plate', class: "blue white--text darken-1"},
+        {text: 'Afspraak Met', value: 'employee_name', class: "blue white--text darken-1"},
         {text: 'Check-in', value: 'checkin', class: "blue white--text darken-1"},
         {text: 'Check-out', value: 'checkout', class: "blue white--text rounded-tr-lg darken-1"},
       ],
@@ -90,16 +95,92 @@ export default {
     }
   },
 
+  watch: {
+   
+  },
+
   created() {
     this.scannedGuestData()
     this.getScannedGuestData()
+    // let self = this
+
+    // guest checked in socket
+    this.$store.state.socket.on('checked_in', function(guestdata){
+      guestdata.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+
+      document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id).innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      // let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
+      // checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      // checkinBtn.elevation = '0';
+      // checkinBtn.classList.add('v-btn--disabled')
+      // checkinBtn.style.backgroundColor = 'white'
+
+      // update checkout btn style
+      let checkoutBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+'-checkout-'+guestdata.appointment_id)
+      checkoutBtn.disabled = false
+      checkoutBtn.classList.remove('v-btn--disabled')
+      checkoutBtn.style.backgroundColor = '#ff304c'
+    })
+
+    // checkout socket
+    this.checkedOutSocket()
   },
 
   methods: {
+    checkedOutSocket(){
+      let self = this
+      let increase = 0
+      // let tableBody
+
+      // setTimeout(() => {
+      //   tableBody = self.ingecheckt.length > 0 ? tableBody = document.getElementsByTagName('tbody')[0].children.length : null
+      // }, 1000)
+
+       this.$store.state.socket.on('checked_out', function(guestData){
+        guestData.checkout = true
+        document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Uit Checken ...'
+    
+        setTimeout(() => {
+          // let currentGuestId = guestData.appointment_id
+          // let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
+          // self.ingecheckt.splice(guestCheckedOut, 1)
+
+          // reset checkout btn text
+          document.querySelector('.'+guestData.name.replace(/ /g,'')).innerHTML = 'Check-Uit'
+          // // reset check in btn
+          // let checkInBtn = document.querySelector('.'+guestData.name.replace(/ /g,'')+guestData.appointment_id)
+          // checkInBtn.firstChild.innerHTML = 'Check-In'
+          // checkInBtn.firstChild.style.color = 'white'
+          // checkInBtn.elevation = '2';
+          // checkInBtn.style.backgroundColor = '#0f78b2'
+          // checkInBtn.style.textTransform = 'capitalize'
+          // checkInBtn.classList.remove('v-btn--disabled')
+
+          // remove from DOM
+          let currentGuest  = document.getElementById(guestData.appointment_id)
+          currentGuest.style.display = 'none'
+
+          // show no scan guest view when all guest checked out
+          // check if there is any tr in the DOM
+          increase += 1
+          // let ingechecktArrLen = self.ingecheckt.length
+          let updatedIngechecktArrLen = self.ingecheckt.length - increase
+
+          console.log(updatedIngechecktArrLen);
+          console.log(self.ingecheckt.length)
+          if(updatedIngechecktArrLen < 1){
+            // update ingecheckt array length to 0 if all guest checked out
+            // to be able to display the no guest scan view
+            self.ingecheckt = []
+            increase = 0
+          }
+        }, 2000)
+      })
+    },
+
     getScannedGuestData(){
       // get and display all scanned, in and outchecked guest data from DB in case de page is reloaded
       let self = this;
-
       this.$store.dispatch("getReq", {
           url: "appointments",
           params: {
@@ -107,7 +188,19 @@ export default {
           auth: self.$session.get('token'),
           csrftoken: self.$session.get('token'),
           xaccesstoken: self.$session.get('token'),
-          callback: function(res) {  
+          callback: function(res) { 
+             // check if token is valid
+            if(res.data.message == 'Token is invalid!'){
+              self.notificationText = 'Lijk erop dat u uitgelogd bent, u wordt doorgestuurd naar de login pagina.'
+              self.$store.state.notificationStatus = true
+              // destroy session
+              self.$session.destroy();
+              // sen d to login page
+              setTimeout(() => {
+                self.$router.push({name: 'Login'})
+              }, 3000)
+            }
+
             if(res.status == 200){
                res.data.appointments.forEach(data => {
                 let guestData = {
@@ -117,7 +210,8 @@ export default {
                   tel: data.guest.phone_number,
                   email: data.guest.email,
                   company: data.guest.company,
-                  plate: data.guest.license_plate,
+                  plate: data.guest.license_plate == null ? '---' : data.guest.license_plate,
+                  employee_name: data.employee_name,
                   checkin: data.checked_in,
                   checkout: data.checked_out,
                 }
@@ -136,22 +230,27 @@ export default {
       // get and display current scanned guest
       let self = this
       let socket = self.$store.state.socket
-
       socket.on('face_scanned', function(data){
+        if(data){
           let guestData = {
             id: data.id,
+            appointment_id: data.appointment_id,
             name: data.name,
             tel: data.tel,
             email: data.email,
             company: data.company,
-            plate: data.license_plate,
-            appointment_id: data.appointment_id,
+            plate: data.license_plate == null ? '---' : data.license_plate,
+            employee_name: data.appointment, // employee name
             checkin: null,
             checkout: null,
             // time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
           }
           // add scanned guest data to the top of the table
           self.ingecheckt.unshift(guestData)
+        }else{
+          self.notificationText = 'Lijk erop dat u uitgelogd bent'
+          self.$store.state.notificationStatus = true
+        }
       });
     },
 
@@ -172,15 +271,17 @@ export default {
     checkGuest(){
       let self = this
       if (self.check == 'checkin'){
+        // self.currentGuestData.checkin = true
         self.checkGuestIn(self.currentGuestData)
       }else{
+        // self.currentGuestData.checkout = true
         self.checkGuestOut(self.currentGuestData)
       }
     },
 
     checkGuestIn(guestData){
       let self = this;
-      console.log(guestData);
+      let socket = self.$store.state.socket
       this.confirmDialog=false
       this.$store.dispatch("putReq", {
           url: `appointment/${guestData.appointment_id}`,
@@ -193,22 +294,28 @@ export default {
           xaccesstoken: self.$session.get('token'),
           callback: function(data) {
             data
-            guestData.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
             // self.getScannedGuestData()
           },
       });
+      // let guestdata = guestData;
+      socket.emit("update_checkedin", guestData);
+      // socket.on('checked', function(data){
+      //   console.log('checked data', data);
+      //   console.log('hallo there')
+      //   guestdata.checkin = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
+      // })
     },
 
     checkGuestOut(guestData){
       let self = this;
-      let currentGuest  = document.getElementById(guestData.appointment_id)
-      console.log(guestData);
+      let socket = self.$store.state.socket
+      // let currentGuest  = document.getElementById(guestData.appointment_id)
+
       this.confirmDialog=false
       // remove current guest data from array
-      let currentGuestId = guestData.appointment_id
-      // self.ingecheckt.filter((item) => item.id !== currentGuestId);
-      let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
-      self.ingecheckt.splice(guestCheckedOut, 1)
+      // let currentGuestId = guestData.appointment_id
+      // let guestCheckedOut = self.ingecheckt.findIndex(item => item.appointment_id === currentGuestId);
+      // self.ingecheckt.splice(guestCheckedOut, 1)
 
       // currentGuest.classList.remove('zoomIn')
       // setTimeout(() => {
@@ -216,7 +323,7 @@ export default {
       // }, 100)
       // remove defenitely from the DOM
       // setTimeout(() => {
-        currentGuest.style.display = 'none'
+        // currentGuest.style.display = 'none'
       // }, 500)
       
       this.$store.dispatch("putReq", {
@@ -231,6 +338,7 @@ export default {
             // self.getScannedGuestData()
           },
       });
+      socket.emit("update_checkedout", guestData);
     },
   }
 };
@@ -240,9 +348,11 @@ export default {
 .primary-section {
   background-color: beige;
   min-height: 80vh;
+  height: auto;
 }
 .main-container {
   width: 100%;
+  height: auto;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -252,6 +362,8 @@ export default {
 }
 .data-table-container{
   width: 80%;
+  height: auto;
+  margin-bottom: 30px;
 }
 h1 {
   text-align: left;

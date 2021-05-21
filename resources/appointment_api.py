@@ -68,6 +68,7 @@ class AppointmentApi(Resource):
     @staticmethod
     @login_required
     def put(current_user, appointment_id):
+        from app import socketio
 
         json_data = request.get_json()
 
@@ -96,17 +97,20 @@ class AppointmentApi(Resource):
 
         try:
             data = edit_appointment_schema.load(json_data['body'])
-            print('daatttaaa', data)
+            
         except ValidationError as err:
             return err.messages, 422
         print(data)
 
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)
+            # broadcast the update to all screens
+            # socketio.emit('checked',  now.strftime("%Y-%m-%d %H:%M:%S"),
+            #             broadcast=True)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'Appointment does not exist'}
-
+        
         return {'appointment': appointment_schema.dump(edited_appointment)}, 200
