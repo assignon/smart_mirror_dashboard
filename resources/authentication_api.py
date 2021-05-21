@@ -1,4 +1,4 @@
-import os, smtplib, ssl, uuid
+import os, smtplib, ssl, uuid, random, string
 from dotenv import load_dotenv
 from flask import request, jsonify, make_response, session
 from flask_restful import Resource, abort
@@ -87,7 +87,10 @@ class PasswordManager(Resource):
                 # send_email(user, token)
                 # sla de token op in redis voor 24 uur.
                 # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
-                new_password = str(uuid.uuid4())
+                # get random password pf length 8 with letters, digits, and symbols
+                password_characters = string.ascii_letters + string.digits + string.punctuation
+                new_password = ''.join(random.choice(password_characters) for _ in range(16))
+
                 User.update_user(user.user_id, password=new_password)
                 send_email(user, new_password)
                 return {'succes': 'New password has been sent to your email.'}
