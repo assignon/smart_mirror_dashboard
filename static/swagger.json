@@ -28,8 +28,8 @@
       "description": "Operations about the whole Guest table, IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com"
     },
     {
-      "name": "Guest IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com",
-      "description": "Operations about specific Guest"
+      "name": "Guest",
+      "description": "Operations about specific Guest, IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com"
     },
     {
       "name": "AppointmentCollection",
@@ -38,6 +38,10 @@
     {
       "name": "Appointment",
       "description": "Operations about specific Appointment"
+    },
+    {
+      "name": "PasswordManager",
+      "description": "API for changing the password when the forgot their password"
     }
   ],
   "paths": {
@@ -570,8 +574,102 @@
           {"description": "Server Error"}
         }
     }
-
-  }
+  },
+    "/password": {
+      "get": {
+        "tags": ["PasswordManager"],
+        "summary": "get a special token via mail to change password",
+        "description": "this api returns a special token to the users email if the email exists in the user table.",
+        "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetPasswordToken"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetPasswordTokenResponse"
+              }
+            }
+          }
+        },
+        "400":
+          {"message": "Email does not exist"}
+        }
+      },
+      "post": {
+        "tags": ["PasswordManager"],
+        "summary": "validate the new_password token",
+        "description": "This api checks if the password is valid if it is valid it will send a response with a key 'Authorized' and value = True, if True the user can continue to change the password",
+        "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidatePasswordToken"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ValidatePasswordTokenResponse"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+      },
+      "put": {
+        "tags": ["PasswordManager"],
+        "summary": "updates the password in the database",
+        "description": "api receives the new_password token and the new password, the token is used again for security reasons. the new_password token is destroyed when the password has been updated",
+        "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditPassword"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/EditPasswordResponse"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+      }
+    }
 }
   ,
   "components": {
@@ -653,7 +751,7 @@
             "type": "string"
           },
           "phone_number": {
-            "type": "string",
+            "type": "string"
           },
           "company": {
             "type": "string"
@@ -759,7 +857,7 @@
                 "type": "string"
               },
               "phone_number": {
-                "type": "string",
+                "type": "string"
               },
               "company": {
                 "type": "string"
@@ -815,7 +913,79 @@
           }
 
         }
+      },
+      "GetPasswordToken":{
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": {
+            "type": "string"
+            }
+          }
+        },
+      "GetPasswordTokenResponse":{
+        "type": "object",
+        "properties": {
+            "token": {
+              "type": "string"
+            }
+          }
+        },
+      "ValidatePasswordToken":{
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "password_token": {
+            "type": "string"
+            }
+          }
+        },
+      "ValidatePasswordTokenResponse":{
+        "type": "object",
+        "properties": {
+            "Authenticated": {
+              "type": "boolean"
+            },
+          "user":{
+            "properties": {
+              "user_id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "is_admin": {
+                "type": "boolean"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+
+          }
+        },
+      "EditPassword": {
+        "type": "object",
+        "properties": {
+          "password_token": {
+            "type": "string"
+          },
+          "new_password": {
+            "type": "string"
+          }
+        }
+            },
+      "EditPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
       }
+
         
     }
   }
