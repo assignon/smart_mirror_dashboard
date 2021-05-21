@@ -1,14 +1,12 @@
-from datetime import datetime
-from settings import db
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKeyConstraint, ForeignKey, CheckConstraint, Boolean
+from settings import db, redis_db
+from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql.expression import desc
-from sqlalchemy import exc
 from .base_model import BaseMixin
 from .appointment_model import Appointment
-from .image_model import Image
 from datetime import datetime
+from sqlalchemy.sql import func
+
 
 class Guest(BaseMixin, db.Model):
     __tablename__ = 'Guest'
@@ -19,44 +17,20 @@ class Guest(BaseMixin, db.Model):
     company = Column(String(length=30))
     phone_number = Column(String(length=15), unique=True, nullable=False)
     license_plate = Column(String(length=30), unique=True)
-    consent_duration = Column(Integer, nullable=False)
-    appointments = relationship( "Appointment", order_by= "desc(Appointment.appointment_id)",lazy='joined', back_populates="guest")
-    images = relationship("Image", order_by="desc(Image.image_id)", back_populates="guest")
-    
+    consent_expire_date = Column(Integer)
+    appointments = relationship("Appointment", order_by="desc(Appointment.appointment_id)", lazy='joined',
+                                back_populates="guest")
 
     def __repr__(self):
         return f'Hallo ik ben {self.name}'
-
 
     def add_appointment(self, employee_name):
         """
         add an new appointment in the database
         Input: employee_name
         """
-        Appointment.create(employee_name=employee_name, guest_id = self.guest_id)
+        Appointment.create(employee_name=employee_name, guest_id=self.guest_id)
 
-
-    def add_images(self, filepath_images):
-        """
-        Hie komt functie om 1 of meedere afbeeldingen toe tevoegen aan guest
-        """
-
-        current_date = datetime.today()
-        new_images = [Image(filepath=filepath_image, guest_id=self.guest_id, date=current_date) for filepath_image in filepath_images]
-        db.session.add_all(new_images)
-        db.session.commit()
-    
-
-    def get_images(self):
-        
-        images = db.session.query(Image).filter_by(guest_id=self.guest_id).all()
-        
-        return images
-    
-    def delete_images(self):
-        db.session.query(Image).filter_by(guest_id=self.guest_id).delete()
-        db.session.commit()
-    
 
     @staticmethod
     def update_guest(guest_id, **kwargs):
@@ -69,14 +43,13 @@ class Guest(BaseMixin, db.Model):
         guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()
 
         if guest:
-            for column, value in kwargs.items():  
-                setattr(guest, column, value) 
+            for column, value in kwargs.items():
+                setattr(guest, column, value)
 
             db.session.commit()
             return guest
-        else: 
+        else:
             raise NoResultFound
-        
 
     @staticmethod
     def get_guest(guest_id):
@@ -84,13 +57,16 @@ class Guest(BaseMixin, db.Model):
         This function returns a guest object based on the guest_id
         """
 
-        guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()     
+        guest = db.session.query(Guest).filter_by(guest_id=guest_id).first()
         if guest:
             return guest
-        else: 
+        else:
             raise NoResultFound
-    
+
     @staticmethod
     def delete_guest(guest_id):
         db.session.query(Guest).filter_by(guest_id=guest_id).delete()
         db.session.commit()
+        r.delete("guest:" + str(guest_id))
+        r.zrem("guest_ids", guest_id)
+

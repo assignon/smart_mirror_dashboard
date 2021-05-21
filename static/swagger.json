@@ -1,0 +1,992 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Smart-Mirror-API",
+    "description": "API voor de Smart-Mirror Dasboard. Authenticatie via Swagger UI is nog niet gelukt, maar om deze api's te gebruiken moet je ingelogd zijn. Na het het inloggen ontvang je een 'x-access-token' deze zet je in de header van je requests naar de api's.",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "Sebastiaan",
+      "email": "sebastiaan.cales@student.hu.nl"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags":[
+    {
+      "name": "UserCollection",
+      "description": "Operations about the whole User table"
+    },
+    {
+      "name": "User",
+      "description": "Operations about specific User"
+    },
+    {
+      "name": "GuestCollection",
+      "description": "Operations about the whole Guest table, IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com"
+    },
+    {
+      "name": "Guest",
+      "description": "Operations about specific Guest, IMPORTANT: consent-expire-date is in unixtime see: https://www.unixtimestamp.com"
+    },
+    {
+      "name": "AppointmentCollection",
+      "description": "Operations about the whole Appointment table"
+    },
+    {
+      "name": "Appointment",
+      "description": "Operations about specific Appointment"
+    },
+    {
+      "name": "PasswordManager",
+      "description": "API for changing the password when the forgot their password"
+    }
+  ],
+  "paths": {
+    "/users":{
+      "get":{
+        "tags": ["UserCollection"],
+        "summary": "get all the Users that exists in the database",
+        "description": "This resource represents the collection of all users in the system. Each user is identified by a numeric `user_id`.",
+        "responses": {
+          "200": {
+            "description": "get users response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetUser"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post":{
+        "tags": ["UserCollection"],
+        "summary": "add a new user to the database",
+        "requestBody": {
+          "description": "User to add in the system",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUser"
+              }
+            }
+          }
+        },
+        "responses":{
+          "200":{
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetUser"
+                }
+              }
+            }
+          },
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+    },
+    "/users/{user_id}":{
+      "delete":{
+        "tags": ["UserCollection"],
+        "summary": "delete user from the database",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to delete",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "responses":{
+          "200":{
+            "description": "successful operation"},
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+    },
+    "/user/{user_id}":{
+      "get":{
+        "tags": ["User"],
+        "summary": "get specific user from the database",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to get",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "responses": {
+          "200":{
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetUser"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put":{
+        "tags": ["User"],
+        "summary": "Edit the specified user",
+        "description": "Edit the specified user, none of the fields in the schema are required but if you want to change the 'password' it is expected that there is also a 'new_password' field in the request body",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to edit",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "requestBody": {
+          "description": "Edit the user settings, like email or password.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUser"
+              }
+            }
+          }
+        },
+        "responses":{
+          "200":{
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetUser"
+                }
+              }
+            }
+          },
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+    ,
+        "/users":{
+      "get":{
+        "tags": ["UserCollection"],
+        "summary": "get all the Users that exists in the database",
+        "description": "This resource represents the collection of all users in the system. Each user is identified by a numeric `user_id`.",
+        "responses": {
+          "200": {
+            "description": "get users response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetUser"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post":{
+        "tags": ["UserCollection"],
+        "summary": "add a new user to the database",
+        "requestBody": {
+          "description": "User to add in the system",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUser"
+              }
+            }
+          }
+        },
+        "responses":{
+          "200":{
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetUser"
+                }
+              }
+            }
+          },
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+    },
+    "/users/{user_id}":{
+      "delete":{
+        "tags": ["UserCollection"],
+        "summary": "delete user from the database",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to delete",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "responses":{
+          "200":{
+            "description": "successful operation"},
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+    },
+    "/user/{user_id}":{
+      "get":{
+        "tags": ["User"],
+        "summary": "get specific user from the database",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to delete",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "responses": {
+          "200":{
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetUser"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put":{
+        "tags": ["User"],
+        "summary": "Edit the specified user",
+        "description": "Edit the specified user, none of the fields in the schema are required but if you want to change the 'password' it is expected that there is also a 'new_password' field in the request body",
+        "parameters":[{
+          "name": "user_id",
+          "in": "path",
+          "description": "id of user to edit",
+          "required": true,
+          "type": "integer",
+          "format": "int64"
+        }],
+        "requestBody": {
+          "description": "Edit the user settings, like email or password.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditUser"
+              }
+            }
+          }
+        },
+        "responses":{
+          "200":{
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/GetUser"
+                }
+              }
+            }
+          },
+          "400":
+            {"description": "Server Error"}
+          }
+      }
+
+    }
+    },
+  "/guests":{
+    "get":{
+      "tags": ["GuestCollection"],
+      "summary": "get all the Guests that exists in the database",
+      "description": "This resource represents the collection of all Guests in the system. Each guest is identified by a numeric `guest_id`.",
+      "responses": {
+        "200": {
+          "description": "get guests response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GetGuest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post":{
+      "tags": ["GuestCollection"],
+      "summary": "add a new guest to the database",
+      "requestBody": {
+        "description": "Guest to add in the system",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateGuest"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetGuest"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+  "/guests/{guest_id}":{
+    "delete":{
+      "tags": ["GuestCollection"],
+      "summary": "delete guest from the database",
+      "parameters":[{
+        "name": "guest_id",
+        "in": "path",
+        "description": "id of guest to delete",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "responses":{
+        "200":{
+          "description": "successful operation"},
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+  "/guest/{guest_id}":{
+    "get":{
+      "tags": ["Guest"],
+      "summary": "get specific guest from the database",
+      "parameters":[{
+        "name": "guest_id",
+        "in": "path",
+        "description": "id of guest to get",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "responses": {
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetGuest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "put":{
+      "tags": ["Guest"],
+      "summary": "Edit the specified guest",
+      "description": "Edit the specified guest, none of the fields in the schema are required ",
+      "parameters":[{
+        "name": "guest_id",
+        "in": "path",
+        "description": "id of guest to edit",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "requestBody": {
+        "description": "Edit the guest information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditGuest"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetGuest"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+
+  },
+  "/appointments":{
+    "get":{
+      "tags": ["AppointmentCollection"],
+      "summary": "get all the Appointments that exists  where 'checked_out' is null in the database",
+      "description": "This resource represents the collection of all Appointments in the system. Each appointment is identified by a numeric `appointment_id`.",
+      "responses": {
+        "200": {
+          "description": "get appointments response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GetAppointment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "post":{
+      "tags": ["AppointmentCollection"],
+      "summary": "add a new appointment to the database",
+      "requestBody": {
+        "description": "Appointment to add in the system",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateAppointment"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetAppointment"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+  "/appointments/{appointment_id}":{
+    "delete":{
+      "tags": ["AppointmentCollection"],
+      "summary": "delete appointment from the database",
+      "parameters":[{
+        "name": "appointment_id",
+        "in": "path",
+        "description": "id of appointment to delete",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "responses":{
+        "200":{
+          "description": "successful operation"},
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+  "/appointment/{appointment_id}":{
+    "put":{
+      "tags": ["Appointment"],
+      "summary": "Edit the specified appointment",
+      "description": "Edit the specified appointment, none of the fields in the schema are required ",
+      "parameters":[{
+        "name": "appointment_id",
+        "in": "path",
+        "description": "id of appointment to edit",
+        "required": true,
+        "type": "integer",
+        "format": "int64"
+      }],
+      "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditAppointment"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetAppointment"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+    }
+  },
+    "/password": {
+      "get": {
+        "tags": ["PasswordManager"],
+        "summary": "get a special token via mail to change password",
+        "description": "this api returns a special token to the users email if the email exists in the user table.",
+        "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetPasswordToken"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/GetPasswordTokenResponse"
+              }
+            }
+          }
+        },
+        "400":
+          {"message": "Email does not exist"}
+        }
+      },
+      "post": {
+        "tags": ["PasswordManager"],
+        "summary": "validate the new_password token",
+        "description": "This api checks if the password is valid if it is valid it will send a response with a key 'Authorized' and value = True, if True the user can continue to change the password",
+        "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidatePasswordToken"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ValidatePasswordTokenResponse"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+      },
+      "put": {
+        "tags": ["PasswordManager"],
+        "summary": "updates the password in the database",
+        "description": "api receives the new_password token and the new password, the token is used again for security reasons. the new_password token is destroyed when the password has been updated",
+        "requestBody": {
+        "description": "Edit the appointment information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditPassword"
+            }
+          }
+        }
+      },
+      "responses":{
+        "200":{
+          "description": "successful operation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/EditPasswordResponse"
+              }
+            }
+          }
+        },
+        "400":
+          {"description": "Server Error"}
+        }
+      }
+    }
+}
+  ,
+  "components": {
+    "schemas": {
+      "GetUser": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "is_admin": {
+                "type": "boolean"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }  
+      ,
+      "CreateUser":{
+        "type": "object",
+        "required": [
+          "name", "email", "password", "is_admin"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "is_admin": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password":{
+            "type": "string"
+          }          
+        }
+      },
+      "EditUser":{
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "is_admin": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password":{
+            "type": "string"
+          },
+          "new_password":{
+            "type": "string"
+          }
+        }
+      }
+      ,
+      "GetGuest": {
+        "type": "object",
+        "properties": {
+          "guest_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "license_plate": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "consent_expire_date": {
+            "type": "integer"
+          }
+        }
+      },
+      "CreateGuest": {
+        "type": "object",
+        "required": [
+          "name", "email", "password", "is_admin", "phone_number", "consent_expire_date"
+        ],
+        "properties": {
+          "guest_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "license_plate": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "consent_expire_date": {
+            "type": "integer"
+          }
+
+        }
+      },
+      "EditGuest": {
+        "type": "object",
+        "properties": {
+          "guest_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "license_plate": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "consent_expire_date": {
+            "type": "integer"
+          }
+        }
+      },
+      "GetAppointment": {
+        "type": "object",
+        "properties": {
+          "appointment_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "checked_in": {
+            "type": "string"
+          },
+          "checked_out": {
+            "type": "string"
+          },
+          "has_pass": {
+            "type": "boolean"
+          },
+          "employee_name": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "guest": {
+            "properties": {
+              "guest_id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "license_plate": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phone_number": {
+                "type": "string"
+              },
+              "company": {
+                "type": "string"
+              },
+              "consent_expire_date": {
+                "type": "integer"
+              }
+          }
+        }
+
+          }
+        }
+      ,
+      "CreateAppointment": {
+        "type": "object",
+        "required": [
+          "employee_name", "guest_id"
+        ],
+        "properties":{
+          "checked_in": {
+            "type": "string"
+          },
+          "checked_out": {
+            "type": "string"
+          },
+          "has_pass": {
+            "type": "boolean"
+          },
+          "employee_name": {
+            "type": "string"
+          },
+          "guest_id": {
+            "type": "integer",
+            "format": "int64"
+          }
+
+        
+      }},
+      "EditAppointment": {
+        "type": "object",
+        "properties": {
+          "checked_in": {
+            "type": "string"
+          },
+          "checked_out": {
+            "type": "string"
+          },
+          "has_pass": {
+            "type": "boolean"
+          },
+          "employee_name": {
+            "type": "string"
+          }
+
+        }
+      },
+      "GetPasswordToken":{
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": {
+            "type": "string"
+            }
+          }
+        },
+      "GetPasswordTokenResponse":{
+        "type": "object",
+        "properties": {
+            "token": {
+              "type": "string"
+            }
+          }
+        },
+      "ValidatePasswordToken":{
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "password_token": {
+            "type": "string"
+            }
+          }
+        },
+      "ValidatePasswordTokenResponse":{
+        "type": "object",
+        "properties": {
+            "Authenticated": {
+              "type": "boolean"
+            },
+          "user":{
+            "properties": {
+              "user_id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "is_admin": {
+                "type": "boolean"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+
+          }
+        },
+      "EditPassword": {
+        "type": "object",
+        "properties": {
+          "password_token": {
+            "type": "string"
+          },
+          "new_password": {
+            "type": "string"
+          }
+        }
+            },
+      "EditPasswordResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+
+        
+    }
+  }
+}
