@@ -5,8 +5,8 @@ from settings import app, rest_api
 from routes import api_routes
 
 app.secret_key = "sunnySideUp-smartMirror"
-bcrypt = Bcrypt(app)
-rest_api = Api(app)
+# bcrypt = Bcrypt(app)
+# rest_api = Api(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 CORS(app)
