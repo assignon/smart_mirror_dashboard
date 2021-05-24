@@ -11,10 +11,10 @@
           <v-dialog v-model="add_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                  class="blue darken-1 mt-9 mb-12"
-                  rounded
-                  v-bind="attrs"
-                  v-on="on"
+                class="blue darken-1 mt-9 mb-12"
+                rounded
+                v-bind="attrs"
+                v-on="on"
               >
                 <v-icon color="white">mdi-account-plus-outline</v-icon>
               </v-btn>
@@ -28,33 +28,33 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_user.name"
-                          label="Name*"
-                          required
+                        v-model="new_user.name"
+                        label="Name*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_user.email"
-                          label="Email*"
-                          required
+                        v-model="new_user.email"
+                        label="Email*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_user.password"
-                          label="Password*"
-                          type="password"
-                          required
+                        v-model="new_user.password"
+                        label="Password*"
+                        type="password"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-select
-                          v-model="new_user.is_admin"
-                          :items="adminBool"
-                          item-value="val"
-                          label="Admin*"
-                          required
+                        v-model="new_user.is_admin"
+                        :items="adminBool"
+                        item-value="val"
+                        label="Admin*"
+                        required
                       ></v-select>
                     </v-col>
                   </v-row>
@@ -63,13 +63,16 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="add_dialog = false">
+                <v-btn color="red darken-1" text @click="add_dialog = false">
                   Sluiten
                 </v-btn>
                 <v-btn
-                    color="green darken-1"
-                    text
-                    @click="(add_dialog = false), newUser()"
+                  color="green darken-1"
+                  text
+                  @click="
+                    add_dialog = false;
+                    newUser();
+                  "
                 >
                   Toevoegen
                 </v-btn>
@@ -88,10 +91,10 @@
               <!-- Delete Button -->
               <td :class="row.item.name.replace(/ /g, '') + row.item.id">
                 <v-btn
-                    class="mx-2 red darken-3"
-                    rounded
-                    elevation="2"
-                    @click.stop="confirmationDialog(row.item)"
+                  class="mx-2 red darken-3"
+                  rounded
+                  elevation="2"
+                  @click.stop="confirmationDialog(row.item)"
                 >
                   <v-icon color="white">
                     mdi-delete
@@ -99,69 +102,21 @@
                 </v-btn>
               </td>
               <!-- Edit Button -->
-              <td>
-                <v-dialog v-model="edit_dialog" persistent max-width="600px">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        class="mx-2 green darken-3"
-                        rounded
-                        v-bind="attrs"
-                        v-on="on"
-                    >
-                      <v-icon color="white">mdi-wrench</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-title>
-                      <span class="headline">Gebruiker bewerken</span>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="12">
-                            <v-text-field
-                                label="Email*"
-                                v-model="row.item.email"
-                                required
-                            ></v-text-field>
-                          </v-col>
-                          <v-col cols="12">
-                            <v-select
-                                :items="['True', 'False']"
-                                label="Admin*"
-                                v-model="row.item.admin"
-                                required
-                            ></v-select>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                      <small>*Verplichte velden</small>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                          color="blue darken-1"
-                          text
-                          @click="edit_dialog = false"
-                      >
-                        Sluiten
-                      </v-btn>
-                      <v-btn
-                          color="green darken-1"
-                          text
-                          @click="edit_dialog = false"
-                      >
-                        Toevoegen
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
+              <td :class="row.item.name.replace(/ /g, '') + row.item.id">
+                <v-btn
+                  class="mx-2 green darken-3"
+                  rounded
+                  @click.stop="editDialog(row.item)"
+                >
+                  <v-icon color="white">mdi-wrench</v-icon>
+                </v-btn>
               </td>
             </tr>
           </template>
         </v-data-table>
       </div>
     </div>
+    <!-- Del Dialoge -->
     <v-dialog v-model="del_dialog" max-width="290">
       <v-card>
         <v-card-title class="headline">
@@ -173,12 +128,58 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-              color="red darken-1"
-              align="center"
-              text
-              @click="delUser(currentUserData)"
+            color="red darken-1"
+            align="center"
+            text
+            @click="delUser(currentUserData)"
           >
             Verwijderen
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- Edit Dialoge -->
+    <v-dialog v-model="edit_dialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Gebruiker bewerken</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="Naam*"
+                  v-model="edit_user.name"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  label="Email*"
+                  v-model="edit_user.email"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-select
+                  :items="['True', 'False']"
+                  label="Admin*"
+                  v-model="edit_user.is_admin"
+                  required
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*Verplichte velden</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text @click="edit_dialog = false">
+            Sluiten
+          </v-btn>
+          <v-btn color="green darken-1" text @click="edit_dialog = false; editUser(currentUserData)">
+            Bevestigen
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -187,16 +188,15 @@
 </template>
 
 <script>
-// import UserModal from "./components/UserModal";
-
 export default {
   name: "Admin",
   data() {
     return {
       new_user: {},
+      edit_user: {},
       adminBool: [
-        {text: "Ja", val: true},
-        {text: "Nee", val: false}
+        { text: "Ja", val: true },
+        { text: "Nee", val: false }
       ],
       add_dialog: false,
       del_dialog: false,
@@ -252,11 +252,11 @@ export default {
     allUsersData() {
       let self = this;
       this.$store.dispatch("getReq", {
-        url: "/users",
+        url: "users",
         params: {},
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           res.data.users.forEach(data => {
             let userdata = {
               id: data.user_id,
@@ -283,7 +283,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           if (res.status === 200) {
             console.log("OK");
           } else {
@@ -298,23 +298,27 @@ export default {
       this.currentUserData = userData;
     },
 
-    instellingen() {
-      let self = this;
-      this.$store.dispatch("putReq", {
-        url: `instellingen/${self.session.id}`,
-        params: {},
-        auth: self.$session.get('token'),
-        csrftoken: self.$session.get('token'),
-        xaccesstoken: self.$session.get('token'),
-        callback: function(data) {
-          data;
-        }
-      });
+    editDialog(userData) {
+      this.edit_dialog = true;
+      this.currentUserData = userData;
     },
 
-    checkUser() {
+    editUser(userData) {
       let self = this;
-      self.delUser(self.currentUserData);
+      this.$store.dispatch("putReq", {
+        url: `user/${userData.id}`,
+        params: {
+          name: this.edit_user.name,
+          email: this.edit_user.email,
+          is_admin: this.edit_user.is_admin
+        },
+        auth: self.$session.get("token"),
+        csrftoken: self.$session.get("token"),
+        xaccesstoken: self.$session.get("token"),
+        callback: function(data) {
+          console.log(data);
+        }
+      });
     },
 
     delUser(userData) {
@@ -325,7 +329,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (data) {
+        callback: function(data) {
           console.log(data);
         }
       });
