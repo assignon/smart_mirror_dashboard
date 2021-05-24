@@ -73,12 +73,12 @@ class UserCollection(Resource):
 
         # remove whitespaces from input
 
-        remove_whitespace(json_data)
+        remove_whitespace(json_data['body'])
 
         # Validate and deserialize input
-
+        print(json_data)
         try:
-            data = user_schema.load(json_data)
+            data = user_schema.load(json_data['body'])
         except ValidationError as err:
             return err.messages, 422
 
@@ -130,7 +130,7 @@ class UserApi(Resource):
         if current_user.user_id != user_id and current_user.is_admin is False:
             return {"message": "Not authorized to edit this user!"}
 
-        json_data: dict = request.get_json()
+        json_data: dict = request.get_json()['data']
         if not json_data:
             return {"message": "No input data provided"}, 400
 
