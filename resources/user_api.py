@@ -130,7 +130,7 @@ class UserApi(Resource):
         if current_user.user_id != user_id and current_user.is_admin is False:
             return {"message": "Not authorized to edit this user!"}
 
-        json_data: dict = request.get_json()['data']
+        json_data: dict = request.get_json()['body']
         if not json_data:
             return {"message": "No input data provided"}, 400
 
