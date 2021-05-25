@@ -127,10 +127,12 @@ class UserApi(Resource):
         """
         Edit user. Users can only edit their own user settings, exception is made for admins
         """
+
         if current_user.user_id != user_id and current_user.is_admin is False:
             return {"message": "Not authorized to edit this user!"}
 
-        json_data: dict = request.get_json()
+        json_data: dict = request.get_json()["body"]
+        print(json_data)
         if not json_data:
             return {"message": "No input data provided"}, 400
 
