@@ -1,5 +1,12 @@
 <template>
   <div class="login-core">
+    <v-alert
+      color="blue"
+      dense
+      type="success"
+      v-model="succes_new_password">
+      A new password has been sent to your email
+      </v-alert>
     <h1 class="display-3 mb-15 mt-16">Sogeti Mirror Login</h1>
     <form @submit.prevent="signIn" class="login-form">
       <!--      <input type="text" name="username" v-model="input.username" placeholder="Username"/>-->
@@ -16,7 +23,71 @@
         type="password"
       ></v-text-field>
       <div class='btn-container'>
-        <p style='color:#0070ad;cursor:pointer'>Wachtwoord vergeten?</p>
+        <!-- <p style='color:#0070ad;cursor:pointer'>Wachtwoord vergeten?</p> -->
+        <template>
+          <v-row justify="center">
+            <v-dialog
+              v-model="dialog"
+              persistent
+              max-width="600px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <p
+                  color="primary"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                  style='color:#0070ad;cursor:pointer'>
+                  Wachtwoord vergeten?
+                </p>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="headline">Wachtwoord Vergeten</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                      >
+                        <p>
+                          Voer hier uw email in. Er wordt een nieuw wachtwoord gestuurd naar je email. Deze wacthwoord kunt u na het inloggen veranderen in de settings.
+                        </p>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          label="Email"
+                          name="email_forget_password"
+                          v-model="input.email_forget_password"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <small style="color:red;">{{password_error}}</small>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="dialog = false"
+                  >
+                    Close
+                  </v-btn>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    v-on:click="new_password"
+                  >
+                    Save
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-row>
+        </template>
         <v-btn elevation="6" color='#0070ad' rounded v-on:click="submit" class="pa-5">
           <span style='color:white;text-transform: capitalize'>Login <v-icon small>fas fa-chevron-right</v-icon></span>
         </v-btn>
@@ -38,20 +109,23 @@ export default {
   components: {
     Notifications
   },
-
   data() {
     return {
       notificationText: '',
       input: {
         email: "",
-        password: ""
+        password: "",
+        email_forget_password: ""
       },
-      showError: false
+      showError: false,
+      dialog: false,
+      succes_new_password: false,
+      password_error: "" 
     };
   },
   created() {
     // this.userConnected();
-    this.userDisconnected();
+    // this.userDisconnected();
     this.user_joinded()
   },
 
@@ -141,6 +215,35 @@ export default {
         self.$store.state.notificationStatus = true
         // formErrMsg.innerHTML = "Email and password should not be empty";
       }
+    },
+    new_password(){
+      console.log("NEW PASSWORD FUNCTIE");
+      let self = this;
+        if (this.input.email_forget_password != ''){      
+
+              this.$store.dispatch("getReq", {
+                url: "password",
+                params: {
+                email: this.input.email_forget_password
+              },
+              callback: function(res) {         
+                if (res.data.message){
+                  //geef aan wat er fout is gegaan
+                  console.log(self.password_error);
+                  self.password_error = res.data.message;
+                }
+                else{
+                  // geef aan dat het gelukt is en dat de gebruiker zijn mail moet checken
+                  self.succes_new_password = true;
+                  self.dialog = false;
+                }
+               
+              }
+            })
+        } 
+        else {
+          this.password_error = "Email should not be empty";
+        }
     },
   }
 };

@@ -61,8 +61,8 @@ class CreateAppointmentSchema(ma.SQLAlchemyAutoSchema):
 def password_check(password):
     if len(password) < 3:
         raise ValidationError("password length must be greater than 3.")
-    if len(password) > 30:
-        raise ValidationError("password must not be greater than 30.")
+    if len(password) > 100:
+        raise ValidationError("password must not be greater than 100.")
 
 
 # Autoschema maakt automatisch voor ieder column een field aan en voegt het toe aan de schema.

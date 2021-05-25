@@ -7,6 +7,8 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
+import redis
+
 
 
 
@@ -16,7 +18,10 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 
 
-app = Flask(__name__, static_url_path='/static', template_folder="templates")
+# app = Flask(__name__, static_url_path='/', static_folder="../frontend/dist/", template_folder="templates")
+# app = Flask(__name__, static_url_path='/static', template_folder="templates")
+app = Flask(__name__, static_folder = "./frontend/dist/static",
+            template_folder = "./frontend/dist")
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'
@@ -54,10 +59,11 @@ app.config['JWT_SECRET_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# mysql conf
+# Redis connection
+redis_db = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
+                      password=os.getenv('REDIS_PASSWORD'))
 
-
-## api settings
+# api settings
 rest_api = Api(app)
 
 
