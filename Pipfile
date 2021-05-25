@@ -46,6 +46,7 @@ Flask-JWT-Extended = "==4.1.0"
 Flask-RESTful = "==0.3.8"
 Flask-SocketIO = "==5.0.1"
 PyJWT = "==1.7.1"
+gunicorn = "*"
 
 [dev-packages]
 
