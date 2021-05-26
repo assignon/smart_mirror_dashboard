@@ -103,11 +103,14 @@ class RedisDatabase:
         cache_id_with_unixtime = [(pair[0].decode('utf-8'), pair[1]) for pair in cache_id_in_bytes_with_unixtime]
         return cache_id_with_unixtime
 
-    def label_unknown_embeddings(self, cache_id, guest_id):
+    def label_unknown_embeddings(self, cache_id, guest_id, consent_expire_date):
         """Voegt de unknown embeddings toe aan de aangewezen gast en verwijdert de key waarin de unkown embeddings
         stonden"""
         embeddings = self.session.lrange('unknown_embeddings:' + str(cache_id), 0, -1)
+
         self.session.rpush('guest:' + str(guest_id), *embeddings)
+        self.session.expireat("guest:" + str(guest_id), consent_expire_date)
+        self.session.zadd("guest_ids", {guest_id: consent_expire_date})
         self.session.zrem('cache_ids', cache_id)
         self.session.delete('unknown_embeddings' + str(cache_id))
 

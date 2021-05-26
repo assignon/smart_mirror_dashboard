@@ -48,7 +48,7 @@ class RedisCache(Resource):
         except NoResultFound:
             return {"error": "Specified guest_id does not exist in the database"}
 
-        redis_db.label_unknown_embeddings(cache_id, guest.guest_id)
+        redis_db.label_unknown_embeddings(cache_id, guest.guest_id, guest.consent_expire_date)
         return 200
 
     @staticmethod
