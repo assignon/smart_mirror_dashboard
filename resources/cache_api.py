@@ -1,7 +1,6 @@
 from flask_restful import Resource, reqparse, abort
 from flask import request, jsonify, make_response
 from settings import ma, db, redis_db
-from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
@@ -33,7 +32,7 @@ class RedisCache(Resource):
 
         if cache_id not in redis_db.get_cache_ids():
             return {"error": "invalid cache_id!"}
-        print(Guest.get_guest(10000))
+
         json_data: dict = request.get_json()
         if not json_data:
             return {" error": "JSON missing :("}

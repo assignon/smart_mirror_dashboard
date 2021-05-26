@@ -6,6 +6,8 @@ import Gastenlijst from "@/views/Ingecheckt";
 import Clients from "@/views/Clients";
 import Instellingen from "@/views/Instellingen";
 import Admin from "@/views/Admin";
+import component from "vuetify/src/util/component";
+import Cache from "../views/Cache";
 
 Vue.use(VueRouter);
 
@@ -43,6 +45,11 @@ const routes = [
     path: "/Admin",
     name: "Admin",
     component: Admin
+  },
+  {
+    path: "/cache",
+    name: "Cache",
+    component: Cache
   }
   // {
   //   path: "/about",
