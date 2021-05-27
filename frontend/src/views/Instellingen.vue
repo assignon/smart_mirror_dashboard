@@ -47,6 +47,7 @@
     >
       Bevestigen
     </v-btn>
+    <Notifications :content='notificationText' :color='notificationColor'/>
   </div>
 </template>
 
@@ -55,10 +56,11 @@
 // import Popup from '../components/modals/Popup.vue';
 import succesAlert from '../components/modals/succesAlert.vue';
 import failureAlert from '../components/modals/failureAlert.vue';
+import Notifications from "../components/modals/Notifications";
 
 export default {
   name: "Instellingen",
-  components: { succesAlert, failureAlert }, 
+  components: { succesAlert, failureAlert, Notifications }, 
   data() {
     return {
       valid: true,
@@ -83,7 +85,9 @@ export default {
       showError: false,
       dialog: false,
       succes_new_password: false,
-      password_error: "" 
+      password_error: "", 
+      notificationText: "",
+      notificationColor: ""
     };
   },
 
@@ -98,24 +102,32 @@ export default {
       let self = this;
       this.error = null;
       if (self.input.password_new == self.input.password_new_repeat && self.input.password_new != ""){
-        try{
-          this.$store.dispatch("putReq", {
-          url: "user/"+this.$session.getAll()['userId']+"",
-          params: {
-            "password": self.input.password_old,
-            "new_password": self.input.password_new,
-          },
-          auth: self.$session.get('token'),
-          csrftoken: self.$session.get('token'),
-          xaccesstoken: self.$session.get('token'),
-          callback: function(data) {
-            console.log(data)
+        this.$store.dispatch("putReq", {
+        url: "user/"+this.$session.getAll()['userId']+"",
+        params: {
+          "password": self.input.password_old,
+          "new_password": self.input.password_new,
+        },
+        auth: self.$session.get('token'),
+        csrftoken: self.$session.get('token'),
+        xaccesstoken: self.$session.get('token'),
+        callback: function(data) {
+          // self.password_error = data.error;
+          if (data.error != "") {
+            console.log(data.error)
+            self.notificationText = data.error;
+            self.notificationColor = "blue";
           }
-        });
-        } catch(err){
-          this.error = err.message;
-          console.log(this.error)
+          else {
+            console.log("error is none")
+            self.notificationText = "Password changed successfully";
+            self.notificationColor = "green";
+          }
+          self.$store.state.notificationStatus = true
+          console.log(data.error)
+          console.log(data.message)
         }
+      });
       }
     }
   }

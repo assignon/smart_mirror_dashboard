@@ -129,12 +129,12 @@ class UserApi(Resource):
         """
 
         if current_user.user_id != user_id and current_user.is_admin is False:
-            return {"message": "Not authorized to edit this user!"}
+            return {"error": "Not authorized to edit this user!"}
 
         json_data: dict = request.get_json()["body"]
         print(json_data)
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
@@ -146,7 +146,7 @@ class UserApi(Resource):
             try: 
                 user_to_be_updated = User.get_user(user_id)
             except NoResultFound:
-                return {'message': 'User does not exist!'}
+                return {'error': 'User does not exist!'}
 
         try:
             if json_data['new_password'] != '' and user_to_be_updated.check_password(json_data['password']):
