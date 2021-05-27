@@ -18,7 +18,10 @@ import redis
 
 
 
-app = Flask(__name__, static_url_path='/static', template_folder="templates")
+# app = Flask(__name__, static_url_path='/', static_folder="../frontend/dist/", template_folder="templates")
+# app = Flask(__name__, static_url_path='/static', template_folder="templates")
+app = Flask(__name__, static_folder = "./frontend/dist/static",
+            template_folder = "./frontend/dist")
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'

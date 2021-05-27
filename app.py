@@ -10,20 +10,44 @@ import time, datetime
 app.secret_key = "sunnySideUp-smartMirror"
 # bcrypt = Bcrypt(app)
 rest_api = Api(app)
-socketio = SocketIO(app, cors_allowed_origins='*', async_mode=None)
-# socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080') // use this live with the live url
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 CORS(app)
 cors = CORS(app, resources={
     r"/*": {
-        "origins": "*"
+        "Access-Control-Allow-Origin": "*"
     }
 })
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template("index.html")
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
+# @app.route('/')
+# def index():
+#     # return app.send_static_file('index.html')
+#     return render_template("index.html")
+
+# @app.route('/login')
+# def index():
+#     return app.send_static_file('index.html')
+
+# @app.route('/ingecheckt')
+# def ingecheckt():
+#     return app.send_static_file('index.html')
+
+# @app.route('/clients')
+# def clients():
+#     return app.send_static_file('index.html')
+
+# @app.route('/instellingen')
+# def instellingen():
+#     return app.send_static_file('index.html')
+
+# @app.route('/')
+# def hello_world():
+#     return 'Hello, World!'
 
 @socketio.on('connect')
 def user_connect():
@@ -83,5 +107,5 @@ api_routes(rest_api)
 
 
 if __name__ == 'main':
-    socketio.run(app)
-    # app.run()
+    # socketio.run(app)
+    app.run()

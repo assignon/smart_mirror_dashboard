@@ -73,13 +73,14 @@ class UserCollection(Resource):
 
         # remove whitespaces from input
 
-        remove_whitespace(json_data)
+        remove_whitespace(json_data['body'])
 
         # Validate and deserialize input
-
+        print(json_data)
         try:
-            data = user_schema.load(json_data)
+            data = user_schema.load(json_data['body'])
         except ValidationError as err:
+            print(json_data)
             return err.messages, 422
 
         try:
@@ -160,6 +161,8 @@ class UserApi(Resource):
                 data = edit_user_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
+        except KeyError as err:
+            data = edit_user_schema.load(json_data)
 
         try:
             edited_user = User.update_user(user_id, **data)

@@ -27,7 +27,7 @@ def login_required(fun):
             if current_user is None:
                 return jsonify({'error': 'The user_id is invalid'})
         except Exception as e:
-            print('excceepptttionnnn',e)
+            print('excceepptttionnnn', e)
             return jsonify({'message': 'Token is invalid!'})
 
         return fun(current_user, *args, **kwargs)
@@ -88,7 +88,7 @@ class PasswordManager(Resource):
                 # sla de token op in redis voor 24 uur.
                 # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
                 # get random password pf length 8 with letters, digits, and symbols
-                password_characters = string.ascii_letters + string.digits + string.punctuation
+                password_characters = string.ascii_letters + string.digits + '!?'
                 new_password = ''.join(random.choice(password_characters) for _ in range(16))
 
                 User.update_user(user.user_id, password=new_password)
@@ -98,9 +98,6 @@ class PasswordManager(Resource):
                 return {'message': 'This email is not recognized.'}
         else:
             return {"message": "Email not provided in the data"}
-
-
-
 
     @staticmethod
     def post():
@@ -158,6 +155,7 @@ class PasswordManager(Resource):
 
 load_dotenv('../.env')
 
+
 def send_email(user, new_password):
     port = 465  # For SSL
 
@@ -167,7 +165,7 @@ def send_email(user, new_password):
     password = os.getenv('EMAIL_PASSWORD')
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-        message =f"""\
+        message = f"""\
         Subject: Change Password\n
         
         Hi {user.name}, You forgot your password :(\n 
@@ -180,4 +178,3 @@ def send_email(user, new_password):
 
         server.login(sender, password)
         server.sendmail(sender, user.email, message)
-        
