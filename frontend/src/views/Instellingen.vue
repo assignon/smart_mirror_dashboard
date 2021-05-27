@@ -113,12 +113,12 @@ export default {
         xaccesstoken: self.$session.get('token'),
         callback: function(data) {
           // self.password_error = data.error;
-          if (data.error != "") {
+          if (data.error) {
             console.log(data.error)
             self.notificationText = data.error;
-            self.notificationColor = "blue";
+            self.notificationColor = "red";
           }
-          else {
+          if (data.succes)  {
             console.log("error is none")
             self.notificationText = "Password changed successfully";
             self.notificationColor = "green";

@@ -169,4 +169,4 @@ class UserApi(Resource):
         except NoResultFound:
             return {'error': 'User does not exist'}
 
-        return {"user": user_schema.dump(edited_user)}, 200
+        return {'succes': 'Password changed successfully'}, 200
