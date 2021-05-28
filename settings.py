@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_apscheduler import APScheduler
-import redis
+from RedisDB.redisdb import RedisDatabase
 
 
 
@@ -69,8 +69,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 # Redis connection
-redis_db = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
-                      password=os.getenv('REDIS_PASSWORD'))
+redis_db = RedisDatabase(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
+                         password=os.getenv('REDIS_PASSWORD'))
 
 # api settings
 rest_api = Api(app)
