@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_apscheduler import APScheduler
 import redis
 
 
@@ -22,6 +23,14 @@ import redis
 # app = Flask(__name__, static_url_path='/static', template_folder="templates")
 app = Flask(__name__, static_folder = "./frontend/dist/static",
             template_folder = "./frontend/dist")
+
+
+app.config['SCHEDULER_API_ENABLED'] = True
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'
