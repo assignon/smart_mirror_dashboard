@@ -4,15 +4,15 @@ module.exports = {
   "devServer": {
     "proxy": {
       "^/": {
-        "target": "http://127.0.0.1:8000/",
+        "target": "http://127.0.0.1:5000/",
         // "target": "https://accountancy-tsgf2.ondigitalocean.app/",
-        "ws": false
+        // "ws": false
       }
     }
   },
-  "outputDir": "./dist/",
-  "assetsDir": "static",
-  "transpileDependencies": [
-    "vuetify"
-  ]
+  // "outputDir": "./dist/",
+  // "assetsDir": "static",
+  // "transpileDependencies": [
+  //   "vuetify"
+  // ]
 };
