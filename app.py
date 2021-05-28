@@ -108,4 +108,5 @@ api_routes(rest_api)
 
 if __name__ == 'main':
     # socketio.run(app)
+    print('test')
     app.run()

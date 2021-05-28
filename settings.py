@@ -9,6 +9,8 @@ from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_apscheduler import APScheduler
 from RedisDB.redisdb import RedisDatabase
+from daily import daily_delete
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 
 
@@ -24,11 +26,6 @@ from RedisDB.redisdb import RedisDatabase
 app = Flask(__name__, static_folder = "./frontend/dist/static",
             template_folder = "./frontend/dist")
 
-
-app.config['SCHEDULER_API_ENABLED'] = True
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
 
 
 
@@ -46,7 +43,7 @@ app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 ### end swagger specific ###
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-app.config.from_envvar('ENV_FILE_LOCATION')
+# app.config.from_envvar('ENV_FILE_LOCATION')
 bcrypt = Bcrypt(app)
 
 ## Db configurations
@@ -79,3 +76,36 @@ rest_api = Api(app)
 # initialize marshmallow
 
 ma = Marshmallow(app)
+
+# scheduling:
+
+
+def daily_task():
+    """Verwijder alle gasten die overdatum zijn"""
+    print("Deleting all expired guests....")
+    daily_delete(db, redis_db)
+
+
+scheduler = APScheduler()
+
+"""Schedule configuratuons"""
+
+
+# app.config['SCHEDULER_API_ENABLED'] = True
+app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task,
+                       "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
+
+app.config['SCHEDULER_JOBSTORES'] = {"default": SQLAlchemyJobStore(url=connection_url)}
+
+
+
+
+
+# @scheduler.task("cron", id="remove_expired_guests", minute="*")
+# def daily_task():
+#     """Verwijder alle gasten die overdatum zijn"""
+#     print("Deleting all expired guests....")
+#     daily_delete(db, redis_db)
+
+scheduler.init_app(app)
+scheduler.start()
