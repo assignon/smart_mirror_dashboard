@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, time
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -13,23 +13,11 @@ from daily import daily_delete
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 
-
-
-# from flask_restful import Api
-# if 'app' not in sys.modules:
-#     from app import app
-
-
-
-# app = Flask(__name__, static_url_path='/', static_folder="../frontend/dist/", template_folder="templates")
-# app = Flask(__name__, static_url_path='/static', template_folder="templates")
 app = Flask(__name__, static_folder = "./frontend/dist/static",
             template_folder = "./frontend/dist")
 
 
-
-
-### swagger specific ###
+# swagger specific
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger.json'
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
@@ -40,10 +28,10 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
-### end swagger specific ###
+
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-# app.config.from_envvar('ENV_FILE_LOCATION')
+app.config.from_envvar('ENV_FILE_LOCATION')
 bcrypt = Bcrypt(app)
 
 ## Db configurations
@@ -90,22 +78,17 @@ scheduler = APScheduler()
 
 """Schedule configuratuons"""
 
+# check of de laatste taak geexecute is.
+
+res = db.session.execute("""SELECT next_run_time FROM apscheduler_jobs;""").first()
+if res.next_run_time < time.time():
+    daily_task()
 
 # app.config['SCHEDULER_API_ENABLED'] = True
-app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task,
+app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task, 'replace_existing': True,
                        "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
 
 app.config['SCHEDULER_JOBSTORES'] = {"default": SQLAlchemyJobStore(url=connection_url)}
-
-
-
-
-
-# @scheduler.task("cron", id="remove_expired_guests", minute="*")
-# def daily_task():
-#     """Verwijder alle gasten die overdatum zijn"""
-#     print("Deleting all expired guests....")
-#     daily_delete(db, redis_db)
 
 scheduler.init_app(app)
 scheduler.start()
