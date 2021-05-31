@@ -118,9 +118,7 @@ export default new Vuex.Store({
            params:
                payload: [object]: [data sended with the request]
        */
-      let body = {
-        body: payload.params
-      };
+      let body = payload.params;
       axios
         .post(`${payload.host}/${payload.url}`, body, {
           headers: {
@@ -168,9 +166,8 @@ export default new Vuex.Store({
            params:
                payload: [object]: [data sended with the request]
        */
-      let body = {
-        body: payload.params
-      };
+      let body = payload.params;
+
       axios
         .put(`${payload.host}/${payload.url}`, body, {
           headers: {

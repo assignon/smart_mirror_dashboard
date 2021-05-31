@@ -36,7 +36,7 @@ class GuestCollection(Resource):
         """
         add a new guest
         """
-        json_data = request.get_json()["body"]
+        json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
 
@@ -109,7 +109,7 @@ class GuestApi(Resource):
         edit guest
         """
 
-        json_data = request.get_json()["body"]
+        json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
 

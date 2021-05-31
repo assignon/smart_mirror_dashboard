@@ -71,12 +71,10 @@ class AppointmentApi(Resource):
     @staticmethod
     @login_required
     def put(current_user, appointment_id):
-        from app import socketio
 
         json_data = request.get_json()
-
+        print(json_data)
         now = datetime.datetime.now()
-        print('json_dataaaaaaaa', json_data['body'])
 
         if not json_data:
             return {"message": "No input data provided"}, 400
@@ -85,13 +83,13 @@ class AppointmentApi(Resource):
 
         remove_whitespace(json_data)
         try:
-            if json_data['body']['checked_in']:
-                json_data['body']['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
-            elif json_data['body']['checked_out']:
-                json_data['body']['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
+            if json_data['checked_in']:
+                json_data['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
+            elif json_data['checked_out']:
+                json_data['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
         except KeyError as e:
             try:
-                json_data['body']['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
+                json_data['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
             except KeyError as e:
                 print('errorrr',e)
                 pass
@@ -99,7 +97,7 @@ class AppointmentApi(Resource):
         # Validate and deserialize input
 
         try:
-            data = edit_appointment_schema.load(json_data['body'])
+            data = edit_appointment_schema.load(json_data)
             
         except ValidationError as err:
             return err.messages, 422
