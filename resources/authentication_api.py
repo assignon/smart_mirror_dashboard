@@ -1,14 +1,12 @@
-import os, smtplib, ssl, uuid, random, string
+import os, smtplib, ssl, random, string
 from dotenv import load_dotenv
 from flask import request, jsonify, make_response, session
-from flask_restful import Resource, abort
+from flask_restful import Resource
 import jwt
 import datetime
-import time
 from functools import wraps
-from settings import app, ma, db, redis_db
+from settings import app, db
 from models.user_model import User
-from schemas.schemas import UserSchema
 
 
 def login_required(fun):
@@ -42,7 +40,10 @@ class Login(Resource):
         if not auth or not auth.username or not auth.password:
             return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
-        user = User.query.filter_by(email=auth.username).first()
+        try:
+            user = User.query.filter_by(email=auth.username).first()
+        except Exception:
+            return 500
 
         if not user:
             return {'message': 'User does not exist'}
@@ -76,25 +77,33 @@ class PasswordManager(Resource):
         if not request.args:
             return {"message": "No input data provided"}
         email = request.args.get('email')
-        if request.args.get('email'):
-            user: User = db.session.query(User).filter_by(email=email).first()
-            if user:
-                # email versturen met random token
-                # token = jwt.encode(
-                #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
-                #         app.config['JWT_SECRET_KEY']).decode('utf-8')
-                # send_email(user, token)
-                # sla de token op in redis voor 24 uur.
-                # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
-                # get random password pf length 8 with letters, digits, and symbols
-                password_characters = string.ascii_letters + string.digits + '!?'
-                new_password = ''.join(random.choice(password_characters) for _ in range(16))
-
-                User.update_user(user.user_id, password=new_password)
-                send_email(user, new_password)
-                return {'succes': 'New password has been sent to your email.'}
-            else:
-                return {'message': 'This email is not recognized.'}
+        if email is not None:
+            try:
+                user: User = db.session.query(User).filter_by(email=email).first()
+                if user:
+                    # email versturen met random token
+                    # token = jwt.encode(
+                    #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
+                    #         app.config['JWT_SECRET_KEY']).decode('utf-8')
+                    # send_email(user, token)
+                    # sla de token op in redis voor 24 uur.
+                    # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
+                    # get random password pf length 8 with letters, digits, and symbols
+                    password_characters = string.ascii_letters + string.digits + '!?'
+                    new_password = ''.join(random.choice(password_characters) for _ in range(16))
+                    try:
+                        User.update_user(user.user_id, password=new_password)
+                    except Exception:
+                        return 500
+                    try:
+                        send_email(user, new_password)
+                        return {'succes': 'New password has been sent to your email.'}
+                    except Exception:
+                        return {"message": "new_password has been created but email has not been sended"}, 500
+                else:
+                    return {'message': 'This email is not recognized.'}
+            except Exception:
+                return 500
         else:
             return {"message": "Email not provided in the data"}
 
@@ -156,6 +165,7 @@ load_dotenv('../.env')
 
 
 def send_email(user, new_password):
+
     port = 465  # For SSL
 
     # Create a secure SSL context
