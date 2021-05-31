@@ -24,8 +24,11 @@ class AppointmentCollection(Resource):
         """
         Haalt alle appointments op waarvan de checkout NULL is
         """
-        appointments = Appointment.get_open_appointments()
-        return {"appointments": appointments_schema.dump(appointments)}
+        try:
+            appointments = Appointment.get_open_appointments()
+            return {"appointments": appointments_schema.dump(appointments)}
+        except Exception:
+            return 500
 
     @staticmethod
     @login_required
