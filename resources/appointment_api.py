@@ -62,8 +62,11 @@ class AppointmentCollection(Resource):
     @staticmethod
     @login_required
     def delete(current_user, appoinment_id):
-        Appointment.delete_appointment(appoinment_id)
-        return 200
+        try:
+            Appointment.delete_appointment(appoinment_id)
+            return 200
+        except Exception:
+            return 500
 
 
 class AppointmentApi(Resource):
@@ -73,7 +76,6 @@ class AppointmentApi(Resource):
     def put(current_user, appointment_id):
 
         json_data = request.get_json()
-        print(json_data)
         now = datetime.datetime.now()
 
         if not json_data:
@@ -82,26 +84,17 @@ class AppointmentApi(Resource):
         # remove whitespaces from input
 
         remove_whitespace(json_data)
-        try:
-            if json_data['checked_in']:
-                json_data['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
-            elif json_data['checked_out']:
-                json_data['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
-        except KeyError as e:
-            try:
-                json_data['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
-            except KeyError as e:
-                print('errorrr',e)
-                pass
+        if 'checked_in' in json_data.keys():
+            json_data['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
+        elif 'checked_out' in json_data.keys():
+            json_data['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
  
         # Validate and deserialize input
 
         try:
             data = edit_appointment_schema.load(json_data)
-            
         except ValidationError as err:
             return err.messages, 422
-        print(data)
 
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)

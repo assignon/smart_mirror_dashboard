@@ -76,11 +76,9 @@ class UserCollection(Resource):
         remove_whitespace(json_data)
 
         # Validate and deserialize input
-        print(json_data)
         try:
             data = user_schema.load(json_data)
         except ValidationError as err:
-            print(json_data)
             return err.messages, 422
 
         try:
@@ -100,7 +98,7 @@ class UserCollection(Resource):
         try: 
             User.delete_user(user_id)
         except:
-            return 400
+            return 500
         return 200
 
 
@@ -133,7 +131,6 @@ class UserApi(Resource):
             return {"error": "Not authorized to edit this user!"}
 
         json_data: dict = request.get_json()
-        print(json_data)
         if not json_data:
             return {"error": "No input data provided"}, 400
 
@@ -161,8 +158,10 @@ class UserApi(Resource):
                 data = edit_user_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
-        except KeyError as err:
+        except KeyError:
             data = edit_user_schema.load(json_data)
+        except Exception:
+            return 500
 
         try:
             edited_user = User.update_user(user_id, **data)

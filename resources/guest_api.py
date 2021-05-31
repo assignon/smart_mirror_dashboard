@@ -27,8 +27,11 @@ class GuestCollection(Resource):
         """
         get all guests
         """
-        guests = Guest.query.all()
-        return {'guests': guests_schema.dump(guests)}, 200
+        try:
+            guests = Guest.query.all()
+            return {'guests': guests_schema.dump(guests)}, 200
+        except Exception:
+            return 500
 
     @staticmethod
     @login_required
@@ -61,8 +64,11 @@ class GuestCollection(Resource):
     @staticmethod
     @login_required
     def delete(current_user, guest_id):
-        Guest.delete_guest(guest_id)
-        return 200
+        try:
+            Guest.delete_guest(guest_id)
+            return 200
+        except Exception:
+            return 500
 
 
 class GuestScanned(Resource):
@@ -86,7 +92,8 @@ class GuestScanned(Resource):
             return {"emited": False, 'msg': 'Lijk erop dat u uitgelogd bent'}
         
         return {"emited": True, 'msg': 'Data verzonden'}
-    
+
+
 class GuestApi(Resource):
 
     @staticmethod
