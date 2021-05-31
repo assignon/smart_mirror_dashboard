@@ -9,10 +9,10 @@
           <v-dialog v-model="add_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                  class="blue darken-1 mt-9 mb-12"
-                  rounded
-                  v-bind="attrs"
-                  v-on="on"
+                class="blue darken-1 mt-9 mb-12"
+                rounded
+                v-bind="attrs"
+                v-on="on"
               >
                 <v-icon color="white">mdi-account-plus-outline</v-icon>
               </v-btn>
@@ -26,37 +26,37 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.name"
-                          label="Name*"
-                          required
+                        v-model="new_client.name"
+                        label="Name*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.phone_number"
-                          label="Tel*"
-                          required
+                        v-model="new_client.phone_number"
+                        label="Tel*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.email"
-                          label="Email*"
-                          required
+                        v-model="new_client.email"
+                        label="Email*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.company"
-                          label="Bedrijf*"
-                          required
+                        v-model="new_client.company"
+                        label="Bedrijf*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.license_plate"
-                          label="Kenteken*"
-                          required
+                        v-model="new_client.license_plate"
+                        label="Kenteken*"
+                        required
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -69,9 +69,9 @@
                   Sluiten
                 </v-btn>
                 <v-btn
-                    color="green darken-1"
-                    text
-                    @click="
+                  color="green darken-1"
+                  text
+                  @click="
                     add_dialog = false;
                     newClient();
                   "
@@ -82,51 +82,56 @@
             </v-card>
           </v-dialog>
         </v-row>
-        <!-- Searchbar -->
-        <v-text-field
-            Naam
-            label="Zoeken op naam"
-            clearable
-            class="mb-6"
-        ></v-text-field>
         <!-- Datatable -->
-        <v-data-table :headers="headers" :items="clients" hide-default-footer>
-          <template v-slot:item="row">
-            <tr>
-              <td>{{ row.item.name }}</td>
-              <td>{{ row.item.phone_number }}</td>
-              <td>{{ row.item.email }}</td>
-              <td>{{ row.item.company }}</td>
-              <td>{{ row.item.licence_plate }}</td>
-              <!-- Delete button -->
-              <td>
-                <v-btn
-                    class="mx-2 red darken-3"
+        <v-card class="mb-15">
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Zoeken"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-title>
+          <v-data-table :headers="headers" :items="clients" :search="search">
+            <template v-slot:item="row">
+              <tr>
+                <td>{{ row.item.name }}</td>
+                <td>{{ row.item.phone_number }}</td>
+                <td>{{ row.item.email }}</td>
+                <td>{{ row.item.company }}</td>
+                <td>{{ row.item.licence_plate }}</td>
+                <!-- Delete button -->
+                <td>
+                  <v-btn
+                    class="mx-2 darken-4"
                     rounded
                     elevation="2"
                     @click.stop="confirmationDialog(row.item)"
-                >
-                  <v-icon color="white">
-                    mdi-delete
-                  </v-icon>
-                </v-btn>
-              </td>
-              <!-- Edit button -->
-              <td>
-                <v-btn
-                    class="mx-2 green darken-3"
+                  >
+                    <v-icon color="red" dense>
+                      mdi-delete
+
+                    </v-icon>
+                  </v-btn>
+                </td>
+                <!-- Edit button -->
+                <td>
+                  <v-btn
+                    class="mx-2 darken-4"
                     rounded
                     elevation="2"
                     @click="editDialog(row.item)"
-                >
-                  <v-icon color="white">
-                    mdi-wrench
-                  </v-icon>
-                </v-btn>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
+                  >
+                    <v-icon color="green" dense>
+                      mdi-wrench
+                    </v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-card>
       </div>
     </div>
     <!-- Del Dialoge -->
@@ -141,10 +146,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-              color="red darken-1"
-              align="center"
-              text
-              @click="delClient(currentUserData)"
+            color="red darken-1"
+            align="center"
+            text
+            @click="delClient(currentUserData)"
           >
             Verwijderen
           </v-btn>
@@ -162,37 +167,37 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                    label="Naam"
-                    v-model="edit_client.name"
-                    required
+                  label="Naam"
+                  v-model="edit_client.name"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Tel"
-                    v-model="edit_client.phone_number"
-                    required
+                  label="Tel"
+                  v-model="edit_client.phone_number"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Email"
-                    v-model="edit_client.email"
-                    required
+                  label="Email"
+                  v-model="edit_client.email"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Bedrijf"
-                    v-model="edit_client.company"
-                    required
+                  label="Bedrijf"
+                  v-model="edit_client.company"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Kenteken"
-                    v-model="edit_client.licence_plate"
-                    required
+                  label="Kenteken"
+                  v-model="edit_client.licence_plate"
+                  required
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -205,9 +210,9 @@
             Sluiten
           </v-btn>
           <v-btn
-              color="green darken-1"
-              text
-              @click="
+            color="green darken-1"
+            text
+            @click="
               edit_dialog = false;
               editClient(currentUserData);
             "
@@ -225,6 +230,7 @@ export default {
   name: "Clients",
   data() {
     return {
+      search: "",
       add_dialog: false,
       del_dialog: false,
       edit_dialog: false,
@@ -237,29 +243,35 @@ export default {
           align: "start",
           sortable: true,
           value: "name",
-          class: "blue white--text rounded-tl-lg darken-1"
+          class: "darken-1"
         },
-        {text: "Telefoon", value: "tel", class: "blue white--text darken-1"},
-        {text: "E-mail", value: "email", class: "blue white--text darken-1"},
+        { text: "Telefoon", value: "tel", class: "darken-1" },
+        { text: "E-mail", value: "email", class: "darken-1" },
         {
           text: "Bedrijf",
           value: "company",
-          class: "blue white--text darken-1"
+          class: "darken-1",
+          sortable: false
         },
         {
           text: "Kenteken",
           value: "plate",
-          class: "blue white--text darken-1"
+          class: "darken-1",
+          sortable: false
         },
         {
           text: "Verwijderen",
           value: "plate",
-          class: "blue white--text darken-1"
+          class: "darken-1",
+          filterable: false,
+          sortable: false
         },
         {
           text: "Bewerken",
           value: "plate",
-          class: "blue white--text rounded-tr-lg darken-1"
+          class: "darken-1",
+          filterable: false,
+          sortable: false
         }
       ]
     };
@@ -275,7 +287,7 @@ export default {
         params: {},
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           res.data.guests.forEach(data => {
             let clientdata = {
               id: data.guest_id,
@@ -310,7 +322,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           if (res.status === 200) {
             console.log("OK");
           } else {
@@ -339,7 +351,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (data) {
+        callback: function(data) {
           console.log(data);
         }
       });
@@ -353,9 +365,24 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (data) {
+        callback: function(data) {
           console.log(data);
         }
+      });
+    }
+  },
+  computed: {
+    filteredRows() {
+      return this.row.filter(row => {
+        const client = row.item.name.toString().toLowerCase();
+        const email = row.email.toString().toLowerCase();
+        const company = row.company.toString().toLowerCase();
+        const searchTerm = this.filter.toLowerCase();
+        return (
+          client.includes(searchTerm) ||
+          email.includes(searchTerm) ||
+          company.include(searchTerm)
+        );
       });
     }
   }
@@ -375,6 +402,9 @@ export default {
   min-height: 80vh;
 }
 
+th {
+  min-width: 350px;
+}
 h1 {
   text-align: left;
 }
