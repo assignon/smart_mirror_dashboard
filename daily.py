@@ -36,6 +36,8 @@ def daily_delete(db, redis_db):
             print("guests deleted")
             return
 
+        time.sleep(5)
+
     print("Failed to delete guests")
 
 

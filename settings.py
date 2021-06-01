@@ -13,8 +13,7 @@ from daily import daily_delete
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 
-app = Flask(__name__, static_folder = "./frontend/dist/static",
-            template_folder = "./frontend/dist")
+app = Flask(__name__)
 
 
 # swagger specific

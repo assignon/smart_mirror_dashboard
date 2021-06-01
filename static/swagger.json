@@ -325,6 +325,9 @@
     },
   "/guests":{
     "get":{
+      "security": {
+        "BasicAuth": []
+      },
       "tags": ["GuestCollection"],
       "summary": "get all the Guests that exists in the database",
       "description": "This resource represents the collection of all Guests in the system. Each guest is identified by a numeric `guest_id`.",
@@ -673,6 +676,12 @@
 }
   ,
   "components": {
+    "SecuritySchemes": {
+      "BasicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
     "schemas": {
       "GetUser": {
             "type": "object",
@@ -988,5 +997,9 @@
 
         
     }
+  },
+
+  "security":{
+    "basicAuth": []
   }
 }
