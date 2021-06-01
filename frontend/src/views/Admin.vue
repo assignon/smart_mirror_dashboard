@@ -286,6 +286,7 @@ export default {
         callback: function(res) {
           if (res.status === 200) {
             console.log("OK");
+            window.location.reload()
           } else {
             console.log(res);
           }
@@ -317,6 +318,7 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
+          window.location.reload()
         }
       });
     },
@@ -331,6 +333,7 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
+          window.location.reload()
         }
       });
     }

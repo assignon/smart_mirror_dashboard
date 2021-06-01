@@ -48,6 +48,7 @@ Flask-SocketIO = "==5.0.1"
 PyJWT = "==1.7.1"
 pyodbc = "*"
 mysql-client = "*"
+gunicorn = "*"
 
 [dev-packages]
 

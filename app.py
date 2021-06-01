@@ -19,10 +19,35 @@ cors = CORS(app, resources={
     }
 })
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template("index.html")
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
+# @app.route('/')
+# def index():
+#     # return app.send_static_file('index.html')
+#     return render_template("index.html")
+
+# @app.route('/login')
+# def index():
+#     return app.send_static_file('index.html')
+
+# @app.route('/ingecheckt')
+# def ingecheckt():
+#     return app.send_static_file('index.html')
+
+# @app.route('/clients')
+# def clients():
+#     return app.send_static_file('index.html')
+
+# @app.route('/instellingen')
+# def instellingen():
+#     return app.send_static_file('index.html')
+
+# @app.route('/')
+# def hello_world():
+#     return 'Hello, World!'
 
 @socketio.on('connect')
 def user_connect():
@@ -81,6 +106,8 @@ def update_checked_guest(guest_data):
 api_routes(rest_api)
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     # socketio.run(app)
+    print('test')
     app.run()
+    print('test')

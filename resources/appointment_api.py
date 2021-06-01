@@ -71,6 +71,7 @@ class AppointmentApi(Resource):
         from app import socketio
 
         json_data = request.get_json()
+
         now = datetime.datetime.now()
         print('json_dataaaaaaaa', json_data['body'])
 
@@ -99,6 +100,7 @@ class AppointmentApi(Resource):
             
         except ValidationError as err:
             return err.messages, 422
+        print(data)
 
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)
