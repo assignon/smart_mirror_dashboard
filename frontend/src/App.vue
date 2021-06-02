@@ -1,56 +1,84 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+  <v-app id="app">
     <v-main>
-      <HelloWorld />
+      <!-- Navbar component -->
+      <Navbar />
+      <!-- <router-view class="animated fadeIn" @authenticated="setAuthenticated" /> -->
+      <router-view class="animated fadeIn" />
+      <div class='footer'><p>Sogeti labs © 2021</p></div>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
-
+import io from "socket.io-client";
+import Navbar from "@/components/layouts/Navbar";
 export default {
   name: "App",
-
   components: {
-    HelloWorld
+    Navbar
   },
-
   data: () => ({
-    //
-  })
+    return: {
+      authenticated: false,
+    }
+  }),
+  created() {
+    // connect socket io
+    this.$store.state.socket = io.connect(`${this.$store.state.HOST}/`)
+    if (!this.$session.get("authenticated")) {
+      this.$router.push({name: "Login"})
+    }
+  },
+  methods: {
+    // createSession() {
+    //   if (!this.$session.has("auth")) {
+    //     this.$session.start();
+    //     this.$session.set("auth", false);
+    //   }
+    //   this.$store.state.AUTHENTICATED = this.$session.get("auth");
+    //   // console.log(this.$store.state.AUTHENTICATED);
+    // },
+  }
 };
 </script>
+
+<style scoped>
+html,
+body {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+
+#app {
+  /* font-family: Avenir, Helvetica, Arial, sans-serif; */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  /* color: #2c3e50; */
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.footer{
+  width: 100%;
+  height: 7vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.footer p{
+  text-align: left;
+  color: #0070ad;
+  margin-left: 30px;
+  position: relative;
+  top: 10px;
+}
+</style>

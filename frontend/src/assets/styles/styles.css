@@ -1,0 +1,11 @@
+.main-container {
+  width: 900px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.primary-section {
+  background-color: beige;
+  min-height: 500px;
+}
