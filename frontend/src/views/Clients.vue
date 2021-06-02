@@ -302,7 +302,7 @@ export default {
           align: "start",
           sortable: true,
           value: "name",
-          class: "blue rounded-tl  darken-1"
+          class: "rounded-tl  darken-1"
         },
         {
           text: "Bedrijf",

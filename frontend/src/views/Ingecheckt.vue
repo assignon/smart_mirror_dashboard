@@ -80,14 +80,14 @@ export default {
           align: 'start',
           sortable: true,
           value: 'name',
-          class: "blue white--text rounded-tl-lg darken-1"
+          class: "rounded-tl-lg darken-1"
         },
-        {text: 'Telefoon', value: 'tel', class: "blue white--text darken-1"},
-        {text: 'E-mail', value: 'email', class: "blue white--text darken-1"},
-        {text: 'Bedrijf', value: 'company', class: "blue white--text darken-1"},
-        {text: 'Kenteken', value: 'plate', class: "blue white--text darken-1"},
-        {text: 'Check-in', value: 'checkin', class: "blue white--text darken-1"},
-        {text: 'Check-out', value: 'checkout', class: "blue white--text rounded-tr-lg darken-1"},
+        {text: 'Telefoon', value: 'tel', class: "darken-1"},
+        {text: 'E-mail', value: 'email', class: "bdarken-1"},
+        {text: 'Bedrijf', value: 'company', class: "darken-1"},
+        {text: 'Kenteken', value: 'plate', class: "darken-1"},
+        {text: 'Check-in', value: 'checkin', class: "darken-1"},
+        {text: 'Check-out', value: 'checkout', class: "rounded-tr-lg darken-1"},
       ],
       ingecheckt: [],
     }
