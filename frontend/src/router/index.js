@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Login from "../views/Login.vue";
-import Checkin from "../views/checkin";
 import Gastenlijst from "@/views/Ingecheckt";
 import Clients from "@/views/Clients";
 import Instellingen from "@/views/Instellingen";
@@ -20,11 +19,6 @@ const routes = [
     component: Login
   },
   {
-    path: "/checkin",
-    name: "Checkin",
-    component: Checkin
-  },
-  {
     path: "/ingecheckt",
     name: "Ingecheckt",
     component: Gastenlijst
@@ -40,7 +34,7 @@ const routes = [
     component: Instellingen
   },
   {
-    path: "/Admin",
+    path: "/admin",
     name: "Admin",
     component: Admin
   }
