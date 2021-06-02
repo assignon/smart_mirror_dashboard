@@ -10,8 +10,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   namespaced: true,
   state: {
-    // HOST: window.location.port != "" ? "https://ee3150d57218.ngrok.io" : "live-server",
-    HOST: "https://8ff365b719f6.ngrok.io",
+    HOST: window.location.port != "" ? "http://145.89.102.102:5000" : "live-server",
     //  "http://127.0.0.1:8000",
     AUTHENTICATED: undefined,
     usertoken: undefined,
