@@ -15,6 +15,10 @@ class User(db.Model):
     def __repr__(self):
         return self.name
 
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+
+
     @staticmethod
     def create(name, email, password, is_admin):
         """
@@ -116,6 +120,7 @@ class SocketUserManager(db.Model):
     def delete_user(user_id):
         User.query.filter_by(user_id=user_id).delete()
         db.session.commit()
+
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)

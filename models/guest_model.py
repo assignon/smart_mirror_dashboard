@@ -67,6 +67,6 @@ class Guest(BaseMixin, db.Model):
     def delete_guest(guest_id):
         db.session.query(Guest).filter_by(guest_id=guest_id).delete()
         db.session.commit()
-        r.delete("guest:" + str(guest_id))
-        r.zrem("guest_ids", guest_id)
+        redis_db.del_guest(guest_id)
+
 

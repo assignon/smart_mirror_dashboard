@@ -13,13 +13,12 @@ import os
 app.secret_key = "sunnySideUp-smartMirror"
 # bcrypt = Bcrypt(app)
 rest_api = Api(app)
-socketio = SocketIO(app, cors_allowed_origins='*', async_mode=None)
-# socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080') // use this live with the live url
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 CORS(app)
 cors = CORS(app, resources={
     r"/*": {
-        "origins": "*"
+        "Access-Control-Allow-Origin": "*"
     }
 })
 
@@ -118,9 +117,10 @@ def static_file(path):
     return app.send_static_file(path)
 
 
-# @app.route('/')
-# def hello_world():
-#     return 'Hello, World!'
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+
 
 @socketio.on('connect')
 def user_connect():
@@ -183,6 +183,8 @@ def update_checked_guest(guest_data):
 api_routes(rest_api)
 
 
-if __name__ == 'main':
-    socketio.run(app)
-    # app.run()
+if __name__ == '__main__':
+    # socketio.run(app)
+    print('test')
+    app.run()
+    print('test')

@@ -6,11 +6,17 @@
     role="navigation"
     aria-label="main navigation"
   >
+    <!-- Left side + Logo -->
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <v-img src="@/assets/SogetiLabs_Logo_Primary_3COL_RGB (002).png" max-height="88" max-width="248"></v-img>
+        <v-img
+          src="@/assets/SogetiLabs_Logo_Primary_3COL_RGB (002).png"
+          max-height="88"
+          max-width="248"
+        ></v-img>
       </a>
     </div>
+    <!-- Right side Nav items -->
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
         <router-link to="/ingecheckt" class="navbar-item"
@@ -20,8 +26,13 @@
         <router-link to="/instellingen" class="navbar-item">
           Instellingen</router-link
         >
-      </div>
-      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <router-link v-if="(this.$session.su = true)" to="/admin" replace
+              >Admin</router-link
+            >
+          </div>
+        </div>
         <div class="navbar-item">
           <div class="buttons">
             <p
@@ -44,13 +55,18 @@ export default {
 
   data() {
     return {
-      authenticated: true
+      authenticated: true,
+      su: true
     };
   },
 
   methods: {
     setAuthenticated(status) {
       this.authenticated = status;
+    },
+
+    setSu(){
+
     },
 
     logout() {

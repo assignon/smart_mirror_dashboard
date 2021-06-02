@@ -4,7 +4,7 @@
       timeout="5000"
       :top='true'
       :right='true'
-      :color='color'
+      :color= color
     >
       {{content}}
 
