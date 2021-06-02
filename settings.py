@@ -77,29 +77,29 @@ ma = Marshmallow(app)
 # scheduling:
 
 
-def daily_task():
-    """Verwijder alle gasten die overdatum zijn"""
-    print("Deleting all expired guests....")
-    daily_delete(db, redis_db)
+# def daily_task():
+#     """Verwijder alle gasten die overdatum zijn"""
+#     print("Deleting all expired guests....")
+#     daily_delete(db, redis_db)
 
 
-scheduler = APScheduler()
+# scheduler = APScheduler()
 
-"""Schedule configuratuons"""
+# """Schedule configuratuons"""
 
-# check of de laatste taak geexecute is.
+# # check of de laatste taak geexecute is.
 
-res = db.session.execute(
-    """SELECT next_run_time FROM apscheduler_jobs;""").first()
-if res.next_run_time < time.time():
-    daily_task()
+# res = db.session.execute(
+#     """SELECT next_run_time FROM apscheduler_jobs;""").first()
+# if res.next_run_time < time.time():
+#     daily_task()
 
-# app.config['SCHEDULER_API_ENABLED'] = True
-app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task, 'replace_existing': True,
-                       "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
+# # app.config['SCHEDULER_API_ENABLED'] = True
+# app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task, 'replace_existing': True,
+#                        "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
 
-app.config['SCHEDULER_JOBSTORES'] = {
-    "default": SQLAlchemyJobStore(url=connection_url)}
+# app.config['SCHEDULER_JOBSTORES'] = {
+#     "default": SQLAlchemyJobStore(url=connection_url)}
 
-scheduler.init_app(app)
-scheduler.start()
+# scheduler.init_app(app)
+# scheduler.start()
