@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -10,18 +11,16 @@ from flask_swagger_ui import get_swaggerui_blueprint
 import redis
 
 
-
-
 # from flask_restful import Api
 # if 'app' not in sys.modules:
 #     from app import app
 
 
-
-# app = Flask(__name__, static_url_path='/', static_folder="../frontend/dist/", template_folder="templates")
+# app = Flask(__name__, static_url_path='/',
+#             static_folder="../frontend/dist/", template_folder="templates")
 # app = Flask(__name__, static_url_path='/static', template_folder="templates")
-app = Flask(__name__, static_folder = "./frontend/dist/static",
-            template_folder = "./frontend/dist")
+app = Flask(__name__, static_folder="./frontend/dist/static",
+            template_folder="./frontend/dist")
 
 ### swagger specific ###
 SWAGGER_URL = '/swagger'
@@ -40,7 +39,7 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 app.config.from_envvar('ENV_FILE_LOCATION')
 bcrypt = Bcrypt(app)
 
-## Db configurations
+# Db configurations
 
 load_dotenv('.env')
 """AWS CONNECTIE"""
@@ -61,7 +60,7 @@ migrate = Migrate(app, db)
 
 # Redis connection
 redis_db = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
-                      password=os.getenv('REDIS_PASSWORD'))
+                             password=os.getenv('REDIS_PASSWORD'))
 
 # api settings
 rest_api = Api(app)

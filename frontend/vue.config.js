@@ -4,7 +4,7 @@ module.exports = {
   "devServer": {
     "proxy": {
       "^/": {
-        "target": "http://127.0.0.1:8000/",
+        "target": "http://127.0.0.1:5000/",
         // "target": "https://accountancy-tsgf2.ondigitalocean.app/",
         "ws": false
       }
@@ -16,3 +16,10 @@ module.exports = {
     "vuetify"
   ]
 };
+
+// module.exports = {
+//     devServer: {
+//       proxy: 'http://127.0.0.1:5000'
+//     },
+//     "outputDir": "./dist/",
+// }
