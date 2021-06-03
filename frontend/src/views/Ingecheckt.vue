@@ -11,7 +11,6 @@
               <td>{{ row.item.email }}</td>
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
-              <td>{{ row.item.employee_name }}</td>
               <td :class='row.item.name.replace(/ /g,"")+row.item.appointment_id'>
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
                 <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="confirmationDialog('checkin',row.item)" v-if='row.item.checkin==null'>
@@ -81,15 +80,14 @@ export default {
           align: 'start',
           sortable: true,
           value: 'name',
-          class: "blue white--text rounded-tl-lg darken-1"
+          class: "rounded-tl-lg darken-1"
         },
-        {text: 'Telefoon', value: 'tel', class: "blue white--text darken-1"},
-        {text: 'E-mail', value: 'email', class: "blue white--text darken-1"},
-        {text: 'Bedrijf', value: 'company', class: "blue white--text darken-1"},
-        {text: 'Kenteken', value: 'plate', class: "blue white--text darken-1"},
-        {text: 'Afspraak Met', value: 'employee_name', class: "blue white--text darken-1"},
-        {text: 'Check-in', value: 'checkin', class: "blue white--text darken-1"},
-        {text: 'Check-out', value: 'checkout', class: "blue white--text rounded-tr-lg darken-1"},
+        {text: 'Telefoon', value: 'tel', class: "darken-1"},
+        {text: 'E-mail', value: 'email', class: "bdarken-1"},
+        {text: 'Bedrijf', value: 'company', class: "darken-1"},
+        {text: 'Kenteken', value: 'plate', class: "darken-1"},
+        {text: 'Check-in', value: 'checkin', class: "darken-1"},
+        {text: 'Check-out', value: 'checkout', class: "rounded-tr-lg darken-1"},
       ],
       ingecheckt: [],
     }
@@ -210,8 +208,7 @@ export default {
                   tel: data.guest.phone_number,
                   email: data.guest.email,
                   company: data.guest.company,
-                  plate: data.guest.license_plate == null ? '---' : data.guest.license_plate,
-                  employee_name: data.employee_name,
+                  plate: data.guest.license_plate,
                   checkin: data.checked_in,
                   checkout: data.checked_out,
                 }
@@ -234,13 +231,12 @@ export default {
         if(data){
           let guestData = {
             id: data.id,
-            appointment_id: data.appointment_id,
             name: data.name,
             tel: data.tel,
             email: data.email,
             company: data.company,
-            plate: data.license_plate == null ? '---' : data.license_plate,
-            employee_name: data.appointment, // employee name
+            plate: data.license_plate,
+            appointment_id: data.appointment_id,
             checkin: null,
             checkout: null,
             // time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
