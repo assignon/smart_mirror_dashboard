@@ -78,16 +78,6 @@
                 >
                   Toevoegen
                 </v-btn>
-                <!-- checkin -->
-                <v-btn
-                    color="blue darken-1"
-                    @click="
-                    edit_dialog = false;
-                    checkIn();
-                  "
-                >
-                  Check-in
-                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
