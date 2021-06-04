@@ -3,18 +3,20 @@
     <div class="main-container">
       <div>
         <!-- Header -->
-        <h1 class="mb-3 mt-12">Gasten zoeken</h1>
+        <h1 class="mb-3 mt-12">Alle gasten</h1>
         <!-- New client button -->
         <v-row>
           <v-dialog v-model="add_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                  class="blue darken-1 mt-9 mb-12"
-                  rounded
-                  v-bind="attrs"
-                  v-on="on"
+                class="white--text mt-9 mb-12"
+                color="#0f78b2"
+                rounded
+                v-bind="attrs"
+                v-on="on"
               >
                 <v-icon color="white">mdi-account-plus-outline</v-icon>
+                Toevoegen
               </v-btn>
             </template>
             <v-card>
@@ -26,37 +28,37 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.name"
-                          label="Name*"
-                          required
+                        v-model="new_client.name"
+                        label="Name*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.phone_number"
-                          label="Tel*"
-                          required
+                        v-model="new_client.phone_number"
+                        label="Tel*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.email"
-                          label="Email*"
-                          required
+                        v-model="new_client.email"
+                        label="Email*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.company"
-                          label="Bedrijf*"
-                          required
+                        v-model="new_client.company"
+                        label="Bedrijf*"
+                        required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                          v-model="new_client.license_plate"
-                          label="Kenteken*"
-                          required
+                        v-model="new_client.license_plate"
+                        label="Kenteken*"
+                        required
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -69,24 +71,14 @@
                   Sluiten
                 </v-btn>
                 <v-btn
-                    color="green darken-1"
-                    text
-                    @click="
+                  color="green darken-1"
+                  text
+                  @click="
                     add_dialog = false;
                     newClient();
                   "
                 >
                   Toevoegen
-                </v-btn>
-                <!-- checkin -->
-                <v-btn
-                    color="blue darken-1"
-                    @click="
-                    edit_dialog = false;
-                    checkIn();
-                  "
-                >
-                  Check-in
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -94,12 +86,12 @@
         </v-row>
         <!-- Search bar -->
         <v-text-field
-            class="mb-9"
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Zoeken"
-            single-line
-            hide-details
+          class="mb-9"
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Zoeken"
+          single-line
+          hide-details
         ></v-text-field>
         <!-- Datatable -->
         <v-card class="mb-15">
@@ -115,10 +107,10 @@
                 <!-- Delete button -->
                 <td>
                   <v-btn
-                      class="mx-2 darken-4"
-                      rounded
-                      elevation="2"
-                      @click.stop="confirmationDialog(row.item)"
+                    class="mx-2 darken-4"
+                    rounded
+                    elevation="2"
+                    @click.stop="confirmationDialog(row.item)"
                   >
                     <v-icon color="red" dense>
                       mdi-delete
@@ -128,12 +120,12 @@
                 <!-- Edit button -->
                 <td>
                   <v-btn
-                      class="mx-2 darken-4"
-                      rounded
-                      elevation="2"
-                      @click="editDialog(row.item)"
+                    class="mx-2 darken-4"
+                    rounded
+                    elevation="2"
+                    @click="editDialog(row.item)"
                   >
-                    <v-icon color="green" dense>
+                    <v-icon color="orange" dense>
                       mdi-wrench
                     </v-icon>
                   </v-btn>
@@ -141,13 +133,13 @@
                 <!-- Checkin button -->
                 <td>
                   <v-btn
-                      class="mx-2 darken-4"
-                      rounded
-                      elevation="2"
-                      @click="checkinDialog(row.item)"
+                    class="mx-2 darken-4"
+                    rounded
+                    elevation="2"
+                    @click="checkinDialog(row.item)"
                   >
                     <v-icon color="green" dense>
-                      mdi-wrench
+                      mdi-check-bold
                     </v-icon>
                   </v-btn>
                 </td>
@@ -164,18 +156,27 @@
           Weet je het zeker?
         </v-card-title>
         <v-card-text>
-          Inchecken
+          Om deze persoon in te checken
         </v-card-text>
         <v-card-actions>
+          <!-- Annuleer button -->
+          <v-btn
+            color="red darken-1"
+            align="center"
+            text
+            @click="checkin_dialog = false"
+          >
+            Annuleren
+          </v-btn>
           <v-spacer></v-spacer>
           <!-- Checkin button -->
           <v-btn
-              color="red darken-1"
-              align="center"
-              text
-              @click="checkIn(currentUserData)"
+            color="green darken-1"
+            align="center"
+            text
+            @click="checkIn(currentUserData); checkin_dialog = false"
           >
-            Inchecken
+            Bevestigen
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -190,12 +191,23 @@
           Deze actie kan je niet ongedaan maken.
         </v-card-text>
         <v-card-actions>
+          <v-btn
+            color="red darken-1"
+            align="center"
+            text
+            @click="del_dialog = false"
+          >
+            Annuleren
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn
-              color="red darken-1"
-              align="center"
-              text
-              @click="delClient(currentUserData)"
+            color="green darken-1"
+            align="center"
+            text
+            @click="
+              delClient(currentUserData);
+              del_dialog = false;
+            "
           >
             Verwijderen
           </v-btn>
@@ -213,37 +225,37 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                    label="Naam"
-                    v-model="edit_client.name"
-                    required
+                  label="Naam"
+                  v-model="edit_client.name"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Bedrijf"
-                    v-model="edit_client.company"
-                    required
+                  label="Bedrijf"
+                  v-model="edit_client.company"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Email"
-                    v-model="edit_client.email"
-                    required
+                  label="Email"
+                  v-model="edit_client.email"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Tel"
-                    v-model="edit_client.phone_number"
-                    required
+                  label="Tel"
+                  v-model="edit_client.phone_number"
+                  required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Kenteken"
-                    v-model="edit_client.licence_plate"
-                    required
+                  label="Kenteken"
+                  v-model="edit_client.licence_plate"
+                  required
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -251,24 +263,14 @@
           <small>*Verplichte velden</small>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-              color="blue darken-1"
-              @click="
-              edit_dialog = false;
-              checkIn(currentUserData);
-            "
-          >
-            Check-in
-          </v-btn>
           <v-spacer></v-spacer>
           <v-btn color="red darken-1" text @click="edit_dialog = false">
             Sluiten
           </v-btn>
           <v-btn
-              color="green darken-2"
-              text
-              outlined
-              @click="
+            color="green darken-2"
+            text
+            @click="
               edit_dialog = false;
               editClient(currentUserData);
             "
@@ -310,14 +312,14 @@ export default {
           class: "darken-1",
           sortable: false
         },
-        {text: "E-mail", value: "email", class: "darken-1"},
+        { text: "E-mail", value: "email", class: "darken-1" },
         {
           text: "Kenteken",
           value: "plate",
           class: "darken-1",
           sortable: false
         },
-        {text: "Telefoon", value: "tel", class: "darken-1"},
+        { text: "Telefoon", value: "tel", class: "darken-1" },
         {
           text: "Verwijderen",
           class: "darken-1",
@@ -350,7 +352,7 @@ export default {
         params: {},
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           res.data.guests.forEach(data => {
             let clientdata = {
               id: data.guest_id,
@@ -361,7 +363,7 @@ export default {
               company: data.company
             };
             self.clients.push(clientdata);
-            console.log(clientdata)
+            console.log(clientdata);
           });
         }
       });
@@ -386,18 +388,20 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           self.$store.dispatch("postReq", {
             url: `appointments`,
             params: {
               guest_id: res.guest_id,
-              employee_name: res.name
+              employee_name: res.name,
+              checked_in: new Date().toISOString()
             },
             auth: self.$session.get("token"),
             csrftoken: self.$session.get("token"),
             xaccesstoken: self.$session.get("token"),
-            callback: function (res) {
+            callback: function(res) {
               console.log(res);
+              self.$router.push({ name: "Ingecheckt" });
             }
           });
         }
@@ -410,12 +414,13 @@ export default {
         url: `appointments`,
         params: {
           guest_id: userData.id,
-          employee_name: userData.name
+          employee_name: userData.name,
+          checked_in: new Date().toISOString()
         },
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (res) {
+        callback: function(res) {
           res;
         }
       });
@@ -445,7 +450,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (data) {
+        callback: function(data) {
           console.log(data);
         }
       });
@@ -459,7 +464,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function (data) {
+        callback: function(data) {
           console.log(data);
         }
       });
@@ -470,10 +475,11 @@ export default {
 
 <style scoped>
 .main-container {
-  width: 900px;
+  width: auto;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .primary-section {

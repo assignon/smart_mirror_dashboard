@@ -16,10 +16,12 @@
               type="password"
           ></v-text-field>
           <v-btn
-              class="mt-9 green darken-3"
+              class="mt-9"
               elevation="6"
+              rounded
               v-on:click="login()"
-          >Bevestigen
+          >
+            <v-icon color="green">mdi-content-save</v-icon>
           </v-btn>
         </v-form>
       </div>
