@@ -26,9 +26,9 @@ export default {
   created() {
     // connect socket io
     this.$store.state.socket = io.connect(`${this.$store.state.HOST}/`)
-    if (!this.$session.get("authenticated")) {
-      this.$router.push({name: "Login"})
-    }
+    // if (!this.$session.get("authenticated")) {
+    //   this.$router.push({name: "Login"})
+    // }
   },
   methods: {
     // createSession() {

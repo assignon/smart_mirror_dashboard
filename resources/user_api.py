@@ -76,7 +76,7 @@ class UserCollection(Resource):
         remove_whitespace(json_data['body'])
 
         # Validate and deserialize input
-
+        print(json_data)
         try:
             data = user_schema.load(json_data['body'])
         except ValidationError as err:
@@ -128,24 +128,32 @@ class UserApi(Resource):
         """
         Edit user. Users can only edit their own user settings, exception is made for admins
         """
+
         if current_user.user_id != user_id and current_user.is_admin is False:
-            return {"message": "Not authorized to edit this user!"}
+            return {"error": "Not authorized to edit this user!"}
 
         json_data: dict = request.get_json()["body"]
+        print(json_data)
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
         remove_whitespace(json_data)
 
-        # Validate and deserialize input
+        if current_user.user_id == user_id:
+            user_to_be_updated = current_user
+        else:
+            try: 
+                user_to_be_updated = User.get_user(user_id)
+            except NoResultFound:
+                return {'error': 'User does not exist!'}
 
         try:
-            if json_data['new_password'] != '' and current_user.check_password(json_data['password']):
+            if json_data['new_password'] != '' and user_to_be_updated.check_password(json_data['password']):
                 data = edit_user_password_schema.load(json_data)
                 data['password'] = data.pop('new_password')
-            elif json_data['new_password'] != '' and not current_user.check_password((json_data['password'])):
+            elif json_data['new_password'] != '' and not user_to_be_updated.check_password((json_data['password'])):
                 return jsonify({'error': 'incorrect password'})
             else:
                 json_data.pop('new_password', None)
@@ -164,4 +172,4 @@ class UserApi(Resource):
         except NoResultFound:
             return {'error': 'User does not exist'}
 
-        return {"user": user_schema.dump(edited_user)}, 200
+        return {'succes': 'Password changed successfully'}, 200

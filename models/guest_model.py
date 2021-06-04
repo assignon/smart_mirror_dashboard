@@ -1,10 +1,9 @@
-from settings import db
+from settings import db, redis_db
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 from .base_model import BaseMixin
 from .appointment_model import Appointment
-import redis
 from datetime import datetime
 from sqlalchemy.sql import func
 
@@ -68,9 +67,6 @@ class Guest(BaseMixin, db.Model):
     def delete_guest(guest_id):
         db.session.query(Guest).filter_by(guest_id=guest_id).delete()
         db.session.commit()
-        r = redis.StrictRedis(host='redis-11905.c247.eu-west-1-1.ec2.cloud.redislabs.com', port=11905,
-                                    password='sunny-side-UP')
+        redis_db.del_guest(guest_id)
 
-        r.delete("guest:" + str(guest_id))
-        r.zrem("guest_ids", guest_id)
 
