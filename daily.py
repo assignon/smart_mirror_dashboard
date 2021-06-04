@@ -1,9 +1,4 @@
 import time
-import sqlalchemy as sa
-import pickle
-import numpy as np
-import redis
-import os
 from dotenv import load_dotenv
 
 load_dotenv('.env')
@@ -13,7 +8,7 @@ def daily_delete(db, redis_db):
     aws_success = False
     redis_success = False
 
-    for _ in range(10):
+    for _ in range(2):
 
         # Delete expired guests from AWS
         if aws_success is False:
@@ -36,21 +31,8 @@ def daily_delete(db, redis_db):
             print("guests deleted")
             return
 
+        # aws promises a maximum of 22 minutes downtime per month, so on failure we wait 22 minutes and try to delete
+        # the data agaain
+        time.sleep(60*22)
+
     print("Failed to delete guests")
-
-
-
-
-
-
-# # Update the face recognitiopn model
-# recognizer = pickle.loads(open('../face_recognition/models/face_recognizer.p', "rb").read())
-#
-# # get embeddings and labels from redis
-# face_embeddings, face_ids = redis_db.get_vectors()
-#
-# # Train model
-# recognizer.fit(np.array(face_embeddings), np.array(face_ids))
-#
-# # dump new model in pickle
-# pickle.dump(recognizer, open('../face_recognition/models/face_recognizer.p', "wb"))
