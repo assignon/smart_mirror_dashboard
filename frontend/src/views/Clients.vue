@@ -2,9 +2,9 @@
   <section class="primary-section">
     <div class="main-container">
       <div>
-        <!-- Header -->
+        <!-- Heading -->
         <h1 class="mb-3 mt-12">Alle gasten</h1>
-        <!-- New client button -->
+        <!-- New client button and form -->
         <v-row>
           <v-dialog v-model="add_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">

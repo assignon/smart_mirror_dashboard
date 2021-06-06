@@ -57,7 +57,7 @@
                     :class="row.item.name.replace(/ /g, '')"
                     style="color:white;text-transform:capitalize"
                   ></strong>
-                  <v-icon color="#ff304c" dense>
+                  <v-icon dense>
                     mdi-close-thick
                   </v-icon>
                 </v-btn>
