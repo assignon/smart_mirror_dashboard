@@ -33,7 +33,7 @@ class AppointmentCollection(Resource):
         """
         Creates a new appointment in the appointment table
         """
-        json_data = request.get_json()
+        json_data = request.get_json()['body']
         if not json_data:
             return {"message": "No input data provided"}, 400
 
