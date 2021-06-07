@@ -263,10 +263,10 @@ export default {
 }
 
 .login-form .v-text-field {
-  width: 22%;
+  width: 40%;
 }
 .btn-container {
-  width: 50%;
+  width: 40%;
   height: auto;
   display: flex;
   justify-content: flex-end;

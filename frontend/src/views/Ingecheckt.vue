@@ -55,7 +55,7 @@
                 >
                   <strong
                     :class="row.item.name.replace(/ /g, '')"
-                    style="color:white;text-transform:capitalize"
+                    style="color:#ff304c;text-transform:capitalize"
                   ></strong>
                   <v-icon color="#ff304c" dense>
                     mdi-close-thick
@@ -178,7 +178,7 @@ export default {
       );
       checkoutBtn.disabled = false;
       checkoutBtn.classList.remove("v-btn--disabled");
-      checkoutBtn.style.backgroundColor = "#ff304c";
+      checkoutBtn.style.backgroundColor = "#f5f5f5";
     });
 
     // checkout socket
@@ -207,9 +207,14 @@ export default {
           // self.ingecheckt.splice(guestCheckedOut, 1)
 
           // reset checkout btn text
+          // document.querySelector(
+          //   "." + guestData.name.replace(/ /g, "")
+          // ).innerHTML = "Check-Uit";
+
           document.querySelector(
             "." + guestData.name.replace(/ /g, "")
-          ).innerHTML = "Check-Uit";
+          ).style.color = "#ff314d";
+
           // // reset check in btn
           // let checkInBtn = document.querySelector('.'+guestData.name.replace(/ /g,'')+guestData.appointment_id)
           // checkInBtn.firstChild.innerHTML = 'Check-In'

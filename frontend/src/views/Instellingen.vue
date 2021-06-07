@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='main-container'>
     <h1>Wachtwoord wijzigen</h1>
     <v-flex id="failureAlert">
       <failure-alert />
@@ -40,13 +40,15 @@
           required
       ></v-text-field>
     </v-form>
-    <v-btn
-      color="success"
-      class="mr-4"
-      v-on:click="validation"
-    >
-      Bevestigen
-    </v-btn>
+    <div class='btn-container'>
+      <v-btn
+        color="success"
+        class="mr-4"
+        v-on:click="validation"
+      >
+        Bevestigen
+      </v-btn>
+    </div>
     <Notifications :content='notificationText' :color='notificationColor'/>
   </div>
 </template>
@@ -135,12 +137,45 @@ export default {
 </script>
 
 <style scoped>
-  div {
+  /* div {
     width: 300px;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+  } */
+
+  .main-container {
+    width: 100%;
+    height: 80vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    /* flex-wrap: wrap; */
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5dc;
+  }
+
+  .login-form{
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-form .v-text-field {
+    width: 40%;
+  }
+
+  .btn-container {
+    width: 40%;
+    height: auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
   }
 
   #failureAlert{
