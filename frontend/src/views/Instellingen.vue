@@ -78,11 +78,11 @@ export default {
       ],
       passwordRules: [
         v => !!v || "This field is required",
-        v => (v && v.length <= 10) || 'Password must be less than 10 characters',
+        v => (v && v.length >= 4) || 'Password must be more than 5 characters',
       ],
       matchRules: [
         () => (this.input.password_new_repeat === this.input.password_new) || 'Passwords must match',
-        v => (v && v.length <= 10) || 'Password must be less than 10 characters',
+        v => (v && v.length >= 4) || 'Password must be more than 5 characters',
       ],
       showError: false,
       dialog: false,
