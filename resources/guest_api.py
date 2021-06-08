@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, abort
 from flask import request, jsonify, make_response
-from settings import ma, db
+from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
@@ -11,8 +11,7 @@ from .helper import remove_whitespace
 from models.guest_model import Guest
 
 # schema imports
-from schemas.schemas import GuestSchema, EditGuestSchema
-# from schemas.guest_schema import GuestSchema, EditGuestSchema
+from schemas.guest_appointment_schema import GuestSchema, EditGuestSchema
 
 guest_schema = GuestSchema()
 guests_schema = GuestSchema(many=True)

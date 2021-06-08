@@ -1,14 +1,13 @@
-import os, smtplib, ssl, uuid, random, string
+import os, smtplib, ssl, random, string
 from dotenv import load_dotenv
 from flask import request, jsonify, make_response, session
-from flask_restful import Resource, abort
+from flask_restful import Resource
 import jwt
 import datetime
-import time
 from functools import wraps
-from settings import app, ma, db, redis_db
+from settings import app, db, redis_db
 from models.user_model import User
-from schemas.schemas import UserSchema
+from schemas.user_schema import UserSchema
 
 
 def login_required(fun):

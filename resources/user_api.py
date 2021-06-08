@@ -1,38 +1,13 @@
-from flask_jwt_extended import jwt_required
-from flask_socketio import SocketIO, emit
-from flask_restful import Resource, reqparse, abort
-from flask import request, jsonify, make_response
-from settings import ma, db
+from flask_restful import Resource
+from flask import request, jsonify
+from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 from .helper import remove_whitespace
-
-
-# # models imports
-
-# # model = UserModel() 
-# class CreateUser(Resource):
-#     def post(self):
-#         pass
-
-
-# class GetUser(Resource):
-#     # @jwt_required
-#     def get(self):
-#         from app import socketio
-
-#         data = request.args
-#         socketio.emit('face_scanned', data)
-
-#         return 'run'
-
-
 from models.user_model import User
-# schema imports
-# from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
-from schemas.schemas import UserSchema, EditUserSchema, EditUserPasswordSchema
+from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
 
 user_schema: UserSchema = UserSchema()
 user_response_schema = UserSchema(exclude=['password',])
