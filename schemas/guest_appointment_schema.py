@@ -17,9 +17,9 @@ class EditGuestSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Guest
 
-    name = fields.Str(required=False, validate=validate.Length(min=3, max=30))
+    name = fields.Str(required=False, validate=validate.Length(min=2, max=30))
     email = fields.Email(required=False)
-    company = fields.Str(required=False, validate=validate.Length(min=3, max=30))
+    company = fields.Str(required=False, validate=validate.Length(min=2, max=30))
     phone_number = fields.Str(required=False, validate=validate.Length(min=8, max=15))
     license_plate = fields.Str(required=False, validate=validate.Length(min=3, max=30))
     consent_expire_date = fields.Int(required=False, validate=validate.Range(min=0))
@@ -51,5 +51,5 @@ class CreateAppointmentSchema(ma.SQLAlchemyAutoSchema):
     checked_in = fields.DateTime(required=False)
     checked_out = fields.DateTime(required=False)
     has_pass = fields.Boolean(required=False)
-    employee_name = fields.Str(required=True)
+    employee_name = fields.Str(required=True, validate=validate.Length(min=2, max=30))
     guest_id = fields.Int(required=True)
