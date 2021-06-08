@@ -8,13 +8,13 @@
       <succes-alert />
     </v-flex>
     <v-form class="login-form mt-9" ref="form" v-model="valid" lazy-validation>
-      <v-text-field
+      <!-- <v-text-field
           name="E-mail"
           :rules="emailRules"
           label="E-mail"
           v-model="input.email"
           required
-      ></v-text-field>
+      ></v-text-field> -->
       <v-text-field
           name="password_old"
           :rules="passwordRules"
@@ -78,11 +78,11 @@ export default {
       ],
       passwordRules: [
         v => !!v || "This field is required",
-        v => (v && v.length <= 10) || 'Password must be less than 10 characters',
+        v => (v && v.length >= 4) || 'Password must be more or equal than 5 characters',
       ],
       matchRules: [
         () => (this.input.password_new_repeat === this.input.password_new) || 'Passwords must match',
-        v => (v && v.length <= 10) || 'Password must be less than 10 characters',
+        v => (v && v.length >= 4) || 'Password must be more or equal than 5 characters',
       ],
       showError: false,
       dialog: false,
