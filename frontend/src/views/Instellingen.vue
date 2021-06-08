@@ -8,13 +8,13 @@
       <succes-alert />
     </v-flex>
     <v-form class="login-form mt-9" ref="form" v-model="valid" lazy-validation>
-      <v-text-field
+      <!-- <v-text-field
           name="E-mail"
           :rules="emailRules"
           label="E-mail"
           v-model="input.email"
           required
-      ></v-text-field>
+      ></v-text-field> -->
       <v-text-field
           name="password_old"
           :rules="passwordRules"
