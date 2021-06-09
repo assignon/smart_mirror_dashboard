@@ -11,12 +11,14 @@
           <v-dialog v-model="add_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                class="blue darken-1 mt-9 mb-12"
+                class="mt-9 mb-12 white--text"
+                color="#0f78b2"
                 rounded
                 v-bind="attrs"
                 v-on="on"
               >
                 <v-icon color="white">mdi-account-plus-outline</v-icon>
+                Toevoegen
               </v-btn>
             </template>
             <v-card>
@@ -63,7 +65,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="red darken-1" text @click="add_dialog = false">
+                <v-btn color="#FF4411" text @click="add_dialog = false">
                   Sluiten
                 </v-btn>
                 <v-btn
@@ -91,12 +93,12 @@
               <!-- Delete Button -->
               <td :class="row.item.name.replace(/ /g, '') + row.item.id">
                 <v-btn
-                  class="mx-2 red darken-3"
+                  class="mx-2 darken-3"
                   rounded
                   elevation="2"
                   @click.stop="confirmationDialog(row.item)"
                 >
-                  <v-icon color="white">
+                  <v-icon color="#FF4411">
                     mdi-delete
                   </v-icon>
                 </v-btn>
@@ -104,11 +106,11 @@
               <!-- Edit Button -->
               <td :class="row.item.name.replace(/ /g, '') + row.item.id">
                 <v-btn
-                  class="mx-2 green darken-3"
+                  class="mx-2 darken-3"
                   rounded
                   @click.stop="editDialog(row.item)"
                 >
-                  <v-icon color="white">mdi-wrench</v-icon>
+                  <v-icon color="green">mdi-wrench</v-icon>
                 </v-btn>
               </td>
             </tr>
@@ -175,10 +177,17 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text @click="edit_dialog = false">
+          <v-btn color="#FF4411" text @click="edit_dialog = false">
             Sluiten
           </v-btn>
-          <v-btn color="green darken-1" text @click="edit_dialog = false; editUser(currentUserData)">
+          <v-btn
+            color="green darken-1"
+            text
+            @click="
+              edit_dialog = false;
+              editUser(currentUserData);
+            "
+          >
             Bevestigen
           </v-btn>
         </v-card-actions>
@@ -207,39 +216,39 @@ export default {
           align: "start",
           sortable: true,
           value: "id",
-          class: "blue white--text rounded-tl-lg darken-1"
+          class: "rounded-tl-lg darken-1"
         },
         {
           text: "Name",
           sortable: true,
           value: "name",
-          class: "blue white--text darken-1"
+          class: "darken-1"
         },
         {
           text: "Email",
           sortable: true,
           value: "email",
-          class: "blue white--text darken-1"
+          class: "darken-1"
         },
         {
           text: "Admin",
           sortable: true,
           value: "admin",
-          class: "blue white--text darken-1"
+          class: "darken-1"
         },
         {
           text: "Verwijder",
           sortable: false,
           align: "center",
           value: "delete",
-          class: "blue white--text darken-1"
+          class: "darken-1"
         },
         {
           text: "Bewerken",
           sortable: false,
           align: "center",
           value: "delete",
-          class: "blue white--text rounded-tr-lg darken-1"
+          class: "rounded-tr-lg darken-1"
         }
       ],
       users: []

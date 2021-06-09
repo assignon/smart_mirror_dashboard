@@ -114,7 +114,7 @@ def static_file(path):
     Returns:
         [file]: [vue static file]
     """
-    return app.send_static_file(path)
+#     return app.send_static_file(path)
 
 
 @app.route('/')

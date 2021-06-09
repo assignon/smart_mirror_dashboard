@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='main-container'>
     <h1>Wachtwoord wijzigen</h1>
     <v-flex id="failureAlert">
       <failure-alert />
@@ -8,13 +8,13 @@
       <succes-alert />
     </v-flex>
     <v-form class="login-form mt-9" ref="form" v-model="valid" lazy-validation>
-      <v-text-field
+      <!-- <v-text-field
           name="E-mail"
           :rules="emailRules"
           label="E-mail"
           v-model="input.email"
           required
-      ></v-text-field>
+      ></v-text-field> -->
       <v-text-field
           name="password_old"
           :rules="passwordRules"
@@ -40,13 +40,15 @@
           required
       ></v-text-field>
     </v-form>
-    <v-btn
-      color="success"
-      class="mr-4"
-      v-on:click="validation"
-    >
-      Bevestigen
-    </v-btn>
+    <div class='btn-container'>
+      <v-btn
+        color="success"
+        class="mr-4"
+        v-on:click="validation"
+      >
+        Bevestigen
+      </v-btn>
+    </div>
     <Notifications :content='notificationText' :color='notificationColor'/>
   </div>
 </template>
@@ -76,11 +78,11 @@ export default {
       ],
       passwordRules: [
         v => !!v || "This field is required",
-        v => (v && v.length <= 10) || 'Password must be less than 10 characters',
+        v => (v && v.length >= 4) || 'Password must be more or equal than 5 characters',
       ],
       matchRules: [
         () => (this.input.password_new_repeat === this.input.password_new) || 'Passwords must match',
-        v => (v && v.length <= 10) || 'Password must be less than 10 characters',
+        v => (v && v.length >= 4) || 'Password must be more or equal than 5 characters',
       ],
       showError: false,
       dialog: false,
@@ -135,12 +137,45 @@ export default {
 </script>
 
 <style scoped>
-  div {
+  /* div {
     width: 300px;
     margin: auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+  } */
+
+  .main-container {
+    width: 100%;
+    height: 80vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    /* flex-wrap: wrap; */
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5dc;
+  }
+
+  .login-form{
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-form .v-text-field {
+    width: 40%;
+  }
+
+  .btn-container {
+    width: 40%;
+    height: auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
   }
 
   #failureAlert{

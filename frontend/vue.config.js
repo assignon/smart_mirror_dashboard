@@ -1,4 +1,4 @@
-module.exports = {
+  module.exports = {
   transpileDependencies: ["vuetify"],
   "devServer": {
     "proxy": {
@@ -17,8 +17,5 @@ module.exports = {
 };
 
 // module.exports = {
-//     devServer: {
-//       proxy: 'http://127.0.0.1:5000'
-//     },
-//     "outputDir": "./dist/",
-// }
+//   transpileDependencies: ["vuetify"]
+// };
