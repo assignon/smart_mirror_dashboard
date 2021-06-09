@@ -1,4 +1,6 @@
-import os, sys, time
+import os
+import sys
+import time
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -12,9 +14,11 @@ from RedisDB.redisdb import RedisDatabase
 from daily import daily_delete
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-
-app = Flask(__name__)
-
+# app = Flask(__name__, static_url_path='/',
+#             static_folder="../frontend/dist/", template_folder="templates")
+app = Flask(__name__, static_url_path='/static', template_folder="templates")
+# app = Flask(__name__, static_folder="./frontend/dist/static",
+#             template_folder="./frontend/dist")
 
 # swagger specific
 SWAGGER_URL = '/swagger'
@@ -33,7 +37,7 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 app.config.from_envvar('ENV_FILE_LOCATION')
 bcrypt = Bcrypt(app)
 
-## Db configurations
+# Db configurations
 
 load_dotenv('.env')
 """AWS CONNECTIE"""
@@ -79,7 +83,8 @@ scheduler = APScheduler()
 
 # check of de laatste taak geexecute is.
 
-res = db.session.execute("""SELECT next_run_time FROM apscheduler_jobs;""").first()
+res = db.session.execute(
+    """SELECT next_run_time FROM apscheduler_jobs;""").first()
 if res.next_run_time < time.time():
     daily_task()
 
@@ -87,7 +92,8 @@ if res.next_run_time < time.time():
 app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task, 'replace_existing': True,
                        "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
 
-app.config['SCHEDULER_JOBSTORES'] = {"default": SQLAlchemyJobStore(url=connection_url)}
+app.config['SCHEDULER_JOBSTORES'] = {
+    "default": SQLAlchemyJobStore(url=connection_url)}
 
 scheduler.init_app(app)
 scheduler.start()

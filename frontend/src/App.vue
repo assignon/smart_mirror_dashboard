@@ -26,9 +26,9 @@ export default {
   created() {
     // connect socket io
     this.$store.state.socket = io.connect(`${this.$store.state.HOST}/`)
-    if (!this.$session.get("authenticated")) {
-      this.$router.push({name: "Login"})
-    }
+    // if (!this.$session.get("authenticated")) {
+    //   this.$router.push({name: "Login"})
+    // }
   },
   methods: {
     // createSession() {
@@ -49,18 +49,18 @@ body {
   scroll-behavior: smooth;
   overflow-x: hidden;
   width: 100%;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
 }
 
 #app {
   /* font-family: Avenir, Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /*text-align: center;*/
   /* color: #2c3e50; */
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: auto;
   display: flex;
