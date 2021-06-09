@@ -1,8 +1,31 @@
-from settings import db, manager
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
-from sqlalchemy.orm import relationship
+
 from sqlalchemy.orm.exc import NoResultFound
-from .base_model import BaseMixin
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
+
+import os
+import sys
+try:
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+    # from .base_model import BaseMixin
+    from settings import db, manager
+except:
+    pass
+
+
+class BaseMixin(object):
+    @classmethod
+    def create(cls, **kw):
+        """
+        This function inserts a new row into the table and returns the row that has been added.
+        """
+
+        obj = cls(**kw)
+        db.session.add(obj)
+        db.session.commit()
+
+        return obj
 
 
 class Appointment(BaseMixin, db.Model):

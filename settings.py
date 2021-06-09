@@ -77,6 +77,9 @@ rest_api = Api(app)
 
 ma = Marshmallow(app)
 
+# if __name__ == '__main__':
+#     manager.run()
+
 # scheduling:
 
 
