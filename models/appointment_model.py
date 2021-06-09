@@ -1,4 +1,4 @@
-from settings import db
+from settings import db, manager
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
@@ -19,17 +19,16 @@ class Appointment(BaseMixin, db.Model):
 
     @staticmethod
     def get_appointment(appointment_id):
-        appointment = db.session.query(Appointment).filter_by(appointment_id=appointment_id).first()
+        appointment = db.session.query(Appointment).filter_by(
+            appointment_id=appointment_id).first()
         if appointment:
             return appointment
         else:
             raise NoResultFound
-    
 
     @staticmethod
     def get_open_appointments():
         return db.session.query(Appointment).filter_by(checked_out=None).order_by(desc(Appointment.appointment_id)).all()
-        
 
     @staticmethod
     def update_appointment(appointment_id, **kwargs):
@@ -40,7 +39,8 @@ class Appointment(BaseMixin, db.Model):
             **kwargs: key value pairs, keys used should be the same as the columns specified in the model 
         """
 
-        appointment = Appointment.query.filter_by(appointment_id=appointment_id).first()
+        appointment = Appointment.query.filter_by(
+            appointment_id=appointment_id).first()
 
         if appointment:
             for column, value in kwargs.items():
@@ -54,5 +54,10 @@ class Appointment(BaseMixin, db.Model):
 
     @staticmethod
     def delete_appointment(appointment_id):
-        db.session.query(Appointment).filter_by(appointment_id=appointment_id).delete()
+        db.session.query(Appointment).filter_by(
+            appointment_id=appointment_id).delete()
         db.session.commit()
+
+
+if __name__ == '__main__':
+    manager.run()
