@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1c4aef41e5a1bc6f27346f1752320b01",
+    "revision": "347996aa0f86690cf4fe910d4450a198",
     "url": "/index.html"
   },
   {
@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/robots.txt"
   },
   {
-    "revision": "009f3048888f201b2758",
+    "revision": "210699cf1f5d8f4ca7c0",
     "url": "/static/css/app.c8f50093.css"
   },
   {
@@ -100,8 +100,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/img/fa-solid-900.2306f642.svg"
   },
   {
-    "revision": "009f3048888f201b2758",
-    "url": "/static/js/app.a589de4b.js"
+    "revision": "210699cf1f5d8f4ca7c0",
+    "url": "/static/js/app.45cb1403.js"
   },
   {
     "revision": "43fe634c8975ea421a5f",
