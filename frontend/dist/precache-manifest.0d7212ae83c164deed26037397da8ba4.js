@@ -1,10 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-<<<<<<< HEAD:frontend/dist/precache-manifest.fc78567b525cbc8f81aab0d3b0adea36.js
-    "revision": "347996aa0f86690cf4fe910d4450a198",
-=======
-    "revision": "326b441c8d311b3f3d87b9a88de40aaf",
->>>>>>> develop:frontend/dist/precache-manifest.a115f4949c4882cbc73be1122ee27180.js
+    "revision": "18cddef1aa0be082208fb4e0a1317e3a",
     "url": "/index.html"
   },
   {
@@ -16,13 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/robots.txt"
   },
   {
-<<<<<<< HEAD:frontend/dist/precache-manifest.fc78567b525cbc8f81aab0d3b0adea36.js
-    "revision": "210699cf1f5d8f4ca7c0",
-    "url": "/static/css/app.c8f50093.css"
-=======
-    "revision": "6e735b4cdcd99db17693",
-    "url": "/static/css/app.daf39e6a.css"
->>>>>>> develop:frontend/dist/precache-manifest.a115f4949c4882cbc73be1122ee27180.js
+    "revision": "380f7bdb47b574a5992d",
+    "url": "/static/css/app.c1fdb5f2.css"
   },
   {
     "revision": "c700a72719513afbbd65",
@@ -109,13 +100,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/img/fa-solid-900.2306f642.svg"
   },
   {
-<<<<<<< HEAD:frontend/dist/precache-manifest.fc78567b525cbc8f81aab0d3b0adea36.js
-    "revision": "210699cf1f5d8f4ca7c0",
-    "url": "/static/js/app.45cb1403.js"
-=======
-    "revision": "6e735b4cdcd99db17693",
-    "url": "/static/js/app.93f5bb1a.js"
->>>>>>> develop:frontend/dist/precache-manifest.a115f4949c4882cbc73be1122ee27180.js
+    "revision": "380f7bdb47b574a5992d",
+    "url": "/static/js/app.1d719ce2.js"
   },
   {
     "revision": "c700a72719513afbbd65",
