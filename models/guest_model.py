@@ -1,11 +1,37 @@
-from settings import db, redis_db
+# from settings import db, redis_db
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
-from .base_model import BaseMixin
-from .appointment_model import Appointment
+# from .base_model import BaseMixin
+# from .appointment_model import Appointment
 from datetime import datetime
 from sqlalchemy.sql import func
+
+
+import os
+import sys
+try:
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+    # from .base_model import BaseMixin
+    from settings import db, manager, redis_db
+    from .appointment_model import Appointment
+except:
+    pass
+
+
+class BaseMixin(object):
+    @classmethod
+    def create(cls, **kw):
+        """
+        This function inserts a new row into the table and returns the row that has been added.
+        """
+
+        obj = cls(**kw)
+        db.session.add(obj)
+        db.session.commit()
+
+        return obj
 
 
 class Guest(BaseMixin, db.Model):
@@ -30,7 +56,6 @@ class Guest(BaseMixin, db.Model):
         Input: employee_name
         """
         Appointment.create(employee_name=employee_name, guest_id=self.guest_id)
-
 
     @staticmethod
     def update_guest(guest_id, **kwargs):
@@ -70,3 +95,5 @@ class Guest(BaseMixin, db.Model):
         redis_db.del_guest(guest_id)
 
 
+if __name__ == '__main__':
+    manager.run()
