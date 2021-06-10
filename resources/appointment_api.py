@@ -28,7 +28,7 @@ class AppointmentCollection(Resource):
             appointments = Appointment.get_open_appointments()
             return {"appointments": appointments_schema.dump(appointments)}
         except Exception:
-            return 500
+            return {"error": "Database Server Error"}, 500
 
     @staticmethod
     @login_required
@@ -36,9 +36,9 @@ class AppointmentCollection(Resource):
         """
         Creates a new appointment in the appointment table
         """
-        json_data = request.get_json()['body']
+        json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
@@ -49,7 +49,7 @@ class AppointmentCollection(Resource):
         try:
             data = create_appointment_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}, 422
 
         try:
             appointment = Appointment.create(**data)
@@ -57,14 +57,14 @@ class AppointmentCollection(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
 
-        return {"appointment": appointment_schema.dump(appointment)}, 201
+        return {"message": "Succesvol ingecheckt", "appointment": appointment_schema.dump(appointment)}, 201
 
     @staticmethod
     @login_required
     def delete(current_user, appoinment_id):
         try:
             Appointment.delete_appointment(appoinment_id)
-            return 200
+            return {"message": "Appointment is verwijderd"}, 200
         except Exception:
             return 500
 
@@ -79,7 +79,7 @@ class AppointmentApi(Resource):
         now = datetime.datetime.now()
 
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
@@ -94,7 +94,7 @@ class AppointmentApi(Resource):
         try:
             data = edit_appointment_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}, 422
 
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)
@@ -107,4 +107,5 @@ class AppointmentApi(Resource):
         except NoResultFound:
             return {'error': 'Appointment does not exist'}
         
-        return {'appointment': appointment_schema.dump(edited_appointment)}, 200
+        return {'message': "appointment status is succesvol aangepast",
+                'appointment': appointment_schema.dump(edited_appointment)}, 200
