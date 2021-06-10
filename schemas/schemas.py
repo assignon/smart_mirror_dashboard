@@ -12,6 +12,8 @@ class GuestSchema(ma.SQLAlchemyAutoSchema):
         model = Guest
         # include_relationships = True
 
+    consent_expire_date = fields.Int(required=True, validate=validate.Range(min=0))
+
     # appointments = ma.Nested(lambda: AppointmentSchema, many=True, exclude=('guest',))
         
 
