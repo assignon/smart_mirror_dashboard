@@ -31,7 +31,7 @@ class GuestCollection(Resource):
             guests = Guest.query.all()
             return {'guests': guests_schema.dump(guests)}, 200
         except Exception:
-            return 500
+            return {"error": "Database Server Error"}, 500
 
     @staticmethod
     @login_required
@@ -41,7 +41,7 @@ class GuestCollection(Resource):
         """
         json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
@@ -52,23 +52,23 @@ class GuestCollection(Resource):
         try:
             data = guest_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}, 422
         try:
             guest = Guest.create(**data)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
 
-        return guest_schema.dump(guest), 201
+        return {"message": "guest succesvol aangemaakt", **guest_schema.dump(guest)}, 201
 
     @staticmethod
     @login_required
     def delete(current_user, guest_id):
         try:
             Guest.delete_guest(guest_id)
-            return 200
+            return {"message": "Guest is succesvol verwijderd"}, 200
         except Exception:
-            return 500
+            return {"error": "Database Server Error"}, 500
 
 
 class GuestScanned(Resource):
@@ -105,7 +105,7 @@ class GuestApi(Resource):
         try:
             guest = Guest.get_guest(guest_id)
         except NoResultFound:
-            return {'message': 'Guest does not exist!'}
+            return {'error': 'Guest does not exist!'}
 
         return {'guest': guest_schema.dump(guest)}, 200
 
@@ -118,7 +118,7 @@ class GuestApi(Resource):
 
         json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
@@ -129,7 +129,7 @@ class GuestApi(Resource):
         try:
             data = edit_guest_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}, 422
 
         try:
             edited_guest = Guest.update_guest(guest_id, **data)
@@ -139,4 +139,4 @@ class GuestApi(Resource):
         except NoResultFound:
             return {'error': 'Guest does not exist'}
 
-        return {'guest': guest_schema.dump(edited_guest)}, 200
+        return {'message': "Guest succesvol bewerkt", 'guest': guest_schema.dump(edited_guest)}, 200

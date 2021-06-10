@@ -51,11 +51,11 @@ class UserCollection(Resource):
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'}), 401
+            return jsonify({'error': 'Not authorized to perform this function'}), 401
         try:
             users = User.get_all_users()
         except NoResultFound:
-            return {'message': 'No users found in the database'}, 400
+            return {'error': 'No users found in the database'}, 400
         return {"users": users_response_schema.dump(users)}, 200
 
     @staticmethod
@@ -65,11 +65,11 @@ class UserCollection(Resource):
         Add a new user to the database
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'}), 401
+            return jsonify({'error': 'Not authorized to perform this function'}), 401
 
         json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}, 400
 
         # remove whitespaces from input
 
@@ -79,7 +79,7 @@ class UserCollection(Resource):
         try:
             data = user_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}, 422
 
         try:
             user = User.create(**data)
@@ -87,19 +87,19 @@ class UserCollection(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
 
-        return {"user": user_response_schema.dump(user)}, 201
+        return {"message": "new user succesvol aangemaakt", "user": user_response_schema.dump(user)}, 201
 
     @staticmethod
     @login_required
     def delete(current_user, user_id):
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'})
+            return jsonify({'error': 'Not authorized to perform this function'})
         
         try: 
             User.delete_user(user_id)
         except:
-            return 500
-        return 200
+            return {"error": "Database Server Error"}, 500
+        return {"message": "Guest has been deleted"}, 200
 
 
 class UserApi(Resource):
@@ -111,12 +111,12 @@ class UserApi(Resource):
         get user based on userid
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'})
+            return jsonify({'error': 'Not authorized to perform this function'})
 
         try:
             user = User.get_user(user_id)
         except NoResultFound:
-            return {'message': 'User does not exist!'}
+            return {'error': 'User does not exist!'}
 
         return {"user": user_response_schema.dump(user)}, 200
 
@@ -157,11 +157,11 @@ class UserApi(Resource):
                 json_data.pop('password', None)
                 data = edit_user_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}, 422
         except KeyError:
             data = edit_user_schema.load(json_data)
         except Exception:
-            return 500
+            return {"error": "Database Server Error"}, 500
 
         try:
             edited_user = User.update_user(user_id, **data)
@@ -171,4 +171,4 @@ class UserApi(Resource):
         except NoResultFound:
             return {'error': 'User does not exist'}
 
-        return {'succes': 'Password changed successfully'}, 200
+        return {'message': 'Password changed successfully'}, 200

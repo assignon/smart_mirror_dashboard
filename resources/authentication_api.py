@@ -17,7 +17,7 @@ def login_required(fun):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         if not token:
-            return jsonify({'message': 'Token is missing!'}, 401)
+            return jsonify({'error': 'Token is missing!'}, 401)
 
         try:
             data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
@@ -25,7 +25,7 @@ def login_required(fun):
             if current_user is None:
                 return jsonify({'error': 'The user_id is invalid'})
         except Exception as e:
-            return jsonify({'message': 'Token is invalid!'})
+            return jsonify({'error': 'Token is invalid!'})
 
         return fun(current_user, *args, **kwargs)
 
@@ -38,15 +38,15 @@ class Login(Resource):
     def get():
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
-            return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+            return make_response({"error": "Login information incomplete"}, 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
         try:
             user = User.query.filter_by(email=auth.username).first()
         except Exception:
-            return 500
+            return {"error": "Database Server Error"}, 500
 
         if not user:
-            return {'message': 'User does not exist'}
+            return {'error': 'User does not exist'}
 
         if user.check_password(auth.password):
             try:
@@ -58,7 +58,7 @@ class Login(Resource):
                     {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
                     app.config['JWT_SECRET_KEY'])
             return jsonify({'x-access-token': token, 'user_id': user.user_id, 'superuser': user.is_admin})
-        return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+        return make_response({"error": "Wrong password"}, 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
 
 class Logout(Resource):
@@ -75,7 +75,7 @@ class PasswordManager(Resource):
     def get():
 
         if not request.args:
-            return {"message": "No input data provided"}
+            return {"error": "No input data provided"}
         email = request.args.get('email')
         if email is not None:
             try:
@@ -94,18 +94,20 @@ class PasswordManager(Resource):
                     try:
                         User.update_user(user.user_id, password=new_password)
                     except Exception:
-                        return 500
+                        return {"error": "Database Server Error"},500
                     try:
                         send_email(user, new_password)
-                        return {'succes': 'New password has been sent to your email.'}
+                        return {'message': 'New password has been sent to your email.'}
                     except Exception:
-                        return {"message": "new_password has been created but email has not been sended"}, 500
+                        return {"error": "new_password has been created but email has not been send, because of an "
+                                         "error "
+                                         " in the email server"}, 500
                 else:
-                    return {'message': 'This email is not recognized.'}
+                    return {'error': 'This email is not recognized.'}
             except Exception:
-                return 500
+                return {"error": "Database Server Error"},500
         else:
-            return {"message": "Email not provided in the data"}
+            return {"error": "Email not provided in the data"}
 
     # @staticmethod
     # def post():
