@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from flask_migrate import Migrate
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -61,6 +62,9 @@ app.config['JWT_SECRET_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 # initialize db
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+manager = Manager(app)
+
+manager.add_command('db', MigrateCommand)
 
 # Redis connection
 redis_db = RedisDatabase(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
@@ -88,7 +92,6 @@ scheduler = APScheduler()
 """Schedule configuratuons"""
 
 # check of de laatste taak geexecute is.
-
 res = db.session.execute(
     """SELECT next_run_time FROM apscheduler_jobs;""").first()
 if res.next_run_time < time.time():
