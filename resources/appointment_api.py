@@ -1,11 +1,11 @@
-from flask_restful import Resource, reqparse, abort
-from flask import request, jsonify, make_response
-from settings import ma, db
+from flask_restful import Resource
+from flask import request
+from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
-from schemas.schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
+from schemas.appointment_guest_schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
 from .helper import remove_whitespace
 import datetime

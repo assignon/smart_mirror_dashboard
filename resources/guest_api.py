@@ -1,6 +1,8 @@
-from flask_restful import Resource, reqparse, abort
-from flask import request, jsonify, make_response
-from settings import ma, db
+import time
+
+from flask_restful import Resource
+from flask import request
+from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
@@ -11,8 +13,7 @@ from .helper import remove_whitespace
 from models.guest_model import Guest
 
 # schema imports
-from schemas.schemas import GuestSchema, EditGuestSchema
-# from schemas.guest_schema import GuestSchema, EditGuestSchema
+from schemas.appointment_guest_schemas import GuestSchema, EditGuestSchema
 
 guest_schema = GuestSchema()
 guests_schema = GuestSchema(many=True)
@@ -54,6 +55,7 @@ class GuestCollection(Resource):
         except ValidationError as err:
             return {"error": err.messages}, 422
         try:
+            data['consent_expire_date'] = int(time.time()) + 24*60*60
             guest = Guest.create(**data)
         except exc.IntegrityError as e:
             db.session.rollback()
