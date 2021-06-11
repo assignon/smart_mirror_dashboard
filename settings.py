@@ -62,9 +62,9 @@ app.config['JWT_SECRET_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 # initialize db
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-manager = Manager(app)
+# manager = Manager(app)
 
-manager.add_command('db', MigrateCommand)
+# manager.add_command('db', MigrateCommand)
 
 # Redis connection
 redis_db = RedisDatabase(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
