@@ -32,89 +32,89 @@ cors = CORS(app, resources={
 BUILD_DIR = PROJECT_DIR+'/frontend/dist'
 
 
-# def load_index_file():
-#     """
-#     load generated files(views) from vue build
-#     Returns:
-#         [file]: [vue views files]
-#     """
-#     # path to the vue build static file
-#     index_file_path = '{}/index.html'.format(BUILD_DIR)
-#     with open(index_file_path, 'r', encoding='utf-8') as f:
-#         index_file = f.read()
-#     return index_file
+def load_index_file():
+    """
+    load generated files(views) from vue build
+    Returns:
+        [file]: [vue views files]
+    """
+    # path to the vue build static file
+    index_file_path = '{}/index.html'.format(BUILD_DIR)
+    with open(index_file_path, 'r', encoding='utf-8') as f:
+        index_file = f.read()
+    return index_file
 
 
-# app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
-# index_file = load_index_file()
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
+index_file = load_index_file()
 
 
-# @app.route('/', methods=['GET'])
-# def index():
-#     """render vue login page
+@app.route('/', methods=['GET'])
+def index():
+    """render vue login page
 
-#     Returns:
-#         [file]: [get vue login static page]
-#     """
-#     return Response(index_file, mimetype='text/html',
-#                     headers=Headers({'Cache-Control': 'max-age=60'}))
-
-
-# @app.route('/ingecheckt', methods=['GET'])
-# def ingecheckt():
-#     """render vue in-uitcheck page
-
-#     Returns:
-#         [file]: [get vue in-uitcheck static page]
-#     """
-#     return Response(index_file, mimetype='text/html',
-#                     headers=Headers({'Cache-Control': 'max-age=60'}))
+    Returns:
+        [file]: [get vue login static page]
+    """
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-# @app.route('/clients', methods=['GET'])
-# def clients():
-#     """render vue clients page
+@app.route('/ingecheckt', methods=['GET'])
+def ingecheckt():
+    """render vue in-uitcheck page
 
-#     Returns:
-#         [file]: [get vue clients static page]
-#     """
-#     return Response(index_file, mimetype='text/html',
-#                     headers=Headers({'Cache-Control': 'max-age=60'}))
-
-
-# @app.route('/admin', methods=['GET'])
-# def admin():
-#     """render vue admin page
-
-#     Returns:
-#         [file]: [get vue admin static page]
-#     """
-#     return Response(index_file, mimetype='text/html',
-#                     headers=Headers({'Cache-Control': 'max-age=60'}))
+    Returns:
+        [file]: [get vue in-uitcheck static page]
+    """
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-# @app.route('/instellingen', methods=['GET'])
-# def instellingen():
-#     """render vue instellingen page
+@app.route('/clients', methods=['GET'])
+def clients():
+    """render vue clients page
 
-#     Returns:
-#         [file]: [get vue instellingen static page]
-#     """
-#     return Response(index_file, mimetype='text/html',
-#                     headers=Headers({'Cache-Control': 'max-age=60'}))
+    Returns:
+        [file]: [get vue clients static page]
+    """
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-# @app.route('/<path:path>')
-# def static_file(path):
-#     """get static file collected from vue build
+@app.route('/admin', methods=['GET'])
+def admin():
+    """render vue admin page
 
-#     Args:
-#         path ([str]): [flask route path]
+    Returns:
+        [file]: [get vue admin static page]
+    """
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
 
-#     Returns:
-#         [file]: [vue static file]
-#     """
-#     return app.send_static_file(path)
+
+@app.route('/instellingen', methods=['GET'])
+def instellingen():
+    """render vue instellingen page
+
+    Returns:
+        [file]: [get vue instellingen static page]
+    """
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
+
+
+@app.route('/<path:path>')
+def static_file(path):
+    """get static file collected from vue build
+
+    Args:
+        path ([str]): [flask route path]
+
+    Returns:
+        [file]: [vue static file]
+    """
+    return app.send_static_file(path)
 
 
 @app.route('/')
@@ -170,13 +170,6 @@ def unsubscribe_user(data):
 def update_checked_guest(guest_data):
     # now = datetime.datetime.now()
     emit('checked_in',  guest_data,
-         broadcast=True)
-
-
-@socketio.on('update_checkedout')
-def update_checked_guest(guest_data):
-    # now = datetime.datetime.now()
-    emit('checked_out',  guest_data,
          broadcast=True)
 
 
