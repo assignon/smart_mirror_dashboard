@@ -48,14 +48,10 @@ bcrypt = Bcrypt(app)
 
 load_dotenv('.env')
 """AWS CONNECTIE"""
-# username = os.getenv('AWS_USERNAME')
-username = 'admin'
-# password = os.getenv('AWS_PASSWORD')
-password = 'sunny-side-UP'
-# host = os.getenv('AWS_HOST')
-host = 'sunny-side-up.cakehm4llypf.eu-west-3.rds.amazonaws.com'
-# db_name = os.getenv('AWS_DB_NAME')
-db_name = 'smart_mirror'
+username = os.getenv('AWS_USERNAME')
+password = os.getenv('AWS_PASSWORD')
+host = os.getenv('AWS_HOST')
+db_name = os.getenv('AWS_DB_NAME')
 
 connection_url = f'mysql+mysqldb://{username}:{password}@{host}/{db_name}'
 
