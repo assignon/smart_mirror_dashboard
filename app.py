@@ -117,6 +117,17 @@ def static_file(path):
     return app.send_static_file(path)
 
 
+@app.route('/404', methods=['GET'])
+def no_found():
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('no_found'))
+
+
 @app.route('/')
 def hello_world():
     return 'Hello, World!'

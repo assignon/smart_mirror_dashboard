@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "18cddef1aa0be082208fb4e0a1317e3a",
+    "revision": "ecb21f6cc8fa7b4f74af21d29bac5994",
     "url": "/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/robots.txt"
   },
   {
-    "revision": "380f7bdb47b574a5992d",
-    "url": "/static/css/app.c1fdb5f2.css"
+    "revision": "d15f46da19397a769002",
+    "url": "/static/css/app.3e7621f3.css"
   },
   {
     "revision": "c700a72719513afbbd65",
@@ -88,6 +88,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/img/SogetiLabs_Logo_Primary_3COL_RGB (002).9f4693bc.png"
   },
   {
+    "revision": "580821e86089ab81732069f454d3da83",
+    "url": "/static/img/error.580821e8.png"
+  },
+  {
     "revision": "5d10d00980077f67990f73b1961bc46e",
     "url": "/static/img/fa-brands-400.5d10d009.svg"
   },
@@ -100,8 +104,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/img/fa-solid-900.2306f642.svg"
   },
   {
-    "revision": "380f7bdb47b574a5992d",
-    "url": "/static/js/app.1d719ce2.js"
+    "revision": "d15f46da19397a769002",
+    "url": "/static/js/app.684639cf.js"
   },
   {
     "revision": "c700a72719513afbbd65",
