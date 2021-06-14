@@ -95,7 +95,7 @@
         ></v-text-field>
         <!-- Datatable -->
         <v-card class="mb-15">
-          <v-data-table :headers="headers" :items="clients" :search="search" ref="table">
+          <v-data-table :headers="headers" :items="clients" :search="search">
             <template v-slot:item="row">
               <!-- Template data -->
               <tr>
@@ -225,35 +225,40 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                    label="Naam"
+                    :label="edit_form.length > 0 ? edit_form[0].name : null"
+                    placeholder="Naam"
                     v-model="edit_client.name"
                     required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Bedrijf"
+                    :label="edit_form.length > 0 ? edit_form[0].company : null"
+                    placeholder="Bedrijf"
                     v-model="edit_client.company"
                     required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Email"
+                    :label="edit_form.length > 0 ? edit_form[0].email : null"
+                    placeholder="Email"
                     v-model="edit_client.email"
                     required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Tel"
+                    :label="edit_form.length > 0 ? edit_form[0].phone_number : null"
+                    placeholder="Tel"
                     v-model="edit_client.phone_number"
                     required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                    label="Kenteken"
+                    :label="edit_form.length > 0 ? edit_form[0].license_plate : null"
+                    placeholder="Kenteken"
                     v-model="edit_client.licence_plate"
                     required
                 ></v-text-field>
@@ -294,6 +299,7 @@ export default {
       add_dialog: false,
       del_dialog: false,
       edit_dialog: false,
+      edit_form: [],
       checkin_dialog: false,
       edit_client: {},
       new_client: {},
@@ -434,6 +440,10 @@ export default {
     editDialog(userData) {
       this.edit_dialog = true;
       this.currentUserData = userData;
+      this.edit_form = [];
+      this.edit_form.push(userData);
+      console.log(this.edit_form[0].name)
+      console.log(userData)
     },
 
     checkinDialog(userData) {
