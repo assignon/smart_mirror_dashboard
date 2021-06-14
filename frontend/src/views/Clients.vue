@@ -428,7 +428,7 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function (res) {
           if (res.error) {
-
+            console.log(res)
           } else {
             self.$router.push("/ingecheckt");
           }
