@@ -3,12 +3,37 @@ from sqlalchemy import Column, Integer, String,  Boolean
 from sqlalchemy.orm.exc import NoResultFound
 
 
+import os
+import sys
+try:
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+    # from .base_model import BaseMixin
+    from settings import db, manager
+except:
+    pass
+
+
+class BaseMixin(object):
+    @classmethod
+    def create(cls, **kw):
+        """
+        This function inserts a new row into the table and returns the row that has been added.
+        """
+
+        obj = cls(**kw)
+        db.session.add(obj)
+        db.session.commit()
+
+        return obj
+
+
 class User(db.Model):
     __tablename__ = 'User'
 
     user_id = Column(Integer, primary_key=True)
     name = Column(String(length=50), nullable=False)
-    email = Column(String(length=30),nullable=False, unique=True)
+    email = Column(String(length=30), nullable=False, unique=True)
     password = Column(String(length=100), nullable=False)
     is_admin = Column(Boolean, nullable=False)
 
@@ -17,7 +42,6 @@ class User(db.Model):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
-
 
     @staticmethod
     def create(name, email, password, is_admin):
@@ -121,6 +145,9 @@ class SocketUserManager(db.Model):
         User.query.filter_by(user_id=user_id).delete()
         db.session.commit()
 
-
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
+
+
+if __name__ == '__main__':
+    manager.run()
