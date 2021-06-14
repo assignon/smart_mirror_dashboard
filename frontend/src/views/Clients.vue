@@ -9,11 +9,11 @@
           <v-dialog v-model="add_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                class="white--text mt-9 mb-12"
-                color="#0f78b2"
-                rounded
-                v-bind="attrs"
-                v-on="on"
+                  class="white--text mt-9 mb-12"
+                  color="#0f78b2"
+                  rounded
+                  v-bind="attrs"
+                  v-on="on"
               >
                 <v-icon color="white">mdi-account-plus-outline</v-icon>
                 Toevoegen
@@ -28,37 +28,37 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="new_client.name"
-                        label="Name*"
-                        required
+                          v-model="new_client.name"
+                          label="Name*"
+                          required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="new_client.phone_number"
-                        label="Tel*"
-                        required
+                          v-model="new_client.phone_number"
+                          label="Tel*"
+                          required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="new_client.email"
-                        label="Email*"
-                        required
+                          v-model="new_client.email"
+                          label="Email*"
+                          required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="new_client.company"
-                        label="Bedrijf*"
-                        required
+                          v-model="new_client.company"
+                          label="Bedrijf*"
+                          required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="new_client.license_plate"
-                        label="Kenteken*"
-                        required
+                          v-model="new_client.license_plate"
+                          label="Kenteken*"
+                          required
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -71,9 +71,9 @@
                   Sluiten
                 </v-btn>
                 <v-btn
-                  color="green darken-1"
-                  text
-                  @click="
+                    color="green darken-1"
+                    text
+                    @click="
                     add_dialog = false;
                     newClient();
                   "
@@ -86,16 +86,16 @@
         </v-row>
         <!-- Search bar -->
         <v-text-field
-          class="mb-9"
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Zoeken"
-          single-line
-          hide-details
+            class="mb-9"
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Zoeken"
+            single-line
+            hide-details
         ></v-text-field>
         <!-- Datatable -->
         <v-card class="mb-15">
-          <v-data-table :headers="headers" :items="clients" :search="search">
+          <v-data-table :headers="headers" :items="clients" :search="search" ref="table">
             <template v-slot:item="row">
               <!-- Template data -->
               <tr>
@@ -107,10 +107,10 @@
                 <!-- Delete button -->
                 <td>
                   <v-btn
-                    class="mx-2 darken-4"
-                    rounded
-                    elevation="2"
-                    @click.stop="confirmationDialog(row.item)"
+                      class="mx-2 darken-4"
+                      rounded
+                      elevation="2"
+                      @click.stop="confirmationDialog(row.item)"
                   >
                     <v-icon color="red" dense>
                       mdi-delete
@@ -120,10 +120,10 @@
                 <!-- Edit button -->
                 <td>
                   <v-btn
-                    class="mx-2 darken-4"
-                    rounded
-                    elevation="2"
-                    @click="editDialog(row.item)"
+                      class="mx-2 darken-4"
+                      rounded
+                      elevation="2"
+                      @click="editDialog(row.item)"
                   >
                     <v-icon color="orange" dense>
                       mdi-wrench
@@ -133,10 +133,10 @@
                 <!-- Checkin button -->
                 <td>
                   <v-btn
-                    class="mx-2 darken-4"
-                    rounded
-                    elevation="2"
-                    @click="checkinDialog(row.item)"
+                      class="mx-2 darken-4"
+                      rounded
+                      elevation="2"
+                      @click="checkinDialog(row.item)"
                   >
                     <v-icon color="green" dense>
                       mdi-check-bold
@@ -161,20 +161,20 @@
         <v-card-actions>
           <!-- Annuleer button -->
           <v-btn
-            color="red darken-1"
-            align="center"
-            text
-            @click="checkin_dialog = false"
+              color="red darken-1"
+              align="center"
+              text
+              @click="checkin_dialog = false"
           >
             Annuleren
           </v-btn>
           <v-spacer></v-spacer>
           <!-- Checkin button -->
           <v-btn
-            color="green darken-1"
-            align="center"
-            text
-            @click="checkIn(currentUserData); checkin_dialog = false"
+              color="green darken-1"
+              align="center"
+              text
+              @click="checkIn(currentUserData); checkin_dialog = false"
           >
             Bevestigen
           </v-btn>
@@ -192,19 +192,19 @@
         </v-card-text>
         <v-card-actions>
           <v-btn
-            color="red darken-1"
-            align="center"
-            text
-            @click="del_dialog = false"
+              color="red darken-1"
+              align="center"
+              text
+              @click="del_dialog = false"
           >
             Annuleren
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
-            color="green darken-1"
-            align="center"
-            text
-            @click="
+              color="green darken-1"
+              align="center"
+              text
+              @click="
               delClient(currentUserData);
               del_dialog = false;
             "
@@ -225,37 +225,37 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  label="Naam"
-                  v-model="edit_client.name"
-                  required
+                    label="Naam"
+                    v-model="edit_client.name"
+                    required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Bedrijf"
-                  v-model="edit_client.company"
-                  required
+                    label="Bedrijf"
+                    v-model="edit_client.company"
+                    required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Email"
-                  v-model="edit_client.email"
-                  required
+                    label="Email"
+                    v-model="edit_client.email"
+                    required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Tel"
-                  v-model="edit_client.phone_number"
-                  required
+                    label="Tel"
+                    v-model="edit_client.phone_number"
+                    required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Kenteken"
-                  v-model="edit_client.licence_plate"
-                  required
+                    label="Kenteken"
+                    v-model="edit_client.licence_plate"
+                    required
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -268,9 +268,9 @@
             Sluiten
           </v-btn>
           <v-btn
-            color="green darken-2"
-            text
-            @click="
+              color="green darken-2"
+              text
+              @click="
               edit_dialog = false;
               editClient(currentUserData);
             "
@@ -312,14 +312,14 @@ export default {
           class: "darken-1",
           sortable: false
         },
-        { text: "E-mail", value: "email", class: "darken-1" },
+        {text: "E-mail", value: "email", class: "darken-1"},
         {
           text: "Kenteken",
           value: "plate",
           class: "darken-1",
           sortable: false
         },
-        { text: "Telefoon", value: "tel", class: "darken-1" },
+        {text: "Telefoon", value: "tel", class: "darken-1"},
         {
           text: "Verwijderen",
           class: "darken-1",
@@ -352,7 +352,7 @@ export default {
         params: {},
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
-        callback: function(res) {
+        callback: function (res) {
           res.data.guests.forEach(data => {
             let clientdata = {
               id: data.guest_id,
@@ -388,7 +388,7 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function(res) {
+        callback: function (res) {
           self.$store.dispatch("postReq", {
             url: `appointments`,
             params: {
@@ -399,9 +399,9 @@ export default {
             auth: self.$session.get("token"),
             csrftoken: self.$session.get("token"),
             xaccesstoken: self.$session.get("token"),
-            callback: function(res) {
+            callback: function (res) {
               console.log(res);
-              self.$router.push({ name: "Ingecheckt" });
+              self.$router.push({name: "Ingecheckt"});
             }
           });
         }
@@ -420,9 +420,13 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function(res) {
-          res;
-          self.$router.push("/ingecheckt");
+        callback: function (res) {
+          if (res.error) {
+
+          } else {
+            self.$router.push("/ingecheckt");
+          }
+
         }
       });
     },
@@ -459,9 +463,10 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function(data) {
+        callback: function (data) {
           console.log(data);
-          window.location.reload();
+          self.clients = [];
+          self.allClientsData();
         }
       });
       // }else{
@@ -477,9 +482,10 @@ export default {
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
-        callback: function(data) {
+        callback: function (data) {
           console.log(data);
-          window.location.reload();
+          self.clients = [];
+          self.allClientsData();
         }
       });
     }

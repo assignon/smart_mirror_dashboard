@@ -36,7 +36,7 @@
         <div class="navbar-item">
           <div class="buttons">
             <p
-              style='color: #0070ad;cursor:pointer;font-weight:bold; position: relative;bottom:2px;'
+              style='color: #0070ad;cursor:pointer;font-weight:bold; position: relative;'
               v-if="$session.get('authenticated')"
               @click="logout()"
               

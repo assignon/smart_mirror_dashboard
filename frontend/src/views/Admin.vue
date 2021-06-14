@@ -327,7 +327,8 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
-          window.location.reload()
+          self.users = [];
+          self.allUsersData();
         }
       });
     },
@@ -342,7 +343,8 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
-          window.location.reload()
+          self.users = [];
+          self.allUsersData();
         }
       });
     }
