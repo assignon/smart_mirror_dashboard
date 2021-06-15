@@ -5,6 +5,7 @@ import Gastenlijst from "@/views/Ingecheckt";
 import Clients from "@/views/Clients";
 import Instellingen from "@/views/Instellingen";
 import Admin from "@/views/Admin";
+import NotFound from "@/views/NotFound";
 
 Vue.use(VueRouter);
 
@@ -37,6 +38,11 @@ const routes = [
     path: "/admin",
     name: "Admin",
     component: Admin
+  },
+  {
+    path: "/404",
+    name: "NotFound",
+    component: NotFound
   }
   // {
   //   path: "/about",

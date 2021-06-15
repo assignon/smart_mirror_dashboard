@@ -53,6 +53,7 @@ password = os.getenv('AWS_PASSWORD')
 host = os.getenv('AWS_HOST')
 db_name = os.getenv('AWS_DB_NAME')
 
+
 connection_url = f'mysql+mysqldb://{username}:{password}@{host}/{db_name}'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connection_url
