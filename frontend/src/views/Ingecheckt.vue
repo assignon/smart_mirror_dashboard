@@ -23,16 +23,8 @@
                 "
               >
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
-                <v-btn
-                  class="mx-2 darken-3"
-                  rounded
-                  elevation="2"
-                  @click="confirmationDialog('checkin', row.item)"
-                  v-if="row.item.checkin == null"
-                >
-                  <strong
-                    style="color:white;text-transform:capitalize"
-                  ></strong>
+                <v-btn class="mx-2 darken-3" rounded elevation="2" @click="confirmationDialog('checkin', row.item)" v-if="row.item.checkin == null">
+<!--                  <strong style="color:white;text-transform:capitalize"></strong>-->
                   <v-icon color="green" dense>
                     mdi-check-bold
                   </v-icon>
@@ -407,7 +399,8 @@ export default {
         csrftoken: self.$session.get("token"),
         callback: function(data) {
           data;
-          // self.getScannedGuestData()
+          self.ingecheckt = [];
+          self.getScannedGuestData();
         }
       });
       socket.emit("update_checkedout", guestData);

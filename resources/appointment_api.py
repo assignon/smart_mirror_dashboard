@@ -7,11 +7,13 @@ from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 from schemas.guest_appointment_schema import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
+from models.guest_model import  Guest
 from .helper import remove_whitespace
 import datetime
 
 appointment_schema = AppointmentSchema()
 appointments_schema = AppointmentSchema(many=True)
+
 create_appointment_schema = CreateAppointmentSchema()
 edit_appointment_schema = EditAppointmentSchema()
 
@@ -48,13 +50,22 @@ class AppointmentCollection(Resource):
         except ValidationError as err:
             return err.messages, 422
 
+        guest_id = int(data['guest_id'])
         try:
-            appointment = Appointment.create(**data)
-        except exc.IntegrityError as e:
-            db.session.rollback()
-            return {'error': e.orig.args}
+            guest = Guest.get_guest(guest_id)
+        except NoResultFound:
+            return {'error': 'Guest does not exist!'}
 
-        return {"appointment": appointment_schema.dump(appointment)}, 201
+        if guest.appointments[0].checked_out is not None:
+            try:
+                appointment = Appointment.create(**data)
+            except exc.IntegrityError as e:
+                db.session.rollback()
+                return {'error': e.orig.args}
+
+            return {"appointment": appointment_schema.dump(appointment)}, 201
+        else:
+            return {"error": "Gast zit al in de incheck/uitcheck pagina"}
 
     @staticmethod
     @login_required

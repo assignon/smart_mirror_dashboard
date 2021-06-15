@@ -1,5 +1,6 @@
 <template>
   <section class="primary-section">
+    <Notifications :content="notification_text" color="red" />
     <div class="main-container">
       <div>
         <!-- Header -->
@@ -174,7 +175,10 @@
             color="green darken-1"
             align="center"
             text
-            @click="checkIn(currentUserData); checkin_dialog = false"
+            @click="
+              checkIn(currentUserData);
+              checkin_dialog = false;
+            "
           >
             Bevestigen
           </v-btn>
@@ -225,35 +229,44 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  label="Naam"
+                  :label="edit_form.length > 0 ? edit_form[0].name : null"
+                  placeholder="Naam"
                   v-model="edit_client.name"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Bedrijf"
+                  :label="edit_form.length > 0 ? edit_form[0].company : null"
+                  placeholder="Bedrijf"
                   v-model="edit_client.company"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Email"
+                  :label="edit_form.length > 0 ? edit_form[0].email : null"
+                  placeholder="Email"
                   v-model="edit_client.email"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Tel"
+                  :label="
+                    edit_form.length > 0 ? edit_form[0].phone_number : null
+                  "
+                  placeholder="Tel"
                   v-model="edit_client.phone_number"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Kenteken"
+                  :label="
+                    edit_form.length > 0 ? edit_form[0].license_plate : null
+                  "
+                  placeholder="Kenteken"
                   v-model="edit_client.licence_plate"
                   required
                 ></v-text-field>
@@ -284,16 +297,20 @@
 </template>
 
 <script>
+import Notifications from "../components/modals/Notifications";
 // import checkin from "@/views/checkin";
 
 export default {
   name: "Clients",
+  components: { Notifications },
   data() {
     return {
+      notification_text: "",
       search: "",
       add_dialog: false,
       del_dialog: false,
       edit_dialog: false,
+      edit_form: [],
       checkin_dialog: false,
       edit_client: {},
       new_client: {},
@@ -400,8 +417,11 @@ export default {
             csrftoken: self.$session.get("token"),
             xaccesstoken: self.$session.get("token"),
             callback: function(res) {
-              console.log(res);
-              self.$router.push({ name: "Ingecheckt" });
+              if (res.error) {
+                console.log(res.error);
+              } else {
+                self.$router.push({ name: "Ingecheckt" });
+              }
             }
           });
         }
@@ -421,8 +441,13 @@ export default {
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
         callback: function(res) {
-          res;
-          self.$router.push("/ingecheckt");
+          if (res.error) {
+            self.notification_text = res.error;
+            self.$store.state.notificationStatus = true;
+            console.log(res);
+          } else {
+            self.$router.push("/ingecheckt");
+          }
         }
       });
     },
@@ -430,6 +455,10 @@ export default {
     editDialog(userData) {
       this.edit_dialog = true;
       this.currentUserData = userData;
+      this.edit_form = [];
+      this.edit_form.push(userData);
+      console.log(this.edit_form[0].name);
+      console.log(userData);
     },
 
     checkinDialog(userData) {
@@ -461,7 +490,8 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
-          window.location.reload();
+          self.clients = [];
+          self.allClientsData();
         }
       });
       // }else{
@@ -479,7 +509,8 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
-          window.location.reload();
+          self.clients = [];
+          self.allClientsData();
         }
       });
     }
