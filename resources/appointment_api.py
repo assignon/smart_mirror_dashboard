@@ -28,7 +28,7 @@ class AppointmentCollection(Resource):
             appointments = Appointment.get_open_appointments()
             return {"appointments": appointments_schema.dump(appointments)}
         except Exception:
-            return {"error": "Database Server Error"}, 500
+            return {"error": "Database Server Error"}
 
     @staticmethod
     @login_required
@@ -38,7 +38,7 @@ class AppointmentCollection(Resource):
         """
         json_data = request.get_json()
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -49,7 +49,7 @@ class AppointmentCollection(Resource):
         try:
             data = create_appointment_schema.load(json_data)
         except ValidationError as err:
-            return {"error": err.messages}, 422
+            return {"error": err.messages}
 
         try:
             appointment = Appointment.create(**data)
@@ -66,7 +66,7 @@ class AppointmentCollection(Resource):
             Appointment.delete_appointment(appoinment_id)
             return {"message": "Appointment is verwijderd"}, 200
         except Exception:
-            return 500
+            return {"error": "database server error"}
 
 
 class AppointmentApi(Resource):
@@ -79,7 +79,7 @@ class AppointmentApi(Resource):
         now = datetime.datetime.now()
 
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -94,7 +94,7 @@ class AppointmentApi(Resource):
         try:
             data = edit_appointment_schema.load(json_data)
         except ValidationError as err:
-            return {"error": err.messages}, 422
+            return {"error": err.messages}
 
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)

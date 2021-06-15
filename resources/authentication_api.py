@@ -17,7 +17,7 @@ def login_required(fun):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         if not token:
-            return jsonify({'error': 'Token is missing!'}, 401)
+            return jsonify({'error': 'Token is missing!'})
 
         try:
             data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
@@ -38,12 +38,12 @@ class Login(Resource):
     def get():
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
-            return make_response({"error": "Login information incomplete"}, 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+            return make_response({"error": "Login information incomplete"},200, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
         try:
             user = User.query.filter_by(email=auth.username).first()
         except Exception:
-            return {"error": "Database Server Error"}, 500
+            return {"error": "Database Server Error"}
 
         if not user:
             return {'error': 'User does not exist'}
@@ -58,7 +58,7 @@ class Login(Resource):
                     {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
                     app.config['JWT_SECRET_KEY'])
             return jsonify({'x-access-token': token, 'user_id': user.user_id, 'superuser': user.is_admin})
-        return make_response({"error": "Wrong password"}, 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+        return make_response({"error": "Wrong password"}, 200, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
 
 class Logout(Resource):
@@ -94,18 +94,18 @@ class PasswordManager(Resource):
                     try:
                         User.update_user(user.user_id, password=new_password)
                     except Exception:
-                        return {"error": "Database Server Error"},500
+                        return {"error": "Database Server Error"}
                     try:
                         send_email(user, new_password)
                         return {'message': 'New password has been sent to your email.'}
                     except Exception:
                         return {"error": "new_password has been created but email has not been send, because of an "
                                          "error "
-                                         " in the email server"}, 500
+                                         " in the email server"}
                 else:
                     return {'error': 'This email is not recognized.'}
             except Exception:
-                return {"error": "Database Server Error"},500
+                return {"error": "Database Server Error"}
         else:
             return {"error": "Email not provided in the data"}
 

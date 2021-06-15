@@ -32,7 +32,7 @@ class GuestCollection(Resource):
             guests = Guest.query.all()
             return {'guests': guests_schema.dump(guests)}, 200
         except Exception:
-            return {"error": "Database Server Error"}, 500
+            return {"error": "Database Server Error"}
 
     @staticmethod
     @login_required
@@ -42,7 +42,7 @@ class GuestCollection(Resource):
         """
         json_data = request.get_json()
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -53,7 +53,7 @@ class GuestCollection(Resource):
         try:
             data = guest_schema.load(json_data)
         except ValidationError as err:
-            return {"error": err.messages}, 422
+            return {"error": err.messages}
         try:
             data['consent_expire_date'] = int(time.time()) + 24*60*60
             guest = Guest.create(**data)
@@ -70,7 +70,7 @@ class GuestCollection(Resource):
             Guest.delete_guest(guest_id)
             return {"message": "Guest is succesvol verwijderd"}, 200
         except Exception:
-            return {"error": "Database Server Error"}, 500
+            return {"error": "Database Server Error"}
 
 
 class GuestScanned(Resource):
@@ -120,7 +120,7 @@ class GuestApi(Resource):
 
         json_data = request.get_json()
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -131,7 +131,7 @@ class GuestApi(Resource):
         try:
             data = edit_guest_schema.load(json_data)
         except ValidationError as err:
-            return {"error": err.messages}, 422
+            return {"error": err.messages}
 
         try:
             edited_guest = Guest.update_guest(guest_id, **data)

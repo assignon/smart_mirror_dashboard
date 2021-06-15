@@ -26,11 +26,11 @@ class UserCollection(Resource):
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
         if not current_user.is_admin:
-            return jsonify({'error': 'Not authorized to perform this function'}), 401
+            return jsonify({'error': 'Not authorized to perform this function'})
         try:
             users = User.get_all_users()
         except NoResultFound:
-            return {'error': 'No users found in the database'}, 400
+            return {'error': 'No users found in the database'}
         return {"users": users_response_schema.dump(users)}, 200
 
     @staticmethod
@@ -40,11 +40,11 @@ class UserCollection(Resource):
         Add a new user to the database
         """
         if not current_user.is_admin:
-            return jsonify({'error': 'Not authorized to perform this function'}), 401
+            return jsonify({'error': 'Not authorized to perform this function'})
 
         json_data = request.get_json()
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -54,7 +54,7 @@ class UserCollection(Resource):
         try:
             data = user_schema.load(json_data)
         except ValidationError as err:
-            return {"error": err.messages}, 422
+            return {"error": err.messages}
 
         try:
             user = User.create(**data)
@@ -73,7 +73,7 @@ class UserCollection(Resource):
         try: 
             User.delete_user(user_id)
         except:
-            return {"error": "Database Server Error"}, 500
+            return {"error": "Database Server Error"}
         return {"message": "Guest has been deleted"}, 200
 
 
@@ -107,7 +107,7 @@ class UserApi(Resource):
 
         json_data: dict = request.get_json()
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -132,11 +132,11 @@ class UserApi(Resource):
                 json_data.pop('password', None)
                 data = edit_user_schema.load(json_data)
         except ValidationError as err:
-            return {"error": err.messages}, 422
+            return {"error": err.messages}
         except KeyError:
             data = edit_user_schema.load(json_data)
         except Exception:
-            return {"error": "Database Server Error"}, 500
+            return {"error": "Database Server Error"}
 
         try:
             edited_user = User.update_user(user_id, **data)
