@@ -30,6 +30,8 @@ export default new Vuex.Store({
     ],
     appointmentArr: [], // will contain all appointment in the DB
     notificationStatus: false,
+    manuallyCheckedGuestData: null,
+    guestCheckedManually: false,
   },
 
   getters: {

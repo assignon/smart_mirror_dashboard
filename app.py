@@ -184,6 +184,20 @@ def update_checked_guest(guest_data):
          broadcast=True)
 
 
+@socketio.on('update_checkedout')
+def update_checked_guest(guest_data):
+    # now = datetime.datetime.now()
+    emit('checked_out',  guest_data,
+         broadcast=True)
+
+
+@socketio.on('manually_checkin')
+def manually_checkin(guest_data):
+    # print('guueessstt ddattaa', guest_data)
+    socketio.emit('guest_manually_checkin',  guest_data,
+                  broadcast=True, include_self=False)
+
+
 api_routes(rest_api)
 
 

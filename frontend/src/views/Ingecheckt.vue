@@ -34,10 +34,10 @@
                   <template v-slot:activator="{ on, attrs }">
                     <strong v-bind="attrs" v-on="on">
                       <!-- {{ new Date(row.item.checkin.split('T')).toLocaleDateString() }} -->
-                      {{ row.item.checkin.split('T')[1] }}
+                      {{ row.item.checkin.split('T')[1].replace(/(.*)\D\d+/, '$1') }}
                     </strong>
                   </template>
-                  <strong >{{ new Date(row.item.checkin.split('T')[0]).toLocaleDateString() }} - {{row.item.checkin.split('T')[1]}}</strong>
+                  <strong >{{ new Date(row.item.checkin.split('T')[0]).toLocaleDateString() }} - {{row.item.checkin.split('T')[1].replace(/(.*)\D\d+/, '$1') }}</strong>
                 </v-tooltip>
                 
               </td>
@@ -153,9 +153,14 @@ export default {
   watch: {},
 
   created() {
+    let self = this
+
     this.scannedGuestData();
     this.getScannedGuestData();
-    // let self = this
+    if(this.$store.state.guestCheckedManually){
+      self.guestManuallyCheckin()
+      // self.$store.state.guestCheckedManually = false
+    }
 
     // guest checked in socket
     this.$store.state.socket.on("checked_in", function(guestdata) {
@@ -186,6 +191,13 @@ export default {
 
     // checkout socket
     this.checkedOutSocket();
+
+    // setTimeout(() => {
+    //   if(this.$store.state.guestCheckedManually){
+    //     self.checkGuestIn(self.$store.state.manuallyCheckedGuestData)
+    //     self.$store.state.guestCheckedManually = false
+    //   }
+    // }, 1000)
   },
 
   methods: {
@@ -237,8 +249,8 @@ export default {
           // let ingechecktArrLen = self.ingecheckt.length
           let updatedIngechecktArrLen = self.ingecheckt.length - increase;
 
-          console.log(updatedIngechecktArrLen);
-          console.log(self.ingecheckt.length);
+          // console.log(updatedIngechecktArrLen);
+          // console.log(self.ingecheckt.length);
           if (updatedIngechecktArrLen < 1) {
             // update ingecheckt array length to 0 if all guest checked out
             // to be able to display the no guest scan view
@@ -324,10 +336,25 @@ export default {
       });
     },
 
+    guestManuallyCheckin(){
+      let self = this
+      let socket = this.$store.state.socket
+      
+      socket.on("guest_manually_checkin", function(guestData) {
+        console.log(guestData);
+          if(guestData){
+            let data = guestData
+            alert()
+            self.ingecheckt.unshift(data);
+          }
+      })
+    },
+
     confirmationDialog(checkName, guestData) {
       let self = this;
       // display dialog
       this.confirmDialog = true;
+      // console.log(guestData);
       // get current guest data
       this.currentGuestData = guestData;
       this.check = checkName;
@@ -412,8 +439,8 @@ export default {
         csrftoken: self.$session.get("token"),
         callback: function(data) {
           data;
-          self.ingecheckt = [];
-          self.getScannedGuestData();
+          // self.ingecheckt = [];
+          // self.getScannedGuestData();
         }
       });
       socket.emit("update_checkedout", guestData);
