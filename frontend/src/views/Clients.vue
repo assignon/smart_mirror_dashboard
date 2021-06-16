@@ -468,7 +468,6 @@ export default {
 
     editClient(userData) {
       let self = this;
-      console.log(userData);
       // fill edit form with current guest data
       // this.edit_client.name = userData.name
       // this.edit_client.licence_plate = userData.licence_plate
@@ -489,7 +488,7 @@ export default {
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
-          console.log(data);
+          data
           self.clients = [];
           self.allClientsData();
         }
