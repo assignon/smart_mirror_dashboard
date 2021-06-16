@@ -3,6 +3,16 @@
     <div class="main-container">
       <h1 class="mb-9 mt-12">Ingecheckte Gasten</h1>
       <div v-if="ingecheckt.length > 0" class="data-table-container">
+        <div class="reload-btn">
+
+          <v-btn
+              class="white--text mt-9 mb-12"
+              color="#0f78b2"
+              rounded @click="reloadPage"
+          >
+            <v-icon medium>fas fa-sync-alt</v-icon>
+          </v-btn>
+        </div>
         <v-data-table
           :headers="headers"
           :items="ingecheckt"
@@ -189,6 +199,10 @@ export default {
   },
 
   methods: {
+    reloadPage(){
+      this.ingecheckt = []
+      this.getScannedGuestData()
+  },
     checkedOutSocket() {
       let self = this;
       let increase = 0;
@@ -479,6 +493,14 @@ tr td {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
+}
+.reload-btn{
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
 }
 </style>

@@ -1,11 +1,11 @@
-from flask_restful import Resource, reqparse, abort
-from flask import request, jsonify, make_response
-from settings import ma, db
+from flask_restful import Resource
+from flask import request
+from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
-from schemas.guest_appointment_schema import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
+from schemas.appointment_guest_schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
 from models.guest_model import  Guest
 from .helper import remove_whitespace
@@ -26,8 +26,11 @@ class AppointmentCollection(Resource):
         """
         Haalt alle appointments op waarvan de checkout NULL is
         """
-        appointments = Appointment.get_open_appointments()
-        return {"appointments": appointments_schema.dump(appointments)}
+        try:
+            appointments = Appointment.get_open_appointments()
+            return {"appointments": appointments_schema.dump(appointments)}
+        except Exception:
+            return {"error": "Database Server Error"}
 
     @staticmethod
     @login_required
@@ -35,9 +38,9 @@ class AppointmentCollection(Resource):
         """
         Creates a new appointment in the appointment table
         """
-        json_data = request.get_json()['body']
+        json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -48,30 +51,47 @@ class AppointmentCollection(Resource):
         try:
             data = create_appointment_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}
 
         guest_id = int(data['guest_id'])
         try:
             guest = Guest.get_guest(guest_id)
         except NoResultFound:
             return {'error': 'Guest does not exist!'}
+        except Exception:
+            return {"error": "Database server error"}
 
-        if guest.appointments[0].checked_out is not None:
+        try:
+            if guest.appointments[0].checked_out is not None:
+                try:
+                    appointment = Appointment.create(**data)
+                except exc.IntegrityError as e:
+                    db.session.rollback()
+                    return {'error': e.orig.args}
+                except Exception:
+                    return {"error": "Database server error"}
+
+                return {"message": "Succesvol ingecheckt", "appointment": appointment_schema.dump(appointment)}, 201
+            else:
+                return {"error": "Gast zit al in de incheck/uitcheck pagina"}
+        except IndexError:
             try:
                 appointment = Appointment.create(**data)
             except exc.IntegrityError as e:
                 db.session.rollback()
                 return {'error': e.orig.args}
-
-            return {"appointment": appointment_schema.dump(appointment)}, 201
-        else:
-            return {"error": "Gast zit al in de incheck/uitcheck pagina"}
+            except Exception:
+                return {"error": "Database server error"}
+            return {"message": "Succesvol ingecheckt", "appointment": appointment_schema.dump(appointment)}, 201
 
     @staticmethod
     @login_required
     def delete(current_user, appoinment_id):
-        Appointment.delete_appointment(appoinment_id)
-        return 200
+        try:
+            Appointment.delete_appointment(appoinment_id)
+            return {"message": "Appointment is verwijderd"}, 200
+        except Exception:
+            return {"error": "database server error"}
 
 
 class AppointmentApi(Resource):
@@ -79,39 +99,27 @@ class AppointmentApi(Resource):
     @staticmethod
     @login_required
     def put(current_user, appointment_id):
-        from app import socketio
 
         json_data = request.get_json()
-
         now = datetime.datetime.now()
-        print('json_dataaaaaaaa', json_data['body'])
 
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
         remove_whitespace(json_data)
-        try:
-            if json_data['body']['checked_in']:
-                json_data['body']['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
-            elif json_data['body']['checked_out']:
-                json_data['body']['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
-        except KeyError as e:
-            try:
-                json_data['body']['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
-            except KeyError as e:
-                print('errorrr',e)
-                pass
+        if 'checked_in' in json_data.keys():
+            json_data['checked_in'] = now.strftime("%Y-%m-%d %H:%M:%S")
+        elif 'checked_out' in json_data.keys():
+            json_data['checked_out'] = now.strftime("%Y-%m-%d %H:%M:%S")
  
         # Validate and deserialize input
 
         try:
-            data = edit_appointment_schema.load(json_data['body'])
-            
+            data = edit_appointment_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
-        print(data)
+            return {"error": err.messages}
 
         try:
             edited_appointment = Appointment.update_appointment(appointment_id, **data)
@@ -123,5 +131,8 @@ class AppointmentApi(Resource):
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'Appointment does not exist'}
+        except Exception:
+            return {"error": "Database server error"}
         
-        return {'appointment': appointment_schema.dump(edited_appointment)}, 200
+        return {'message': "appointment status is succesvol aangepast",
+                'appointment': appointment_schema.dump(edited_appointment)}, 200

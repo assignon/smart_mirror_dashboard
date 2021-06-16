@@ -198,7 +198,7 @@ export default {
             );
             await this.$router.push("/ingecheckt");
           } else {
-            self.notificationText = res.message;
+            self.notificationText = res.error;
             self.$store.state.notificationStatus = true;
             // formErrMsg.innerHTML = res.msg;
           }
@@ -209,7 +209,7 @@ export default {
           self.$store.state.notificationStatus = true;
         }
       } else {
-        self.notificationText = "Email and password should not be empty";
+        self.notificationText = "Vul een gebruikersnaam en wachtwoord in!";
         self.$store.state.notificationStatus = true;
         // formErrMsg.innerHTML = "Email and password should not be empty";
       }
@@ -224,10 +224,9 @@ export default {
             email: this.input.email_forget_password
           },
           callback: function(res) {
-            if (res.data.message) {
+            if (res.data.error) {
               //geef aan wat er fout is gegaan
-              console.log(self.password_error);
-              self.password_error = res.data.message;
+              self.password_error = res.data.error;
             } else {
               // geef aan dat het gelukt is en dat de gebruiker zijn mail moet checken
               self.succes_new_password = true;
