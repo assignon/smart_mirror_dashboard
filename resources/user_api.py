@@ -31,6 +31,9 @@ class UserCollection(Resource):
             users = User.get_all_users()
         except NoResultFound:
             return {'error': 'No users found in the database'}
+        except Exception:
+            return {"error": "Database Server Error"}
+
         return {"users": users_response_schema.dump(users)}, 200
 
     @staticmethod
@@ -61,6 +64,8 @@ class UserCollection(Resource):
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {"message": "new user succesvol aangemaakt", "user": user_response_schema.dump(user)}, 201
 
@@ -92,6 +97,8 @@ class UserApi(Resource):
             user = User.get_user(user_id)
         except NoResultFound:
             return {'error': 'User does not exist!'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {"user": user_response_schema.dump(user)}, 200
 
@@ -145,5 +152,7 @@ class UserApi(Resource):
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'User does not exist'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {'message': 'Password changed successfully'}, 200

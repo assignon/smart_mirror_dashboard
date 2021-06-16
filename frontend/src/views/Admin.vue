@@ -151,14 +151,16 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  label="Naam*"
+                  :label="edit_form.length > 0 ? edit_form[0].name : null"
+                  placeholder="Naam*"
                   v-model="edit_user.name"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  label="Email*"
+                  :label="edit_form.length > 0 ? edit_form[0].email : null"
+                  placeholder="Email*"
                   v-model="edit_user.email"
                   required
                 ></v-text-field>
@@ -166,7 +168,8 @@
               <v-col cols="12">
                 <v-select
                   :items="['True', 'False']"
-                  label="Admin*"
+                  :label="edit_form.length > 0 ? edit_form[0].is_admin : null"
+                  placeholder="Admin*"
                   v-model="edit_user.is_admin"
                   required
                 ></v-select>
@@ -251,7 +254,8 @@ export default {
           class: "rounded-tr-lg darken-1"
         }
       ],
-      users: []
+      users: [],
+      edit_form: [],
     };
   },
   created() {
@@ -311,6 +315,8 @@ export default {
     editDialog(userData) {
       this.edit_dialog = true;
       this.currentUserData = userData;
+      this.edit_form = [];
+      this.edit_form.push(userData);
     },
 
     editUser(userData) {
@@ -327,7 +333,8 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
-          window.location.reload()
+          self.users = [];
+          self.allUsersData();
         }
       });
     },
@@ -342,7 +349,8 @@ export default {
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
           console.log(data);
-          window.location.reload()
+          self.users = [];
+          self.allUsersData();
         }
       });
     }

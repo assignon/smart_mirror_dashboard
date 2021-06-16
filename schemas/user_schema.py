@@ -4,8 +4,13 @@ from marshmallow import validate, ValidationError, fields
 
 
 def password_check(password):
+<<<<<<< HEAD
     if len(password) < 3:
         raise ValidationError("password length must be greater than 3.")
+=======
+    if len(password) < 5:
+        raise ValidationError("password length must be greater or equal than 5.")
+>>>>>>> develop
     if len(password) > 100:
         raise ValidationError("password must not be greater than 100.")
 
@@ -16,8 +21,13 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
 
+<<<<<<< HEAD
     name = fields.Str(validate=validate.Length(min=3, max=30))
     email = fields.Str(validate=validate.Length(min=3, max=30))
+=======
+    name = fields.Str(validate=validate.Length(min=2, max=30))
+    email = fields.Str(validate=validate.Length(min=2, max=30))
+>>>>>>> develop
     password = fields.Str(validate=password_check)
 
 
@@ -27,8 +37,13 @@ class EditUserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
 
+<<<<<<< HEAD
     name = fields.Str(required=False, validate=validate.Length(min=3, max=30))
     email = fields.Str(required=False, validate=validate.Length(min=3, max=30))
+=======
+    name = fields.Str(required=False, validate=validate.Length(min=2, max=30))
+    email = fields.Str(required=False, validate=validate.Length(min=2, max=30))
+>>>>>>> develop
     password = fields.Str(required=False, validate=password_check)
     is_admin = fields.Boolean(required=False)
 
@@ -37,8 +52,16 @@ class EditUserPasswordSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = User
 
+<<<<<<< HEAD
     name = fields.Str(required=False, validate=validate.Length(min=3, max=30))
     email = fields.Str(required=False, validate=validate.Length(min=3, max=30))
     password = fields.Str(required=True, validate=password_check)
     new_password = fields.Str(required=True, validate=password_check)
     is_admin = fields.Boolean(required=False)
+=======
+    name = fields.Str(required=False, validate=validate.Length(min=2, max=30))
+    email = fields.Str(required=False, validate=validate.Length(min=2, max=30))
+    password = fields.Str(required=True, validate=password_check)
+    new_password = fields.Str(required=True, validate=password_check)
+    is_admin = fields.Boolean(required=False)
+>>>>>>> develop

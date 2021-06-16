@@ -1,8 +1,31 @@
-from settings import db
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
-from sqlalchemy.orm import relationship
+
 from sqlalchemy.orm.exc import NoResultFound
-from .base_model import BaseMixin
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, desc
+
+import os
+import sys
+try:
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+    # from .base_model import BaseMixin
+    from settings import db, manager
+except:
+    pass
+
+
+class BaseMixin(object):
+    @classmethod
+    def create(cls, **kw):
+        """
+        This function inserts a new row into the table and returns the row that has been added.
+        """
+
+        obj = cls(**kw)
+        db.session.add(obj)
+        db.session.commit()
+
+        return obj
 
 
 class Appointment(BaseMixin, db.Model):
@@ -19,17 +42,16 @@ class Appointment(BaseMixin, db.Model):
 
     @staticmethod
     def get_appointment(appointment_id):
-        appointment = db.session.query(Appointment).filter_by(appointment_id=appointment_id).first()
+        appointment = db.session.query(Appointment).filter_by(
+            appointment_id=appointment_id).first()
         if appointment:
             return appointment
         else:
             raise NoResultFound
-    
 
     @staticmethod
     def get_open_appointments():
         return db.session.query(Appointment).filter_by(checked_out=None).order_by(desc(Appointment.appointment_id)).all()
-        
 
     @staticmethod
     def update_appointment(appointment_id, **kwargs):
@@ -40,7 +62,8 @@ class Appointment(BaseMixin, db.Model):
             **kwargs: key value pairs, keys used should be the same as the columns specified in the model 
         """
 
-        appointment = Appointment.query.filter_by(appointment_id=appointment_id).first()
+        appointment = Appointment.query.filter_by(
+            appointment_id=appointment_id).first()
 
         if appointment:
             for column, value in kwargs.items():
@@ -54,5 +77,10 @@ class Appointment(BaseMixin, db.Model):
 
     @staticmethod
     def delete_appointment(appointment_id):
-        db.session.query(Appointment).filter_by(appointment_id=appointment_id).delete()
+        db.session.query(Appointment).filter_by(
+            appointment_id=appointment_id).delete()
         db.session.commit()
+
+
+if __name__ == '__main__':
+    manager.run()

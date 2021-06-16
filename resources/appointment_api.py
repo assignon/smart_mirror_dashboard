@@ -7,11 +7,13 @@ from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 from schemas.appointment_guest_schemas import AppointmentSchema, EditAppointmentSchema, CreateAppointmentSchema
 from models.appointment_model import Appointment
+from models.guest_model import  Guest
 from .helper import remove_whitespace
 import datetime
 
 appointment_schema = AppointmentSchema()
 appointments_schema = AppointmentSchema(many=True)
+
 create_appointment_schema = CreateAppointmentSchema()
 edit_appointment_schema = EditAppointmentSchema()
 
@@ -51,13 +53,36 @@ class AppointmentCollection(Resource):
         except ValidationError as err:
             return {"error": err.messages}
 
+        guest_id = int(data['guest_id'])
         try:
-            appointment = Appointment.create(**data)
-        except exc.IntegrityError as e:
-            db.session.rollback()
-            return {'error': e.orig.args}
+            guest = Guest.get_guest(guest_id)
+        except NoResultFound:
+            return {'error': 'Guest does not exist!'}
+        except Exception:
+            return {"error": "Database server error"}
 
-        return {"message": "Succesvol ingecheckt", "appointment": appointment_schema.dump(appointment)}, 201
+        try:
+            if guest.appointments[0].checked_out is not None:
+                try:
+                    appointment = Appointment.create(**data)
+                except exc.IntegrityError as e:
+                    db.session.rollback()
+                    return {'error': e.orig.args}
+                except Exception:
+                    return {"error": "Database server error"}
+
+                return {"message": "Succesvol ingecheckt", "appointment": appointment_schema.dump(appointment)}, 201
+            else:
+                return {"error": "Gast zit al in de incheck/uitcheck pagina"}
+        except IndexError:
+            try:
+                appointment = Appointment.create(**data)
+            except exc.IntegrityError as e:
+                db.session.rollback()
+                return {'error': e.orig.args}
+            except Exception:
+                return {"error": "Database server error"}
+            return {"message": "Succesvol ingecheckt", "appointment": appointment_schema.dump(appointment)}, 201
 
     @staticmethod
     @login_required
@@ -106,6 +131,8 @@ class AppointmentApi(Resource):
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'Appointment does not exist'}
+        except Exception:
+            return {"error": "Database server error"}
         
         return {'message': "appointment status is succesvol aangepast",
                 'appointment': appointment_schema.dump(edited_appointment)}, 200

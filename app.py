@@ -117,6 +117,17 @@ BUILD_DIR = PROJECT_DIR+'/frontend/dist'
 #     return app.send_static_file(path)
 
 
+@app.route('/404', methods=['GET'])
+def no_found():
+    return Response(index_file, mimetype='text/html',
+                    headers=Headers({'Cache-Control': 'max-age=60'}))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('no_found'))
+
+
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
@@ -170,13 +181,6 @@ def unsubscribe_user(data):
 def update_checked_guest(guest_data):
     # now = datetime.datetime.now()
     emit('checked_in',  guest_data,
-         broadcast=True)
-
-
-@socketio.on('update_checkedout')
-def update_checked_guest(guest_data):
-    # now = datetime.datetime.now()
-    emit('checked_out',  guest_data,
          broadcast=True)
 
 

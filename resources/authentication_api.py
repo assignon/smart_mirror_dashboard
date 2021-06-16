@@ -1,12 +1,18 @@
-import os, smtplib, ssl, random, string
+import datetime
+import os
+import random
+import smtplib
+import ssl
+import string
+from functools import wraps
+
+import jwt
 from dotenv import load_dotenv
 from flask import request, jsonify, make_response, session
 from flask_restful import Resource
-import jwt
-import datetime
-from functools import wraps
-from settings import app, db
+
 from models.user_model import User
+from settings import app, db
 
 
 def login_required(fun):
@@ -38,7 +44,8 @@ class Login(Resource):
     def get():
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
-            return make_response({"error": "Login information incomplete"},200, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+            return make_response({"error": "Login information incomplete"}, 200,
+                                 {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
         try:
             user = User.query.filter_by(email=auth.username).first()

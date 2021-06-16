@@ -1,5 +1,4 @@
 import time
-
 from flask_restful import Resource
 from flask import request
 from settings import db
@@ -14,6 +13,7 @@ from models.guest_model import Guest
 
 # schema imports
 from schemas.appointment_guest_schemas import GuestSchema, EditGuestSchema
+
 
 guest_schema = GuestSchema()
 guests_schema = GuestSchema(many=True)
@@ -60,6 +60,8 @@ class GuestCollection(Resource):
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {"message": "guest succesvol aangemaakt", **guest_schema.dump(guest)}, 201
 
@@ -108,6 +110,8 @@ class GuestApi(Resource):
             guest = Guest.get_guest(guest_id)
         except NoResultFound:
             return {'error': 'Guest does not exist!'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {'guest': guest_schema.dump(guest)}, 200
 
@@ -140,5 +144,7 @@ class GuestApi(Resource):
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'Guest does not exist'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {'message': "Guest succesvol bewerkt", 'guest': guest_schema.dump(edited_guest)}, 200

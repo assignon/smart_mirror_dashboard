@@ -27,27 +27,29 @@
               <td>{{ row.item.email }}</td>
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
+              <td>{{ row.item.employee_name }}</td>
               <td
                 :class="
                   row.item.name.replace(/ /g, '') + row.item.appointment_id
                 "
               >
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
-                <v-btn
-                  class="mx-2 darken-3"
-                  rounded
-                  elevation="2"
-                  @click="confirmationDialog('checkin', row.item)"
-                  v-if="row.item.checkin == null"
-                >
-                  <strong
-                    style="color:white;text-transform:capitalize"
-                  ></strong>
+                <v-btn class="mx-2 darken-3" rounded elevation="2" @click="confirmationDialog('checkin', row.item)" v-if="row.item.checkin == null">
+<!--                  <strong style="color:white;text-transform:capitalize"></strong>-->
                   <v-icon color="green" dense>
                     mdi-check-bold
                   </v-icon>
                 </v-btn>
-                <strong v-else>{{ row.item.checkin }}</strong>
+                <v-tooltip bottom v-else>
+                  <template v-slot:activator="{ on, attrs }">
+                    <strong v-bind="attrs" v-on="on">
+                      <!-- {{ new Date(row.item.checkin.split('T')).toLocaleDateString() }} -->
+                      {{ row.item.checkin.split('T')[1] }}
+                    </strong>
+                  </template>
+                  <strong >{{ new Date(row.item.checkin.split('T')[0]).toLocaleDateString() }} - {{row.item.checkin.split('T')[1]}}</strong>
+                </v-tooltip>
+                
               </td>
               <td>
                 <!-- <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'> -->
@@ -146,6 +148,7 @@ export default {
         { text: "E-mail", value: "email", class: "bdarken-1" },
         { text: "Bedrijf", value: "company", class: "darken-1" },
         { text: "Kenteken", value: "plate", class: "darken-1" },
+        { text: "Contact Persoon", value: "employee_name", class: "darken-1" },
         { text: "Check-in", value: "checkin", class: "darken-1" },
         {
           text: "Check-out",
@@ -167,12 +170,12 @@ export default {
     // guest checked in socket
     this.$store.state.socket.on("checked_in", function(guestdata) {
       guestdata.checkin =
-        new Date().toLocaleDateString() + "/" + new Date().toLocaleTimeString();
+        new Date().toLocaleDateString() + "T" + new Date().toLocaleTimeString();
 
       document.querySelector(
         "." + guestdata.name.replace(/ /g, "") + guestdata.appointment_id
       ).innerHTML =
-        new Date().toLocaleDateString() + "/" + new Date().toLocaleTimeString();
+        new Date().toLocaleDateString() + "T" + new Date().toLocaleTimeString();
       // let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
       // checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
       // checkinBtn.elevation = '0';
@@ -288,6 +291,7 @@ export default {
               let guestData = {
                 id: data.guest.guest_id,
                 appointment_id: data.appointment_id,
+                employee_name: data.employee_name,
                 name: data.guest.name,
                 tel: data.guest.phone_number,
                 email: data.guest.email,
@@ -320,6 +324,7 @@ export default {
             company: data.company,
             plate: data.license_plate,
             appointment_id: data.appointment_id,
+            employee_name: data.employee_name,
             checkin: null,
             checkout: null
             // time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
@@ -369,7 +374,7 @@ export default {
           // appoinment_id: guestData.appointment_id,
           checked_in:
             new Date().toLocaleDateString() +
-            "/" +
+            "T" +
             new Date().toLocaleTimeString()
         },
         auth: self.$session.get("token"),
@@ -421,7 +426,8 @@ export default {
         csrftoken: self.$session.get("token"),
         callback: function(data) {
           data;
-          // self.getScannedGuestData()
+          self.ingecheckt = [];
+          self.getScannedGuestData();
         }
       });
       socket.emit("update_checkedout", guestData);

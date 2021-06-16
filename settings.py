@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
-from flask_migrate import Migrate
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 from flask_bcrypt import Bcrypt
 from flask_marshmallow import Marshmallow
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -46,6 +47,7 @@ password = os.getenv('AWS_PASSWORD')
 host = os.getenv('AWS_HOST')
 db_name = os.getenv('AWS_DB_NAME')
 
+
 connection_url = f'mysql+mysqldb://{username}:{password}@{host}/{db_name}'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = connection_url
@@ -55,6 +57,8 @@ app.config['JWT_SECRET_KEY'] = '8435dc97-3815-4cfe-aa96-007a52dc98b8'
 # initialize db
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 # Redis connection
 redis_db = RedisDatabase(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'),
@@ -68,32 +72,35 @@ rest_api = Api(app)
 
 ma = Marshmallow(app)
 
+# if __name__ == '__main__':
+#     manager.run()
+
 # scheduling:
 
 
-def daily_task():
-    """Verwijder alle gasten die overdatum zijn"""
-    print("Deleting all expired guests....")
-    daily_delete(db, redis_db)
+# def daily_task():
+#     """Verwijder alle gasten die overdatum zijn"""
+#     print("Deleting all expired guests....")
+#     daily_delete(db, redis_db)
 
 
-scheduler = APScheduler()
+# scheduler = APScheduler()
 
-"""Schedule configuratuons"""
+# """Schedule configuratuons"""
 
-# check of de laatste taak geexecute is.
+# # check of de laatste taak geexecute is.
 
-res = db.session.execute(
-    """SELECT next_run_time FROM apscheduler_jobs;""").first()
-if res.next_run_time < time.time():
-    daily_task()
+# res = db.session.execute(
+#     """SELECT next_run_time FROM apscheduler_jobs;""").first()
+# if res.next_run_time < time.time():
+#     daily_task()
 
-# app.config['SCHEDULER_API_ENABLED'] = True
-app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task, 'replace_existing': True,
-                       "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
+# # app.config['SCHEDULER_API_ENABLED'] = True
+# app.config['JOBS'] = [{"id": "remove_expired_guests", "func": daily_task, 'replace_existing': True,
+#                        "trigger": "cron", "hour": 0, "minute": 0, "second": 0}]
 
-app.config['SCHEDULER_JOBSTORES'] = {
-    "default": SQLAlchemyJobStore(url=connection_url)}
+# app.config['SCHEDULER_JOBSTORES'] = {
+#     "default": SQLAlchemyJobStore(url=connection_url)}
 
-scheduler.init_app(app)
-scheduler.start()
+# scheduler.init_app(app)
+# scheduler.start()
