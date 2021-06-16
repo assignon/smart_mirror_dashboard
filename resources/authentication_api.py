@@ -1,13 +1,18 @@
-import os, smtplib, ssl, random, string
+import datetime
+import os
+import random
+import smtplib
+import ssl
+import string
+from functools import wraps
+
+import jwt
 from dotenv import load_dotenv
 from flask import request, jsonify, make_response, session
 from flask_restful import Resource
-import jwt
-import datetime
-from functools import wraps
-from settings import app, db, redis_db
+
 from models.user_model import User
-from schemas.user_schema import UserSchema
+from settings import app, db
 
 
 def login_required(fun):
@@ -18,7 +23,7 @@ def login_required(fun):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
         if not token:
-            return jsonify({'message': 'Token is missing!'}, 401)
+            return jsonify({'error': 'Token is missing!'})
 
         try:
             data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
@@ -26,8 +31,7 @@ def login_required(fun):
             if current_user is None:
                 return jsonify({'error': 'The user_id is invalid'})
         except Exception as e:
-            print('excceepptttionnnn', e)
-            return jsonify({'message': 'Token is invalid!'})
+            return jsonify({'error': 'Token is invalid!'})
 
         return fun(current_user, *args, **kwargs)
 
@@ -40,12 +44,16 @@ class Login(Resource):
     def get():
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
-            return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+            return make_response({"error": "Login information incomplete"}, 200,
+                                 {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
-        user = User.query.filter_by(email=auth.username).first()
+        try:
+            user = User.query.filter_by(email=auth.username).first()
+        except Exception:
+            return {"error": "Database Server Error"}
 
         if not user:
-            return {'message': 'User does not exist'}
+            return {'error': 'Gebruiker bestaat niet!'}
 
         if user.check_password(auth.password):
             try:
@@ -57,7 +65,7 @@ class Login(Resource):
                     {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
                     app.config['JWT_SECRET_KEY'])
             return jsonify({'x-access-token': token, 'user_id': user.user_id, 'superuser': user.is_admin})
-        return make_response("Could not verify", 401, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+        return make_response({"error": "Wachtwoord is verkeerd!"}, 200, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
 
 class Logout(Resource):
@@ -74,88 +82,99 @@ class PasswordManager(Resource):
     def get():
 
         if not request.args:
-            return {"message": "No input data provided"}
+            return {"error": "No input data provided"}
         email = request.args.get('email')
-        if request.args.get('email'):
-            user: User = db.session.query(User).filter_by(email=email).first()
-            if user:
-                # email versturen met random token
-                # token = jwt.encode(
-                #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
-                #         app.config['JWT_SECRET_KEY']).decode('utf-8')
-                # send_email(user, token)
-                # sla de token op in redis voor 24 uur.
-                # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
-                # get random password pf length 8 with letters, digits, and symbols
-                password_characters = string.ascii_letters + string.digits + '!?'
-                new_password = ''.join(random.choice(password_characters) for _ in range(16))
-
-                User.update_user(user.user_id, password=new_password)
-                send_email(user, new_password)
-                return {'succes': 'New password has been sent to your email.'}
-            else:
-                return {'message': 'This email is not recognized.'}
+        if email is not None:
+            try:
+                user: User = db.session.query(User).filter_by(email=email).first()
+                if user:
+                    # email versturen met random token
+                    # token = jwt.encode(
+                    #         {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
+                    #         app.config['JWT_SECRET_KEY']).decode('utf-8')
+                    # send_email(user, token)
+                    # sla de token op in redis voor 24 uur.
+                    # redis_db.set(f"password_token:{user.user_id}", token, ex=int(time.time()) + 24*60*60)
+                    # get random password pf length 8 with letters, digits, and symbols
+                    password_characters = string.ascii_letters + string.digits + '!?'
+                    new_password = ''.join(random.choice(password_characters) for _ in range(16))
+                    try:
+                        User.update_user(user.user_id, password=new_password)
+                    except Exception:
+                        return {"error": "Database Server Error"}
+                    try:
+                        send_email(user, new_password)
+                        return {'message': 'New password has been sent to your email.'}
+                    except Exception:
+                        return {"error": "new_password has been created but email has not been send, because of an "
+                                         "error "
+                                         " in the email server"}
+                else:
+                    return {'error': 'This email is not recognized.'}
+            except Exception:
+                return {"error": "Database Server Error"}
         else:
-            return {"message": "Email not provided in the data"}
+            return {"error": "Email not provided in the data"}
 
-    @staticmethod
-    def post():
-        json_data: dict = request.get_json()
-        if not json_data:
-            return {"message": "No input data provided"}, 400
-
-        if 'password_token' not in json_data.keys():
-            return {"message": "password_token not provided in the data"}
-
-        try:
-            token_data = jwt.decode(json_data['password_token'], app.config['JWT_SECRET_KEY'])
-            user = User.query.filter_by(user_id=token_data['user_id']).first()
-            if user is None:
-                return jsonify({'message': 'The user_id is invalid'})
-        except:
-            return jsonify({'message': 'Token is invalid!'})
-
-        if json_data['password_token'] == redis_db.get(f"password_token:{user.user_id}").decode("utf-8"):
-            users_response_schema = UserSchema(exclude=['password', ])
-            return {"Authenticated": True, "user": users_response_schema.dump(user)}
-        else:
-            return {"message": "Token is invalid"}
-
-    @staticmethod
-    def put():
-        json_data: dict = request.get_json()
-        if not json_data:
-            return {"message": "No input data provided"}, 400
-
-        if 'password_token' not in json_data.keys():
-            return {"message": "password_token not provided in the data"}
-
-        if 'new_password' not in json_data.keys():
-            return {"message": "new_password missing :("}
-
-        try:
-            token_data = jwt.decode(json_data['password_token'], app.config['JWT_SECRET_KEY'])
-            user = User.query.filter_by(user_id=token_data['user_id']).first()
-            if user is None:
-                return jsonify({'message': 'The user_id is invalid'})
-        except:
-            return jsonify({'message': 'Token is invalid!'})
-
-        try:
-            if json_data['password_token'] == redis_db.get(f"password_token:{user.user_id}").decode("utf-8"):
-                User.update_user(user.user_id, password=json_data['new_password'])
-                redis_db.delete(f"password_token:{user.user_id}")
-                return {"message": "Password has been updated, you can now login with your new password"}
-            else:
-                return {"message": "Token is invalid"}, 200
-        except:
-            return {"message": "Token is invalid"}
+    # @staticmethod
+    # def post():
+    #     json_data: dict = request.get_json()
+    #     if not json_data:
+    #         return {"message": "No json data provided"}, 400
+    #
+    #     if 'password_token' not in json_data.keys():
+    #         return {"message": "password_token not provided in the data"}
+    #
+    #     try:
+    #         token_data = jwt.decode(json_data['password_token'], app.config['JWT_SECRET_KEY'])
+    #         user = User.query.filter_by(user_id=token_data['user_id']).first()
+    #         if user is None:
+    #             return jsonify({'message': 'The user_id is invalid'})
+    #     except:
+    #         return jsonify({'message': 'Token is invalid!'})
+    #
+    #     if json_data['password_token'] == redis_db.get(f"password_token:{user.user_id}").decode("utf-8"):
+    #         users_response_schema = UserSchema(exclude=['password', ])
+    #         return {"Authenticated": True, "user": users_response_schema.dump(user)}
+    #     else:
+    #         return {"message": "Token is invalid"}
+    #
+    # @staticmethod
+    # def put():
+    #     json_data: dict = request.get_json()
+    #     if not json_data:
+    #         return {"message": "No input data provided"}, 400
+    #
+    #     if 'password_token' not in json_data.keys():
+    #         return {"message": "password_token not provided in the data"}
+    #
+    #     if 'new_password' not in json_data.keys():
+    #         return {"message": "new_password missing :("}
+    #
+    #     try:
+    #         token_data = jwt.decode(json_data['password_token'], app.config['JWT_SECRET_KEY'])
+    #         user = User.query.filter_by(user_id=token_data['user_id']).first()
+    #         if user is None:
+    #             return jsonify({'message': 'The user_id is invalid'})
+    #     except:
+    #         return jsonify({'message': 'Token is invalid!'})
+    #
+    #     try:
+    #         if json_data['password_token'] == redis_db.get(f"password_token:{user.user_id}").decode("utf-8"):
+    #             User.update_user(user.user_id, password=json_data['new_password'])
+    #             redis_db.delete(f"password_token:{user.user_id}")
+    #             return {"message": "Password has been updated, you can now login with your new password"}
+    #         else:
+    #             return {"message": "Token is invalid"}, 200
+    #     except:
+    #         return {"message": "Token is invalid"}
 
 
 load_dotenv('../.env')
 
 
 def send_email(user, new_password):
+
     port = 465  # For SSL
 
     # Create a secure SSL context

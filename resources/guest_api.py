@@ -1,5 +1,6 @@
-from flask_restful import Resource, reqparse, abort
-from flask import request, jsonify, make_response
+import time
+from flask_restful import Resource
+from flask import request
 from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
@@ -11,7 +12,8 @@ from .helper import remove_whitespace
 from models.guest_model import Guest
 
 # schema imports
-from schemas.guest_appointment_schema import GuestSchema, EditGuestSchema
+from schemas.appointment_guest_schemas import GuestSchema, EditGuestSchema
+
 
 guest_schema = GuestSchema()
 guests_schema = GuestSchema(many=True)
@@ -26,8 +28,11 @@ class GuestCollection(Resource):
         """
         get all guests
         """
-        guests = Guest.query.all()
-        return {'guests': guests_schema.dump(guests)}, 200
+        try:
+            guests = Guest.query.all()
+            return {'guests': guests_schema.dump(guests)}, 200
+        except Exception:
+            return {"error": "Database Server Error"}
 
     @staticmethod
     @login_required
@@ -35,9 +40,9 @@ class GuestCollection(Resource):
         """
         add a new guest
         """
-        json_data = request.get_json()["body"]
+        json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -48,20 +53,26 @@ class GuestCollection(Resource):
         try:
             data = guest_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}
         try:
+            data['consent_expire_date'] = int(time.time()) + 24*60*60
             guest = Guest.create(**data)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
+        except Exception:
+            return {"error": "Database Server Error"}
 
-        return guest_schema.dump(guest), 201
+        return {"message": "guest succesvol aangemaakt", **guest_schema.dump(guest)}, 201
 
     @staticmethod
     @login_required
     def delete(current_user, guest_id):
-        Guest.delete_guest(guest_id)
-        return 200
+        try:
+            Guest.delete_guest(guest_id)
+            return {"message": "Guest is succesvol verwijderd"}, 200
+        except Exception:
+            return {"error": "Database Server Error"}
 
 
 class GuestScanned(Resource):
@@ -85,7 +96,8 @@ class GuestScanned(Resource):
             return {"emited": False, 'msg': 'Lijk erop dat u uitgelogd bent'}
         
         return {"emited": True, 'msg': 'Data verzonden'}
-    
+
+
 class GuestApi(Resource):
 
     @staticmethod
@@ -97,7 +109,9 @@ class GuestApi(Resource):
         try:
             guest = Guest.get_guest(guest_id)
         except NoResultFound:
-            return {'message': 'Guest does not exist!'}
+            return {'error': 'Guest does not exist!'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {'guest': guest_schema.dump(guest)}, 200
 
@@ -108,9 +122,9 @@ class GuestApi(Resource):
         edit guest
         """
 
-        json_data = request.get_json()["body"]
+        json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -121,7 +135,7 @@ class GuestApi(Resource):
         try:
             data = edit_guest_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
+            return {"error": err.messages}
 
         try:
             edited_guest = Guest.update_guest(guest_id, **data)
@@ -130,5 +144,7 @@ class GuestApi(Resource):
             return {'error': e.orig.args}
         except NoResultFound:
             return {'error': 'Guest does not exist'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
-        return {'guest': guest_schema.dump(edited_guest)}, 200
+        return {'message': "Guest succesvol bewerkt", 'guest': guest_schema.dump(edited_guest)}, 200
