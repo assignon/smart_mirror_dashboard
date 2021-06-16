@@ -191,7 +191,6 @@ export default {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
-            // console.log(res["x-access-token"]);
             self.startSession(
               res["x-access-token"],
               res["superuser"],
@@ -206,6 +205,8 @@ export default {
           this.success = true;
         } catch (err) {
           this.error = err.message;
+          self.notificationText = err.message;
+          self.$store.state.notificationStatus = true;
         }
       } else {
         self.notificationText = "Email and password should not be empty";
