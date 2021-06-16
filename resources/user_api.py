@@ -96,7 +96,7 @@ class UserApi(Resource):
         try:
             user = User.get_user(user_id)
         except NoResultFound:
-            return {'error': 'User does not exist!'}
+            return {'error': 'Gebruiker bestaat niet!'}
         except Exception:
             return {"error": "Database Server Error"}
 
@@ -126,7 +126,7 @@ class UserApi(Resource):
             try: 
                 user_to_be_updated = User.get_user(user_id)
             except NoResultFound:
-                return {'error': 'User does not exist!'}
+                return {'error': 'Gebruiker bestaat niet!'}
 
         try:
             if json_data['new_password'] != '' and user_to_be_updated.check_password(json_data['password']):
@@ -151,7 +151,7 @@ class UserApi(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
         except NoResultFound:
-            return {'error': 'User does not exist'}
+            return {'error': 'Gebruiker bestaat niet!'}
         except Exception:
             return {"error": "Database Server Error"}
 

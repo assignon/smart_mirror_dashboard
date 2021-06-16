@@ -53,7 +53,7 @@ class Login(Resource):
             return {"error": "Database Server Error"}
 
         if not user:
-            return {'error': 'User does not exist'}
+            return {'error': 'Gebruiker bestaat niet!'}
 
         if user.check_password(auth.password):
             try:
@@ -65,7 +65,7 @@ class Login(Resource):
                     {'user_id': user.user_id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)},
                     app.config['JWT_SECRET_KEY'])
             return jsonify({'x-access-token': token, 'user_id': user.user_id, 'superuser': user.is_admin})
-        return make_response({"error": "Wrong password"}, 200, {'WWW-Authenticate': ' Basic realm="Login required!"'})
+        return make_response({"error": "Wachtwoord is verkeerd!"}, 200, {'WWW-Authenticate': ' Basic realm="Login required!"'})
 
 
 class Logout(Resource):

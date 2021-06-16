@@ -208,7 +208,7 @@ export default {
           this.error = err.message;
         }
       } else {
-        self.notificationText = "Email and password should not be empty";
+        self.notificationText = "Vul een gebruikersnaam en wachtwoord in!";
         self.$store.state.notificationStatus = true;
         // formErrMsg.innerHTML = "Email and password should not be empty";
       }
