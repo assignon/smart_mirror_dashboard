@@ -1,29 +1,39 @@
+FROM node:lts-alpine
+
+WORKDIR /app
+
+COPY ./frontend/package*.json ./
+
+RUN npm install
+
+COPY ./frontend .
+
+RUN npm run build
+
+
+
 FROM python:3.9.1
 # FROM ubuntu:16.04
 
 MAINTAINER "yanick007.dev@gmail.com"
 
-# run apt-get update -y && \
-#     apt-get install -y python-pip python-dev
-
 COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 
-ADD . /app
+# ADD . /app
 
 RUN pip install --upgrade pip
 
 RUN pip install typing
 
-RUN pip install -r requirements.txt
+RUN pip install gunicorn
 
-RUN chmod +x ./entrypoint.sh
+RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 5000
 
-# COPY . /app
+# EXPOSE 8000
 
-# ENTRYPOINT [ "gunicorn", "--config", "gunicorn_config.py", "app.wsgi:app" ]
-ENTRYPOINT [ "sh", "entrypoint.sh" ]
-# CMD [ "python", "app.py" ]
+COPY . /app
+
+# ENTRYPOINT [ "gunicorn", "--config", "gunicorn_config.py", "wsgi" ]
