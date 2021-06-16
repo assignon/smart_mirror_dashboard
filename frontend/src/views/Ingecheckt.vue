@@ -171,6 +171,8 @@ export default {
       self.guestManuallyCheckin()
       // self.$store.state.guestCheckedManually = false
     }
+    // remove notification snackbar
+    this.$store.state.notificationStatus = false
 
     // guest checked in socket
     this.$store.state.socket.on("checked_in", function(guestdata) {

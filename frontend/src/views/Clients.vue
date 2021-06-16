@@ -360,6 +360,8 @@ export default {
   },
   created() {
     this.allClientsData();
+    // remove notification snackbar
+    this.$store.state.notificationStatus = false
   },
   methods: {
     allClientsData() {

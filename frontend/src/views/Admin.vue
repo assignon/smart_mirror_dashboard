@@ -260,6 +260,8 @@ export default {
   },
   created() {
     this.allUsersData();
+    // remove notification snackbar
+    this.$store.state.notificationStatus = false
   },
   methods: {
     allUsersData() {

@@ -93,6 +93,11 @@ export default {
     };
   },
 
+  created(){
+    // remove notification snackbar
+    this.$store.state.notificationStatus = false
+  },
+
   methods: {
     validate () {
       this.$refs.observer.validate()
