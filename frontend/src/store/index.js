@@ -11,6 +11,7 @@ export default new Vuex.Store({
   namespaced: true,
   state: {
     HOST: window.location.port != "" ? "http://127.0.0.1:5000" : "http://yanicmd.pythonanywhere.com",
+    // HOST: "http://127.0.0.1:5000",
     //  "http://127.0.0.1:8000",
     AUTHENTICATED: undefined,
     usertoken: undefined,
