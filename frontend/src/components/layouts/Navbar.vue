@@ -30,6 +30,7 @@
           <div class="buttons">
             <router-link v-if="($session.get('su'))" to="/admin" replace
             >Admin</router-link>
+
           </div>
         </div>
         <div class="navbar-item">
