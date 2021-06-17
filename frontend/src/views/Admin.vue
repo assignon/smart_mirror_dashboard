@@ -2,7 +2,7 @@
   <section class="primary-section">
     <Notifications :content="notification_text" color="red" />
     <div class="main-container">
-      <div>
+      <div class='data-table-container'>
         <!-- Title -->
         <div>
           <h1 class="mb-3 mt-12">Systeem gebruikers</h1>
@@ -409,6 +409,11 @@ export default {
 .primary-section {
   background-color: beige;
   min-height: 80vh;
+}
+.data-table-container {
+  width: 80%;
+  height: auto;
+  margin-bottom: 30px;
 }
 
 h1 {
