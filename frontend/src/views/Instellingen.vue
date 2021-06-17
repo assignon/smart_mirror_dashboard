@@ -92,7 +92,9 @@ export default {
       notificationColor: ""
     };
   },
-
+  created() {
+    this.$store.state.notificationStatus = false;
+  },
   methods: {
     validate () {
       this.$refs.observer.validate()
@@ -120,7 +122,7 @@ export default {
             self.notificationText = data.error;
             self.notificationColor = "red";
           }
-          if (data.succes)  {
+          if (data.message)  {
             console.log("error is none")
             self.notificationText = "Password changed successfully";
             self.notificationColor = "green";

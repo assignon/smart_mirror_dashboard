@@ -58,7 +58,7 @@
                     <v-col cols="12">
                       <v-text-field
                         v-model="new_client.license_plate"
-                        label="Kenteken*"
+                        label="Kenteken"
                         required
                       ></v-text-field>
                     </v-col>
@@ -267,7 +267,7 @@
                     edit_form.length > 0 ? edit_form[0].license_plate : null
                   "
                   placeholder="Kenteken"
-                  v-model="edit_client.licence_plate"
+                  v-model="edit_client.license_plate"
                   required
                 ></v-text-field>
               </v-col>
@@ -313,7 +313,13 @@ export default {
       edit_form: [],
       checkin_dialog: false,
       edit_client: {},
-      new_client: {},
+      new_client: {
+        name: "",
+        email: "",
+        phone_number: "",
+        license_plate: "",
+        company: ""
+      },
       clients: [],
       headers: [
         {
@@ -359,6 +365,7 @@ export default {
     };
   },
   created() {
+    this.$store.state.notificationStatus = false;
     this.allClientsData();
   },
   methods: {
@@ -393,39 +400,49 @@ export default {
 
     newClient() {
       let self = this;
-      this.$store.dispatch("postReq", {
-        url: "guests",
-        params: {
-          name: this.new_client.name,
-          license_plate: this.new_client.license_plate,
-          email: this.new_client.email,
-          phone_number: this.new_client.phone_number,
-          company: this.new_client.company
-        },
-        auth: self.$session.get("token"),
-        csrftoken: self.$session.get("token"),
-        xaccesstoken: self.$session.get("token"),
-        callback: function(res) {
-          self.$store.dispatch("postReq", {
-            url: `appointments`,
-            params: {
-              guest_id: res.guest_id,
-              employee_name: res.name,
-              checked_in: new Date().toISOString()
-            },
-            auth: self.$session.get("token"),
-            csrftoken: self.$session.get("token"),
-            xaccesstoken: self.$session.get("token"),
-            callback: function(res) {
-              if (res.error) {
-                console.log(res.error);
-              } else {
-                self.$router.push({ name: "Ingecheckt" });
+      if (
+        this.new_client.name !== "" &&
+        this.new_client.email !== "" &&
+        this.new_client.phone_number !== "" &&
+        this.new_client.company !== ""
+      ) {
+        this.$store.dispatch("postReq", {
+          url: "guests",
+          params: {
+            name: this.new_client.name,
+            license_plate: this.new_client.license_plate,
+            email: this.new_client.email,
+            phone_number: this.new_client.phone_number,
+            company: this.new_client.company
+          },
+          auth: self.$session.get("token"),
+          csrftoken: self.$session.get("token"),
+          xaccesstoken: self.$session.get("token"),
+          callback: function(res) {
+            self.$store.dispatch("postReq", {
+              url: `appointments`,
+              params: {
+                guest_id: res.guest_id,
+                employee_name: res.name,
+                checked_in: new Date().toISOString()
+              },
+              auth: self.$session.get("token"),
+              csrftoken: self.$session.get("token"),
+              xaccesstoken: self.$session.get("token"),
+              callback: function(res) {
+                if (res.error) {
+                  console.log(res.error);
+                } else {
+                  self.$router.push({ name: "Ingecheckt" });
+                }
               }
-            }
-          });
-        }
-      });
+            });
+          }
+        });
+      } else {
+        self.notification_text = "Vul alle benodigden velden in!";
+        self.$store.state.notificationStatus = true;
+      }
     },
 
     checkIn(userData) {
@@ -468,6 +485,7 @@ export default {
 
     editClient(userData) {
       let self = this;
+      console.log(this.edit_client.name)
       // fill edit form with current guest data
       // this.edit_client.name = userData.name
       // this.edit_client.licence_plate = userData.licence_plate
@@ -475,11 +493,18 @@ export default {
       // this.edit_client.company = userData.company
       // this.edit_client.phone_number = userData.phone_number
       // if(this.edit_client.name != null){
-      this.$store.dispatch("putReq", {
+      if (
+        this.edit_client.name !== undefined ||
+        this.edit_client.licence_plate !== undefined ||
+        this.edit_client.email !== undefined ||
+        this.edit_client.phone_number !== undefined ||
+        this.edit_client.company !== undefined
+      ) {
+        this.$store.dispatch("putReq", {
         url: `guest/${userData.id}`,
         params: {
           name: this.edit_client.name,
-          licence_plate: this.edit_client.licence_plate,
+          license_plate: this.edit_client.license_plate,
           email: this.edit_client.email,
           phone_number: this.edit_client.phone_number,
           company: this.edit_client.company
@@ -488,14 +513,15 @@ export default {
         csrftoken: self.$session.get("token"),
         xaccesstoken: self.$session.get("token"),
         callback: function(data) {
-          data
+          data;
           self.clients = [];
           self.allClientsData();
         }
       });
-      // }else{
-      //   alert('empty')
-      // }
+      } else {
+        self.notification_text = "Vul teminste 1 veld in";
+        self.$store.state.notificationStatus = true;
+      }
     },
 
     delClient(userData) {

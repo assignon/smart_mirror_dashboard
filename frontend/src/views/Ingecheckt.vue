@@ -163,6 +163,7 @@ export default {
   watch: {},
 
   created() {
+    this.$store.state.notificationStatus = false;
     this.scannedGuestData();
     this.getScannedGuestData();
     // let self = this

@@ -117,6 +117,7 @@ export default {
     };
   },
   created() {
+    this.$store.state.notificationStatus = false;
     // this.userConnected();
     // this.userDisconnected();
     this.user_joinded();
