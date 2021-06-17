@@ -455,8 +455,8 @@ export default {
         csrftoken: self.$session.get("token"),
         callback: function(data) {
           data;
-          self.ingecheckt = [];
-          self.getScannedGuestData();
+          // self.ingecheckt = [];
+          // self.getScannedGuestData();
         }
       });
       socket.emit("update_checkedout", guestData);
