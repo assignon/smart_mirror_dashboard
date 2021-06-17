@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+    web:
+        restart: always
+        build: .
+        container_name: smart_mirror_dashboard
+        restart: always
+        environment:
+            - JWT_SECRETE_KEY='8435dc97-3815-4cfe-aa96-007a52dc98b8'
+            - FLASK_DEBUG=1
+        volumes:
+            - '.:/app/'
+        expose:
+            - 8000
+        ports:
+            - 8000:8000
+        command: gunicorn -w 2 -b 0.0.0.0:8000 wsgi
