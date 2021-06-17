@@ -11,6 +11,7 @@ export default new Vuex.Store({
   namespaced: true,
   state: {
     HOST: window.location.port != "" ? "http://127.0.0.1:5000" : "http://yanicmd.pythonanywhere.com",
+    // HOST: "http://127.0.0.1:5000",
     //  "http://127.0.0.1:8000",
     AUTHENTICATED: undefined,
     usertoken: undefined,
@@ -30,6 +31,8 @@ export default new Vuex.Store({
     ],
     appointmentArr: [], // will contain all appointment in the DB
     notificationStatus: false,
+    manuallyCheckedGuestData: null,
+    guestCheckedManually: false,
   },
 
   getters: {
@@ -118,9 +121,7 @@ export default new Vuex.Store({
            params:
                payload: [object]: [data sended with the request]
        */
-      let body = {
-        body: payload.params
-      };
+      let body = payload.params;
       axios
         .post(`${payload.host}/${payload.url}`, body, {
           headers: {
@@ -168,9 +169,8 @@ export default new Vuex.Store({
            params:
                payload: [object]: [data sended with the request]
        */
-      let body = {
-        body: payload.params
-      };
+      let body = payload.params;
+
       axios
         .put(`${payload.host}/${payload.url}`, body, {
           headers: {

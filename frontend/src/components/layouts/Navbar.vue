@@ -28,21 +28,21 @@
         >
         <div class="navbar-item">
           <div class="buttons">
-            <router-link v-if="(this.$session.su = true)" to="/admin" replace
-              >Admin</router-link
-            >
+            <router-link v-if="($session.get('su'))" to="/admin" replace
+            >Admin</router-link>
+
           </div>
         </div>
         <div class="navbar-item">
           <div class="buttons">
-            <p
-              style='color: #0070ad;cursor:pointer;font-weight:bold; position: relative;bottom:2px;'
+            <a
+              style='color: #0070ad;cursor:pointer;font-weight:bold;'
               v-if="$session.get('authenticated')"
               @click="logout()"
-              
+
               >
               Logout
-            </p>
+            </a>
           </div>
         </div>
       </div>

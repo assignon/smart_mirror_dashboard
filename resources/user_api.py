@@ -1,42 +1,17 @@
-from flask_jwt_extended import jwt_required
-from flask_socketio import SocketIO, emit
-from flask_restful import Resource, reqparse, abort
-from flask import request, jsonify, make_response
-from settings import ma, db
+from flask_restful import Resource
+from flask import request, jsonify
+from settings import db
 from marshmallow import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm.exc import NoResultFound
 from .authentication_api import login_required
 from .helper import remove_whitespace
-
-
-# # models imports
-
-# # model = UserModel() 
-# class CreateUser(Resource):
-#     def post(self):
-#         pass
-
-
-# class GetUser(Resource):
-#     # @jwt_required
-#     def get(self):
-#         from app import socketio
-
-#         data = request.args
-#         socketio.emit('face_scanned', data)
-
-#         return 'run'
-
-
 from models.user_model import User
-# schema imports
-# from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
-from schemas.schemas import UserSchema, EditUserSchema, EditUserPasswordSchema
+from schemas.user_schema import UserSchema, EditUserSchema, EditUserPasswordSchema
 
 user_schema: UserSchema = UserSchema()
-user_response_schema = UserSchema(exclude=['password',])
-users_response_schema = UserSchema(many=True, exclude= ['password',])
+user_response_schema = UserSchema(exclude=['password', ])
+users_response_schema = UserSchema(many=True, exclude=['password', ])
 users_schema = UserSchema(many=True)
 edit_user_schema = EditUserSchema()
 edit_user_password_schema = EditUserPasswordSchema()
@@ -51,11 +26,14 @@ class UserCollection(Resource):
         Get all users from the database: Je moet een admin zijn om dit te kunnen doen
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'}), 401
+            return jsonify({'error': 'Not authorized to perform this function'})
         try:
             users = User.get_all_users()
         except NoResultFound:
-            return {'message': 'No users found in the database'}, 400
+            return {'error': 'No users found in the database'}
+        except Exception:
+            return {"error": "Database Server Error"}
+
         return {"users": users_response_schema.dump(users)}, 200
 
     @staticmethod
@@ -65,43 +43,43 @@ class UserCollection(Resource):
         Add a new user to the database
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'}), 401
+            return jsonify({'error': 'Not authorized to perform this function'})
 
         json_data = request.get_json()
         if not json_data:
-            return {"message": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
-        remove_whitespace(json_data['body'])
+        remove_whitespace(json_data)
 
         # Validate and deserialize input
-        print(json_data)
         try:
-            data = user_schema.load(json_data['body'])
+            data = user_schema.load(json_data)
         except ValidationError as err:
-            print(json_data)
-            return err.messages, 422
+            return {"error": err.messages}
 
         try:
             user = User.create(**data)
         except exc.IntegrityError as e:
             db.session.rollback()
             return {'error': e.orig.args}
+        except Exception:
+            return {"error": "Database Server Error"}
 
-        return {"user": user_response_schema.dump(user)}, 201
+        return {"message": "new user succesvol aangemaakt", "user": user_response_schema.dump(user)}, 201
 
     @staticmethod
     @login_required
     def delete(current_user, user_id):
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'})
+            return jsonify({'error': 'Not authorized to perform this function'})
         
         try: 
             User.delete_user(user_id)
         except:
-            return 400
-        return 200
+            return {"error": "Database Server Error"}
+        return {"message": "Guest has been deleted"}, 200
 
 
 class UserApi(Resource):
@@ -113,12 +91,14 @@ class UserApi(Resource):
         get user based on userid
         """
         if not current_user.is_admin:
-            return jsonify({'message': 'Not authorized to perform this function'})
+            return jsonify({'error': 'Not authorized to perform this function'})
 
         try:
             user = User.get_user(user_id)
         except NoResultFound:
-            return {'message': 'User does not exist!'}
+            return {'error': 'Gebruiker bestaat niet!'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
         return {"user": user_response_schema.dump(user)}, 200
 
@@ -132,10 +112,9 @@ class UserApi(Resource):
         if current_user.user_id != user_id and current_user.is_admin is False:
             return {"error": "Not authorized to edit this user!"}
 
-        json_data: dict = request.get_json()["body"]
-        print(json_data)
+        json_data: dict = request.get_json()
         if not json_data:
-            return {"error": "No input data provided"}, 400
+            return {"error": "No input data provided"}
 
         # remove whitespaces from input
 
@@ -147,7 +126,7 @@ class UserApi(Resource):
             try: 
                 user_to_be_updated = User.get_user(user_id)
             except NoResultFound:
-                return {'error': 'User does not exist!'}
+                return {'error': 'Gebruiker bestaat niet!'}
 
         try:
             if json_data['new_password'] != '' and user_to_be_updated.check_password(json_data['password']):
@@ -160,9 +139,11 @@ class UserApi(Resource):
                 json_data.pop('password', None)
                 data = edit_user_schema.load(json_data)
         except ValidationError as err:
-            return err.messages, 422
-        except KeyError as err:
+            return {"error": err.messages}
+        except KeyError:
             data = edit_user_schema.load(json_data)
+        except Exception:
+            return {"error": "Database Server Error"}
 
         try:
             edited_user = User.update_user(user_id, **data)
@@ -170,6 +151,8 @@ class UserApi(Resource):
             db.session.rollback()
             return {'error': e.orig.args}
         except NoResultFound:
-            return {'error': 'User does not exist'}
+            return {'error': 'Gebruiker bestaat niet!'}
+        except Exception:
+            return {"error": "Database Server Error"}
 
-        return {'succes': 'Password changed successfully'}, 200
+        return {'message': 'Password changed successfully'}, 200

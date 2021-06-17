@@ -117,6 +117,7 @@ export default {
     };
   },
   created() {
+    this.$store.state.notificationStatus = false;
     // this.userConnected();
     // this.userDisconnected();
     this.user_joinded();
@@ -191,7 +192,6 @@ export default {
         try {
           const res = await axios.get(url, { auth }).then(res => res.data);
           if (res["x-access-token"]) {
-            // console.log(res["x-access-token"]);
             self.startSession(
               res["x-access-token"],
               res["superuser"],
@@ -199,16 +199,18 @@ export default {
             );
             await this.$router.push("/ingecheckt");
           } else {
-            self.notificationText = res.message;
+            self.notificationText = res.error;
             self.$store.state.notificationStatus = true;
             // formErrMsg.innerHTML = res.msg;
           }
           this.success = true;
         } catch (err) {
           this.error = err.message;
+          self.notificationText = err.message;
+          self.$store.state.notificationStatus = true;
         }
       } else {
-        self.notificationText = "Email and password should not be empty";
+        self.notificationText = "Vul een gebruikersnaam en wachtwoord in!";
         self.$store.state.notificationStatus = true;
         // formErrMsg.innerHTML = "Email and password should not be empty";
       }
@@ -223,10 +225,9 @@ export default {
             email: this.input.email_forget_password
           },
           callback: function(res) {
-            if (res.data.message) {
+            if (res.data.error) {
               //geef aan wat er fout is gegaan
-              console.log(self.password_error);
-              self.password_error = res.data.message;
+              self.password_error = res.data.error;
             } else {
               // geef aan dat het gelukt is en dat de gebruiker zijn mail moet checken
               self.succes_new_password = true;

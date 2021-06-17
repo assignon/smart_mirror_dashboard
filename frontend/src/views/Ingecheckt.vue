@@ -3,6 +3,16 @@
     <div class="main-container">
       <h1 class="mb-9 mt-12">Ingecheckte Gasten</h1>
       <div v-if="ingecheckt.length > 0" class="data-table-container">
+        <div class="reload-btn">
+
+          <v-btn
+              class="white--text mt-9 mb-12"
+              color="#0f78b2"
+              rounded @click="reloadPage"
+          >
+            <v-icon medium>fas fa-sync-alt</v-icon>
+          </v-btn>
+        </div>
         <v-data-table
           :headers="headers"
           :items="ingecheckt"
@@ -17,27 +27,29 @@
               <td>{{ row.item.email }}</td>
               <td>{{ row.item.company }}</td>
               <td>{{ row.item.plate }}</td>
+              <td>{{ row.item.employee_name }}</td>
               <td
                 :class="
                   row.item.name.replace(/ /g, '') + row.item.appointment_id
                 "
               >
                 <!-- <v-btn class="mx-2 darken-3" color='#0f78b2' rounded elevation="2" @click="checkGuestIn(row.item)" v-if='row.item.checkin==null'> -->
-                <v-btn
-                  class="mx-2 darken-3"
-                  rounded
-                  elevation="2"
-                  @click="confirmationDialog('checkin', row.item)"
-                  v-if="row.item.checkin == null"
-                >
-                  <strong
-                    style="color:white;text-transform:capitalize"
-                  ></strong>
+                <v-btn class="mx-2 darken-3" rounded elevation="2" @click="confirmationDialog('checkin', row.item)" v-if="row.item.checkin == null">
+<!--                  <strong style="color:white;text-transform:capitalize"></strong>-->
                   <v-icon color="green" dense>
                     mdi-check-bold
                   </v-icon>
                 </v-btn>
-                <strong v-else>{{ row.item.checkin }}</strong>
+                <v-tooltip bottom v-else>
+                  <template v-slot:activator="{ on, attrs }">
+                    <strong v-bind="attrs" v-on="on">
+                      <!-- {{ new Date(row.item.checkin.split('T')).toLocaleDateString() }} -->
+                      {{ row.item.checkin.split('T')[1].replace(/(.*)\D\d+/, '$1') }}
+                    </strong>
+                  </template>
+                  <strong >{{ new Date(row.item.checkin.split('T')[0]).toLocaleDateString() }} - {{row.item.checkin.split('T')[1].replace(/(.*)\D\d+/, '$1') }}</strong>
+                </v-tooltip>
+                
               </td>
               <td>
                 <!-- <v-btn class="mx-2 darken-3" color='#ff304c' rounded elevation="2" @click="checkGuestOut(row.item)" :disabled='row.item.checkin==null'> -->
@@ -136,6 +148,7 @@ export default {
         { text: "E-mail", value: "email", class: "bdarken-1" },
         { text: "Bedrijf", value: "company", class: "darken-1" },
         { text: "Kenteken", value: "plate", class: "darken-1" },
+        { text: "Contact Persoon", value: "employee_name", class: "darken-1" },
         { text: "Check-in", value: "checkin", class: "darken-1" },
         {
           text: "Check-out",
@@ -150,19 +163,25 @@ export default {
   watch: {},
 
   created() {
+    this.$store.state.notificationStatus = false;
+    let self = this
     this.scannedGuestData();
     this.getScannedGuestData();
-    // let self = this
-
+    if(this.$store.state.guestCheckedManually){
+      self.guestManuallyCheckin()
+      // self.$store.state.guestCheckedManually = false
+    }
+    // remove notification snackbar
+    this.$store.state.notificationStatus = false
+    let time = new Date().toLocaleTimeString().split(':')
     // guest checked in socket
     this.$store.state.socket.on("checked_in", function(guestdata) {
-      guestdata.checkin =
-        new Date().toLocaleDateString() + "/" + new Date().toLocaleTimeString();
+      guestdata.checkin = time[0]+':'+time[1];
 
+      guestdata.checkin = "TEST";
       document.querySelector(
         "." + guestdata.name.replace(/ /g, "") + guestdata.appointment_id
-      ).innerHTML =
-        new Date().toLocaleDateString() + "/" + new Date().toLocaleTimeString();
+      ).innerHTML = '<strong>'+time[0]+':'+time[1]+'</strong>';
       // let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
       // checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
       // checkinBtn.elevation = '0';
@@ -183,9 +202,20 @@ export default {
 
     // checkout socket
     this.checkedOutSocket();
+
+    // setTimeout(() => {
+    //   if(this.$store.state.guestCheckedManually){
+    //     self.checkGuestIn(self.$store.state.manuallyCheckedGuestData)
+    //     self.$store.state.guestCheckedManually = false
+    //   }
+    // }, 1000)
   },
 
   methods: {
+    reloadPage(){
+      this.ingecheckt = []
+      this.getScannedGuestData()
+  },
     checkedOutSocket() {
       let self = this;
       let increase = 0;
@@ -234,8 +264,8 @@ export default {
           // let ingechecktArrLen = self.ingecheckt.length
           let updatedIngechecktArrLen = self.ingecheckt.length - increase;
 
-          console.log(updatedIngechecktArrLen);
-          console.log(self.ingecheckt.length);
+          // console.log(updatedIngechecktArrLen);
+          // console.log(self.ingecheckt.length);
           if (updatedIngechecktArrLen < 1) {
             // update ingecheckt array length to 0 if all guest checked out
             // to be able to display the no guest scan view
@@ -274,6 +304,7 @@ export default {
               let guestData = {
                 id: data.guest.guest_id,
                 appointment_id: data.appointment_id,
+                employee_name: data.employee_name,
                 name: data.guest.name,
                 tel: data.guest.phone_number,
                 email: data.guest.email,
@@ -306,6 +337,7 @@ export default {
             company: data.company,
             plate: data.license_plate,
             appointment_id: data.appointment_id,
+            employee_name: data.employee_name,
             checkin: null,
             checkout: null
             // time: new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString(), // change with time from DB
@@ -319,10 +351,25 @@ export default {
       });
     },
 
+    guestManuallyCheckin(){
+      let self = this
+      let socket = this.$store.state.socket
+      
+      socket.on("guest_manually_checkin", function(guestData) {
+        console.log(guestData);
+          if(guestData){
+            let data = guestData
+            alert()
+            self.ingecheckt.unshift(data);
+          }
+      })
+    },
+
     confirmationDialog(checkName, guestData) {
       let self = this;
       // display dialog
       this.confirmDialog = true;
+      // console.log(guestData);
       // get current guest data
       this.currentGuestData = guestData;
       this.check = checkName;
@@ -355,7 +402,7 @@ export default {
           // appoinment_id: guestData.appointment_id,
           checked_in:
             new Date().toLocaleDateString() +
-            "/" +
+            "T" +
             new Date().toLocaleTimeString()
         },
         auth: self.$session.get("token"),
@@ -368,6 +415,7 @@ export default {
       });
       // let guestdata = guestData;
       socket.emit("update_checkedin", guestData);
+
       // socket.on('checked', function(data){
       //   console.log('checked data', data);
       //   console.log('hallo there')
@@ -407,7 +455,8 @@ export default {
         csrftoken: self.$session.get("token"),
         callback: function(data) {
           data;
-          // self.getScannedGuestData()
+          // self.ingecheckt = [];
+          // self.getScannedGuestData();
         }
       });
       socket.emit("update_checkedout", guestData);
@@ -473,6 +522,14 @@ tr td {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
+}
+.reload-btn{
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
 }
 </style>

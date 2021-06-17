@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "18cddef1aa0be082208fb4e0a1317e3a",
+    "revision": "1886d66030a6a17bffa532e923a3d8d3",
     "url": "/index.html"
   },
   {
@@ -12,12 +12,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/robots.txt"
   },
   {
-    "revision": "380f7bdb47b574a5992d",
-    "url": "/static/css/app.c1fdb5f2.css"
+    "revision": "4bf451c41d38e2d2fac5",
+    "url": "/static/css/app.1c1b7568.css"
   },
   {
-    "revision": "c700a72719513afbbd65",
-    "url": "/static/css/chunk-vendors.106d89f7.css"
+    "revision": "d55f47e9fd1d1748fb63",
+    "url": "/static/css/chunk-vendors.3fdbe572.css"
   },
   {
     "revision": "2a61b00fcc9b1afbf99be145777b1b72",
@@ -88,6 +88,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/img/SogetiLabs_Logo_Primary_3COL_RGB (002).9f4693bc.png"
   },
   {
+    "revision": "580821e86089ab81732069f454d3da83",
+    "url": "/static/img/error.580821e8.png"
+  },
+  {
     "revision": "5d10d00980077f67990f73b1961bc46e",
     "url": "/static/img/fa-brands-400.5d10d009.svg"
   },
@@ -100,11 +104,11 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/static/img/fa-solid-900.2306f642.svg"
   },
   {
-    "revision": "380f7bdb47b574a5992d",
-    "url": "/static/js/app.1d719ce2.js"
+    "revision": "4bf451c41d38e2d2fac5",
+    "url": "/static/js/app.0fde1fde.js"
   },
   {
-    "revision": "c700a72719513afbbd65",
-    "url": "/static/js/chunk-vendors.888f6203.js"
+    "revision": "d55f47e9fd1d1748fb63",
+    "url": "/static/js/chunk-vendors.2406331c.js"
   }
 ]);

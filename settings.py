@@ -15,12 +15,6 @@ from RedisDB.redisdb import RedisDatabase
 from daily import daily_delete
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-
-# from flask_restful import Api
-# if 'app' not in sys.modules:
-#     from app import app
-
-
 # app = Flask(__name__, static_url_path='/',
 #             static_folder="../frontend/dist/", template_folder="templates")
 # app = Flask(__name__, static_url_path='/static', template_folder="templates")
