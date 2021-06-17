@@ -173,16 +173,14 @@ export default {
     }
     // remove notification snackbar
     this.$store.state.notificationStatus = false
-
+    let time = new Date().toLocaleTimeString().split(':')
     // guest checked in socket
     this.$store.state.socket.on("checked_in", function(guestdata) {
-      guestdata.checkin =
-        new Date().toLocaleDateString() + "T" + new Date().toLocaleTimeString();
+      guestdata.checkin = time[0]+':'+time[1];
 
       document.querySelector(
         "." + guestdata.name.replace(/ /g, "") + guestdata.appointment_id
-      ).innerHTML =
-        new Date().toLocaleDateString() + "T" + new Date().toLocaleTimeString();
+      ).innerHTML = '<strong>'+time[0]+':'+time[1]+'</strong>';
       // let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
       // checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
       // checkinBtn.elevation = '0';
