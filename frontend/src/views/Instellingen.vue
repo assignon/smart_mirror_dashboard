@@ -93,10 +93,12 @@ export default {
     };
   },
 
+
   created(){
     // remove notification snackbar
     this.$store.state.notificationStatus = false
   },
+
 
   methods: {
     validate () {
@@ -125,7 +127,7 @@ export default {
             self.notificationText = data.error;
             self.notificationColor = "red";
           }
-          if (data.succes)  {
+          if (data.message)  {
             console.log("error is none")
             self.notificationText = "Password changed successfully";
             self.notificationColor = "green";

@@ -163,8 +163,8 @@ export default {
   watch: {},
 
   created() {
+    this.$store.state.notificationStatus = false;
     let self = this
-
     this.scannedGuestData();
     this.getScannedGuestData();
     if(this.$store.state.guestCheckedManually){
@@ -178,6 +178,7 @@ export default {
     this.$store.state.socket.on("checked_in", function(guestdata) {
       guestdata.checkin = time[0]+':'+time[1];
 
+      guestdata.checkin = "TEST";
       document.querySelector(
         "." + guestdata.name.replace(/ /g, "") + guestdata.appointment_id
       ).innerHTML = '<strong>'+time[0]+':'+time[1]+'</strong>';
@@ -414,6 +415,7 @@ export default {
       });
       // let guestdata = guestData;
       socket.emit("update_checkedin", guestData);
+
       // socket.on('checked', function(data){
       //   console.log('checked data', data);
       //   console.log('hallo there')
@@ -453,8 +455,8 @@ export default {
         csrftoken: self.$session.get("token"),
         callback: function(data) {
           data;
-          // self.ingecheckt = [];
-          // self.getScannedGuestData();
+          self.ingecheckt = [];
+          self.getScannedGuestData();
         }
       });
       socket.emit("update_checkedout", guestData);

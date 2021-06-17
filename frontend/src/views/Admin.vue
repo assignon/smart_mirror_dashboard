@@ -1,5 +1,6 @@
 <template>
   <section class="primary-section">
+    <Notifications :content="notification_text" color="red" />
     <div class="main-container">
       <div>
         <!-- Title -->
@@ -168,7 +169,7 @@
               <v-col cols="12">
                 <v-select
                   :items="['True', 'False']"
-                  :label="edit_form.length > 0 ? edit_form[0].is_admin : null"
+                  label="Is admin"
                   placeholder="Admin*"
                   v-model="edit_user.is_admin"
                   required
@@ -200,10 +201,14 @@
 </template>
 
 <script>
+import Notifications from "../components/modals/Notifications";
+
 export default {
   name: "Admin",
+  components: { Notifications },
   data() {
     return {
+      notification_text: "",
       new_user: {},
       edit_user: {},
       adminBool: [
@@ -255,10 +260,11 @@ export default {
         }
       ],
       users: [],
-      edit_form: [],
+      edit_form: []
     };
   },
   created() {
+    this.$store.state.notificationStatus = false;
     this.allUsersData();
     // remove notification snackbar
     this.$store.state.notificationStatus = false
@@ -287,26 +293,36 @@ export default {
 
     newUser() {
       let self = this;
-      this.$store.dispatch("postReq", {
-        url: "users",
-        params: {
-          name: this.new_user.name,
-          is_admin: this.new_user.is_admin,
-          email: this.new_user.email,
-          password: this.new_user.password
-        },
-        auth: self.$session.get("token"),
-        csrftoken: self.$session.get("token"),
-        xaccesstoken: self.$session.get("token"),
-        callback: function(res) {
-          if (res.status === 200) {
-            console.log("OK");
-            window.location.reload()
-          } else {
-            console.log(res);
+      if (
+        this.new_user.name !== undefined &&
+        this.new_user.is_admin !== undefined &&
+        this.new_user.email !== undefined &&
+        this.new_user.password !== undefined
+      ) {
+        this.$store.dispatch("postReq", {
+          url: "users",
+          params: {
+            name: this.new_user.name,
+            is_admin: this.new_user.is_admin,
+            email: this.new_user.email,
+            password: this.new_user.password
+          },
+          auth: self.$session.get("token"),
+          csrftoken: self.$session.get("token"),
+          xaccesstoken: self.$session.get("token"),
+          callback: function(res) {
+            if (res.status === 200) {
+              console.log("OK");
+              window.location.reload();
+            } else {
+              console.log(res);
+            }
           }
-        }
-      });
+        });
+      } else {
+        self.notification_text = "Vul alle velden in!";
+        self.$store.state.notificationStatus = true;
+      }
     },
 
     confirmationDialog(userData) {
@@ -323,24 +339,33 @@ export default {
 
     editUser(userData) {
       let self = this;
-      this.$store.dispatch("putReq", {
-        url: `user/${userData.id}`,
-        params: {
-          name: this.edit_user.name,
-          email: this.edit_user.email,
-          is_admin: this.edit_user.is_admin
-        },
-        auth: self.$session.get("token"),
-        csrftoken: self.$session.get("token"),
-        xaccesstoken: self.$session.get("token"),
-        callback: function(data) {
-          console.log(data);
-          self.users = [];
-          self.allUsersData();
-        }
-      });
+      if (
+        this.edit_user.name !== undefined ||
+        this.edit_user.email !== undefined ||
+        this.edit_user.is_admin !== undefined
+      ) {
+        this.$store.dispatch("putReq", {
+          url: `user/${userData.id}`,
+          params: {
+            name: this.edit_user.name,
+            email: this.edit_user.email,
+            is_admin: this.edit_user.is_admin
+          },
+          auth: self.$session.get("token"),
+          csrftoken: self.$session.get("token"),
+          xaccesstoken: self.$session.get("token"),
+          callback: function(data) {
+            console.log(data);
+            self.users = [];
+            self.allUsersData();
+          }
+        });
+      } else {
+        console.log("FOUT");
+        self.notification_text = "Vul teminste 1 veld in";
+        self.$store.state.notificationStatus = true;
+      }
     },
-
     delUser(userData) {
       let self = this;
       this.$store.dispatch("deleteReq", {
