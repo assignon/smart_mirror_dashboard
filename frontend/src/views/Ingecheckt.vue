@@ -176,13 +176,12 @@ export default {
 
     // guest checked in socket
     this.$store.state.socket.on("checked_in", function(guestdata) {
-      guestdata.checkin =
-        new Date().toLocaleDateString() + "T" + new Date().toLocaleTimeString();
+      // let time = new Date().toLocaleTimeString().split(":")
 
+      guestdata.checkin = "TEST";
       document.querySelector(
         "." + guestdata.name.replace(/ /g, "") + guestdata.appointment_id
-      ).innerHTML =
-        new Date().toLocaleDateString() + "T" + new Date().toLocaleTimeString();
+      ).innerHTML = "TEST";
       // let checkinBtn = document.querySelector('.'+guestdata.name.replace(/ /g,'')+guestdata.appointment_id)
       // checkinBtn.firstChild.innerHTML = new Date().toLocaleDateString()+'/'+new Date().toLocaleTimeString()
       // checkinBtn.elevation = '0';
@@ -416,6 +415,7 @@ export default {
       });
       // let guestdata = guestData;
       socket.emit("update_checkedin", guestData);
+
       // socket.on('checked', function(data){
       //   console.log('checked data', data);
       //   console.log('hallo there')

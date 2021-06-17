@@ -450,13 +450,15 @@ export default {
     checkIn(userData) {
       let self = this;
       let socket = self.$store.state.socket;
+      let today = new Date();
+      today.setHours(today.getHours() + 2);
 
       this.$store.dispatch("postReq", {
         url: `appointments`,
         params: {
           guest_id: userData.id,
           employee_name: userData.name,
-          checked_in: new Date().toISOString()
+          checked_in: today.toISOString()
         },
         auth: self.$session.get("token"),
         csrftoken: self.$session.get("token"),
