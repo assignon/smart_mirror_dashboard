@@ -180,7 +180,7 @@ def update_checked_guest(guest_data):
 
 
 @socketio.on('update_checkedout')
-def update_checked_guest(guest_data):
+def update_checkedout_guest(guest_data):
     # now = datetime.datetime.now()
     emit('checked_out',  guest_data,
          broadcast=True)
