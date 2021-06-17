@@ -367,6 +367,8 @@ export default {
   created() {
     this.$store.state.notificationStatus = false;
     this.allClientsData();
+    // remove notification snackbar
+    this.$store.state.notificationStatus = false
   },
   methods: {
     allClientsData() {
@@ -387,7 +389,7 @@ export default {
               company: data.company
             };
             self.clients.push(clientdata);
-            console.log(clientdata);
+            // console.log(clientdata);
           });
         }
       });
@@ -447,6 +449,8 @@ export default {
 
     checkIn(userData) {
       let self = this;
+      let socket = self.$store.state.socket;
+
       this.$store.dispatch("postReq", {
         url: `appointments`,
         params: {
@@ -463,6 +467,23 @@ export default {
             self.$store.state.notificationStatus = true;
             console.log(res);
           } else {
+            self.$store.state.guestCheckedManually = true
+          
+            // self.$store.state.manuallyCheckedGuestData 
+            let manuallyCheckedGuestData = {
+              appointment_id: res.appointment.appointment_id,
+              checkin: res.appointment.checked_in,
+              checkout: null,
+              company: res.appointment.guest.company,
+              email: res.appointment.guest.email,
+              employee_name: res.appointment.employee_name,
+              id: res.appointment.guest.guest_id,
+              name: res.appointment.guest.name,
+              plate: res.appointment.guest.license_plate,
+              tel: res.appointment.guest.phone_number
+            }
+
+            socket.emit("manually_checkin", manuallyCheckedGuestData);
             self.$router.push("/ingecheckt");
           }
         }
