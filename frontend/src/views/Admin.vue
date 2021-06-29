@@ -349,6 +349,7 @@ export default {
       this.currentUserData = userData;
       this.edit_form = [];
       this.edit_form.push(userData);
+       
     },
 
     editUser(userData) {
