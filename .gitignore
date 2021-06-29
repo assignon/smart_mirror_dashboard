@@ -6,3 +6,4 @@
 /env/
 /schemas/__pycache__/
 .idea/
+RedisDB/__pycache__/

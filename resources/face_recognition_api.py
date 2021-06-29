@@ -1,5 +1,4 @@
 import time
-import cv2
 import numpy as np
 from .face_recognizer import FaceRecognizer
 from statistics import mode
@@ -10,22 +9,26 @@ face_recognizer = FaceRecognizer()
 
 
 class FaceRecognitionSystem(Resource):
-
     @staticmethod
     def get():
         pass
 
     def post(self):
         encoded_face = request.data
-        face = np.frombuffer(encoded_face, dtype=np.float32)
+        decode = np.frombuffer(encoded_face, dtype=np.uint8)
+        face = np.reshape(decode, (160, 160, 3))
         result = face_recognizer.recognize_face(face)
         return {"id": result}
 
     @staticmethod
-    def put():
-        global face_recognizer
-        face_recognizer = FaceRecognizer()
+    def put(self):
+        encoded_faces = request.data
+        decode_faces = np.frombuffer(encoded_faces, dtype=np.uint8)
+        faces = np.reshape(decode_faces, (20, 160, 160, 3))
+        
         return 200
+
+
 
 
 

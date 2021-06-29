@@ -4,6 +4,9 @@ This module contains the recognition module and related functions.
 import os
 from statistics import mode
 import numpy as np
+from tensorflow.keras.models import load_model
+from numpy import expand_dims
+from sklearn.preprocessing import Normalizer
 from sklearn.neighbors import BallTree
 from settings import redis_db
 
@@ -20,6 +23,10 @@ class FaceRecognizer:
         self.face_embeddings, self.face_ids = redis_db.get_vectors()
         print(set(self.face_ids))
 
+        # 128-D vector (face data) setup
+        self.embedder = load_model(os.path.join(base_path,
+                                                "models/facenet_keras.h5"))
+
         if len(set(self.face_ids)) > 0:
             self.recognizer = BallTree(self.face_embeddings, leaf_size=10)
 
@@ -28,7 +35,33 @@ class FaceRecognizer:
         self.radius = .82
         self.n_neighbors = 5
 
-    def recognize_face(self, face_embedding):
+    def facenet(self, input_img):
+        """Takes a face detection result and distils a
+        128D vector set in euclidean space.
+
+        Parameters:
+        input_img (np.array): An image in the form of a numpy array
+
+        Returns:
+        np.array: A 128D array with data representing a face.
+        float: the runtime of the function in seconds
+        """
+        # scale pixel values
+        face_pixels = input_img.astype('float32')
+        # standardize pixel values across channels (global)
+        mean, std = face_pixels.mean(), face_pixels.std()
+        face_pixels = (face_pixels - mean) / std
+
+        # transform face into one sample
+        samples = expand_dims(face_pixels, axis=0)
+        # make prediction to get embedding
+        yhat = self.embedder.predict(samples)
+        normal_encoder = Normalizer(norm='l2')
+        embedding = normal_encoder.transform(yhat)
+
+        return embedding[0]
+
+    def recognize_face(self, input_image):
         """
         This function expects a face embedding as input and runs it through an
         SVM trained on the known faces.
@@ -38,8 +71,10 @@ class FaceRecognizer:
         face_embedding, a numpy array with 128-D vactor in it.
         """
         # Check input format
-        if not isinstance(face_embedding, (np.ndarray, np.generic)):
+        if not isinstance(input_image, (np.ndarray, np.generic)):
             return "Invalid input format"
+
+        face_embedding = self.facenet(input_image)
 
         # if no faces in database return unknown
         if len(set(self.face_ids)) == 0:
@@ -75,6 +110,7 @@ class FaceRecognizer:
 
         return pred
 
+
     def update_recognizer(self, new_embeddings, new_id, expire_date):
         """
         This function takes an array with face data and an id,
@@ -93,6 +129,7 @@ class FaceRecognizer:
         self.recognizer = BallTree(self.face_embeddings, leaf_size=10)
 
         return "Succes"
+
 
     def delete_id(self, input_id):
         """
