@@ -52,13 +52,17 @@
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
+                      <!-- <v-select
                         v-model="new_user.is_admin"
                         :items="adminBool"
                         item-value="val"
                         label="Admin*"
                         required
-                      ></v-select>
+                      ></v-select> -->
+                      <v-checkbox
+                        v-model="isAdmin"
+                        label="Beheerder maken"
+                      ></v-checkbox>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -90,7 +94,8 @@
               <td>{{ row.item.id }}</td>
               <td>{{ row.item.name }}</td>
               <td>{{ row.item.email }}</td>
-              <td>{{ row.item.is_admin }}</td>
+              <td v-if="row.item.is_admin">Ja</td>
+              <td v-else>Nee</td>
               <!-- Delete Button -->
               <td :class="row.item.name.replace(/ /g, '') + row.item.id">
                 <v-btn
@@ -167,13 +172,18 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-select
+                <!-- <v-select
                   :items="['True', 'False']"
                   label="Is admin"
                   placeholder="Admin*"
                   v-model="edit_user.is_admin"
                   required
-                ></v-select>
+                ></v-select> -->
+                <v-checkbox
+                  v-if='edit_form.length > 0'
+                  v-model="edit_form[0].is_admin"
+                  label="Beheerder maken"
+                ></v-checkbox>
               </v-col>
             </v-row>
           </v-container>
@@ -209,6 +219,7 @@ export default {
   data() {
     return {
       notification_text: "",
+      isAdmin: false, // determine if the new added recisptionist have admin right or not
       new_user: {},
       edit_user: {},
       adminBool: [
@@ -239,7 +250,7 @@ export default {
           class: "darken-1"
         },
         {
-          text: "Admin",
+          text: "Beheerder",
           sortable: true,
           value: "admin",
           class: "darken-1"
@@ -293,9 +304,10 @@ export default {
 
     newUser() {
       let self = this;
+    
       if (
         this.new_user.name !== undefined &&
-        this.new_user.is_admin !== undefined &&
+        // this.new_user.is_admin !== undefined &&
         this.new_user.email !== undefined &&
         this.new_user.password !== undefined
       ) {
@@ -303,7 +315,8 @@ export default {
           url: "users",
           params: {
             name: this.new_user.name,
-            is_admin: this.new_user.is_admin,
+            // is_admin: this.new_user.is_admin,
+            is_admin: self.isAdmin,
             email: this.new_user.email,
             password: this.new_user.password
           },
@@ -311,6 +324,7 @@ export default {
           csrftoken: self.$session.get("token"),
           xaccesstoken: self.$session.get("token"),
           callback: function(res) {
+            self.isAdmin = false // reset ia admin checkbox to false
             if (res.status === 200) {
               console.log("OK");
               window.location.reload();
@@ -341,15 +355,16 @@ export default {
       let self = this;
       if (
         this.edit_user.name !== undefined ||
-        this.edit_user.email !== undefined ||
-        this.edit_user.is_admin !== undefined
+        this.edit_user.email !== undefined 
+        // this.edit_user.is_admin !== undefined
       ) {
         this.$store.dispatch("putReq", {
           url: `user/${userData.id}`,
           params: {
             name: this.edit_user.name,
             email: this.edit_user.email,
-            is_admin: this.edit_user.is_admin
+            // is_admin: this.edit_user.is_admin
+            is_admin: userData.is_admin
           },
           auth: self.$session.get("token"),
           csrftoken: self.$session.get("token"),
