@@ -346,6 +346,9 @@ export default {
 
     editDialog(userData) {
       this.edit_dialog = true;
+      // clear foem value
+      this.edit_user.name = undefined
+      this.edit_user.email = undefined
       this.currentUserData = userData;
       this.edit_form = [];
       this.edit_form.push(userData);
@@ -356,8 +359,8 @@ export default {
       let self = this;
       if (
         this.edit_user.name !== undefined ||
-        this.edit_user.email !== undefined 
-        // this.edit_user.is_admin !== undefined
+        this.edit_user.email !== undefined ||
+        userData.is_admin !== undefined
       ) {
         this.$store.dispatch("putReq", {
           url: `user/${userData.id}`,
