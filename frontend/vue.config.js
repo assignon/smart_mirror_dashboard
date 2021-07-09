@@ -3,7 +3,7 @@
   "devServer": {
     "proxy": {
       "^/": {
-        "target": "http://3.138.114.150:8080/",
+        "target": "http://18.118.114.216:8080/",
         // "target": "https://accountancy-tsgf2.ondigitalocean.app/",
         "ws": false
       }
