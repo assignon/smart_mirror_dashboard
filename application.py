@@ -4,19 +4,19 @@ from flask_socketio import SocketIO, emit, send, ConnectionRefusedError, disconn
 from flask_cors import CORS
 # from flask_bcrypt import Bcrypt
 from flask_restful import Api
-from settings import app, rest_api, PROJECT_DIR
+from settings import app as application, rest_api, PROJECT_DIR
 from routes import api_routes
 import time
 import datetime
 import os
 
-app.secret_key = "sunnySideUp-smartMirror"
+application.secret_key = "sunnySideUp-smartMirror"
 # bcrypt = Bcrypt(app)
-rest_api = Api(app)
-socketio = SocketIO(app, cors_allowed_origins='*')
+rest_api = Api(application)
+socketio = SocketIO(application, cors_allowed_origins='*')
 
-CORS(app)
-cors = CORS(app, resources={
+CORS(application)
+cors = CORS(application, resources={
     r"/*": {
         "Access-Control-Allow-Origin": "*"
     }
@@ -45,11 +45,11 @@ def load_index_file():
     return index_file
 
 
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
+application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
 index_file = load_index_file()
 
 
-@app.route('/', methods=['GET'])
+@application.route('/', methods=['GET'])
 def index():
     """render vue login page
 
@@ -60,7 +60,7 @@ def index():
                     headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-@app.route('/ingecheckt', methods=['GET'])
+@application.route('/ingecheckt', methods=['GET'])
 def ingecheckt():
     """render vue in-uitcheck page
 
@@ -71,7 +71,7 @@ def ingecheckt():
                     headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-@app.route('/clients', methods=['GET'])
+@application.route('/clients', methods=['GET'])
 def clients():
     """render vue clients page
 
@@ -82,7 +82,7 @@ def clients():
                     headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-@app.route('/admin', methods=['GET'])
+@application.route('/admin', methods=['GET'])
 def admin():
     """render vue admin page
 
@@ -93,7 +93,7 @@ def admin():
                     headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-@app.route('/instellingen', methods=['GET'])
+@application.route('/instellingen', methods=['GET'])
 def instellingen():
     """render vue instellingen page
 
@@ -104,7 +104,7 @@ def instellingen():
                     headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-@app.route('/<path:path>')
+@application.route('/<path:path>')
 def static_file(path):
     """get static file collected from vue build
 
@@ -117,13 +117,13 @@ def static_file(path):
     return app.send_static_file(path)
 
 
-@app.route('/404', methods=['GET'])
+@application.route('/404', methods=['GET'])
 def no_found():
     return Response(index_file, mimetype='text/html',
                     headers=Headers({'Cache-Control': 'max-age=60'}))
 
 
-@app.errorhandler(404)
+@application.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('no_found'))
 
@@ -197,4 +197,4 @@ api_routes(rest_api)
 
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(application)

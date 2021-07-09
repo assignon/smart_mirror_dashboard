@@ -10,9 +10,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   namespaced: true,
   state: {
-    HOST: window.location.port != "" ? "http://127.0.0.1:5000" : "http://yanicmd.pythonanywhere.com",
-    // HOST: "http://127.0.0.1:5000",
-    //  "http://127.0.0.1:8000",
+    HOST: window.location.port != "" ? "http://3.138.114.150:8080" : "http://smartmirror-env-1.eba-ngnwmpya.us-east-2.elasticbeanstalk.com",
     AUTHENTICATED: undefined,
     usertoken: undefined,
     // socket io host name and initialization
